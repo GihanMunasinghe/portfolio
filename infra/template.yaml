@@ -1,0 +1,151 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Blog platform backend for gihanmunasinghe.lk (Lambda + DynamoDB + daily AI draft schedule)
+
+Parameters:
+  CodeBucket:
+    Type: String
+    Description: S3 bucket holding lambda.zip
+  CodeKey:
+    Type: String
+    Default: lambda.zip
+  AdminPasswordHash:
+    Type: String
+    NoEcho: true
+    Description: SHA-256 hex of the admin password
+  JwtSecret:
+    Type: String
+    NoEcho: true
+  AgentKey:
+    Type: String
+    NoEcho: true
+    Description: Shared secret for non-interactive draft creation
+  AnthropicApiKey:
+    Type: String
+    NoEcho: true
+  NotifyEmail:
+    Type: String
+    Description: SES-verified email that receives morning notifications
+  SiteUrl:
+    Type: String
+    Default: https://www.gihanmunasinghe.lk
+
+Resources:
+  Table:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties:
+      TableName: gihan-blog
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: pk, AttributeType: S }
+        - { AttributeName: sk, AttributeType: S }
+        - { AttributeName: gsi1pk, AttributeType: S }
+        - { AttributeName: createdAt, AttributeType: S }
+      KeySchema:
+        - { AttributeName: pk, KeyType: HASH }
+        - { AttributeName: sk, KeyType: RANGE }
+      GlobalSecondaryIndexes:
+        - IndexName: gsi1
+          KeySchema:
+            - { AttributeName: gsi1pk, KeyType: HASH }
+            - { AttributeName: createdAt, KeyType: RANGE }
+          Projection: { ProjectionType: ALL }
+
+  FnRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: { Service: lambda.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: blog-access
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:Query
+                  - dynamodb:BatchWriteItem
+                Resource:
+                  - !GetAtt Table.Arn
+                  - !Sub "${Table.Arn}/index/*"
+              - Effect: Allow
+                Action: [ses:SendEmail]
+                Resource: "*"
+
+  Fn:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: gihan-blog-api
+      Runtime: nodejs20.x
+      Handler: index.handler
+      MemorySize: 256
+      Timeout: 300
+      Role: !GetAtt FnRole.Arn
+      Code:
+        S3Bucket: !Ref CodeBucket
+        S3Key: !Ref CodeKey
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref Table
+          ADMIN_PASSWORD_HASH: !Ref AdminPasswordHash
+          JWT_SECRET: !Ref JwtSecret
+          AGENT_KEY: !Ref AgentKey
+          ANTHROPIC_API_KEY: !Ref AnthropicApiKey
+          NOTIFY_EMAIL: !Ref NotifyEmail
+          SITE_URL: !Ref SiteUrl
+
+  FnUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      TargetFunctionArn: !GetAtt Fn.Arn
+      AuthType: NONE
+      Cors:
+        AllowOrigins: ["*"]
+        AllowMethods: ["*"]
+        AllowHeaders: ["content-type", "authorization", "x-agent-key"]
+        MaxAge: 86400
+
+  FnUrlPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref Fn
+      Action: lambda:InvokeFunctionUrl
+      Principal: "*"
+      FunctionUrlAuthType: NONE
+
+  DailyDraftRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: gihan-blog-daily-draft
+      Description: Draft a blog post every morning at 07:00 Singapore (23:00 UTC)
+      ScheduleExpression: cron(0 23 * * ? *)
+      State: ENABLED
+      Targets:
+        - Id: draft
+          Arn: !GetAtt Fn.Arn
+          Input: '{"job":"daily-draft"}'
+
+  DailyDraftPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref Fn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt DailyDraftRule.Arn
+
+Outputs:
+  ApiUrl:
+    Description: Base URL of the blog API (paste into site-config.json "api")
+    Value: !GetAtt FnUrl.FunctionUrl
+  TableName:
+    Value: !Ref Table
