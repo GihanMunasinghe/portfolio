@@ -51,15 +51,23 @@ drafts with Preview / Publish / Reject. Publish moves the entry from
 removes the entry and deletes the draft file. The agent skips a day if
 two or more drafts are already waiting.
 
-### Comments, reactions & sharing
+### Comments, reactions, sharing & analytics
 
 - Every post has share buttons (LinkedIn, X, Facebook, WhatsApp, copy link)
   rendered by `blog/post-extras.js`.
-- Comments + emoji reactions use [giscus](https://giscus.app), backed by
-  this repo's GitHub Discussions. One-time activation:
+- Site-wide feature config lives in `site-config.json`, editable from the
+  admin panel's **Analytics** tab (no code changes needed).
+- **Comments + emoji reactions** use [giscus](https://giscus.app), backed
+  by this repo's GitHub Discussions. One-time activation:
   1. Repo **Settings → General → Features** → enable **Discussions**.
   2. Install the [giscus app](https://github.com/apps/giscus) for this repo.
-  3. On https://giscus.app enter the repo, pick a discussion category
-     (create one named "Blog comments", type *Announcement*), and copy the
-     `data-category` and `data-category-id` values into the `GISCUS` config
-     at the top of `blog/post-extras.js`.
+  3. On https://giscus.app select the repo and a category (create "Blog
+     comments", type *Announcement*), then paste the category name + ID
+     into the admin panel's Analytics tab and press "Activate comments".
+  Replies are built into giscus; per-post enable/disable and comment
+  deletion/replies are available from the admin panel (token needs
+  **Discussions → Read and write**).
+- **Traffic analytics** use [GoatCounter](https://www.goatcounter.com)
+  (free, privacy-friendly). Create an account, then enter the site code in
+  the admin Analytics tab and press "Activate" — pageview tracking starts
+  on all pages, and an optional API token shows stats inside the panel.

@@ -1041,6 +1041,19 @@
       });
 
     document.getElementById("year").textContent = new Date().getFullYear();
+
+    /* analytics beacon (GoatCounter) — configured via site-config.json */
+    fetch("site-config.json?t=" + Date.now())
+      .then((r) => r.json())
+      .then((cfg) => {
+        if (!cfg.goatcounter) return;
+        const gc = document.createElement("script");
+        gc.async = true;
+        gc.src = "https://gc.zgo.at/count.js";
+        gc.setAttribute("data-goatcounter", `https://${cfg.goatcounter}.goatcounter.com/count`);
+        document.body.appendChild(gc);
+      })
+      .catch(() => {});
   </script>
 </body>
 </html>
