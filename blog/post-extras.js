@@ -1,12 +1,13 @@
-/* Shared post features: share bar + comments (giscus).
- * Included by every blog post via <script src="post-extras.js"></script>. */
+/* Shared post features: share bar, analytics beacon, comments (giscus).
+ * Configuration lives in /site-config.json — editable from the admin panel. */
 (function () {
   var url = location.href.split("#")[0];
   var title = document.title.replace(/ — Gihan Munasinghe$/, "");
   var eUrl = encodeURIComponent(url);
   var eTitle = encodeURIComponent(title);
+  var slug = location.pathname.split("/").pop().replace(/\.html$/, "");
 
-  /* ---- share bar ---- */
+  /* ---- share bar (config-independent) ---- */
   var share = document.getElementById("share");
   if (share) {
     share.innerHTML =
@@ -27,27 +28,43 @@
     });
   }
 
-  /* ---- comments & reactions (giscus, backed by GitHub Discussions) ----
-   * To activate: enable Discussions on the repo, install the giscus app
-   * (https://github.com/apps/giscus), then fill category + categoryId below
-   * (both shown at https://giscus.app after selecting the repo). */
-  var GISCUS = {
-    repo: "GihanMunasinghe/portfolio",
-    repoId: "R_kgDOSsy7zw",
-    category: "",     // e.g. "Blog comments"
-    categoryId: ""    // e.g. "DIC_kwDOSsy7z84C..."
-  };
-  var comments = document.getElementById("comments");
-  if (comments) {
-    if (GISCUS.categoryId) {
+  /* ---- config-driven features ---- */
+  Promise.all([
+    fetch("../site-config.json?t=" + Date.now()).then(function (r) { return r.json(); }).catch(function () { return {}; }),
+    fetch("posts.json?t=" + Date.now()).then(function (r) { return r.json(); }).catch(function () { return null; }),
+  ]).then(function (res) {
+    var cfg = res[0] || {};
+    var posts = res[1];
+
+    /* analytics beacon (GoatCounter) */
+    if (cfg.goatcounter) {
+      var gc = document.createElement("script");
+      gc.async = true;
+      gc.src = "https://gc.zgo.at/count.js";
+      gc.setAttribute("data-goatcounter", "https://" + cfg.goatcounter + ".goatcounter.com/count");
+      document.body.appendChild(gc);
+    }
+
+    /* comments */
+    var comments = document.getElementById("comments");
+    if (!comments) return;
+    var entry = posts ? posts.find(function (p) { return p.slug === slug; }) : undefined;
+    var note = function (msg) {
+      comments.innerHTML = '<p style="color:#98a1b3; font-size:0.92rem;">' + msg + "</p>";
+    };
+    if (posts && !entry) {
+      note("💬 Comments open once this post is published.");
+    } else if (entry && entry.comments === false) {
+      note("💬 Comments are turned off for this post.");
+    } else if (cfg.giscus && cfg.giscus.categoryId) {
       var s = document.createElement("script");
       s.src = "https://giscus.app/client.js";
       s.async = true;
       s.crossOrigin = "anonymous";
-      s.setAttribute("data-repo", GISCUS.repo);
-      s.setAttribute("data-repo-id", GISCUS.repoId);
-      s.setAttribute("data-category", GISCUS.category);
-      s.setAttribute("data-category-id", GISCUS.categoryId);
+      s.setAttribute("data-repo", cfg.giscus.repo);
+      s.setAttribute("data-repo-id", cfg.giscus.repoId);
+      s.setAttribute("data-category", cfg.giscus.category);
+      s.setAttribute("data-category-id", cfg.giscus.categoryId);
       s.setAttribute("data-mapping", "pathname");
       s.setAttribute("data-strict", "0");
       s.setAttribute("data-reactions-enabled", "1");
@@ -58,8 +75,7 @@
       s.setAttribute("data-loading", "lazy");
       comments.appendChild(s);
     } else {
-      comments.innerHTML =
-        '<p style="color:#98a1b3; font-size:0.92rem;">💬 Comments and reactions are launching soon.</p>';
+      note("💬 Comments and reactions are launching soon.");
     }
-  }
+  });
 })();
