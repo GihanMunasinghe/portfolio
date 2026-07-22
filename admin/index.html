@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — gihanmunasinghe.lk</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>" />
+  <style>
+    :root {
+      --bg: #07090d;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface-solid: #11151d;
+      --border: rgba(255, 255, 255, 0.09);
+      --text: #eef1f7;
+      --muted: #98a1b3;
+      --accent: #6ea8fe;
+      --accent-2: #8b5cf6;
+      --accent-3: #22d3ee;
+      --ok: #34d399;
+      --danger: #f87171;
+      --grad: linear-gradient(100deg, #6ea8fe, #8b5cf6 55%, #22d3ee);
+      --font-display: "Sora", -apple-system, sans-serif;
+      --font-body: "Inter", -apple-system, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-body);
+      background:
+        radial-gradient(600px 400px at 85% -5%, rgba(139, 92, 246, 0.16), transparent 70%),
+        radial-gradient(700px 500px at -10% 30%, rgba(110, 168, 254, 0.12), transparent 70%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 1.5rem 1.4rem 4rem; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.2rem; }
+    .logo { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; color: var(--text); text-decoration: none; }
+    .logo span { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .logo em { font-style: normal; color: var(--muted); font-weight: 500; font-size: 0.85rem; margin-left: 0.5rem; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem;
+      font-family: var(--font-body); font-weight: 600; font-size: 0.9rem;
+      padding: 0.6rem 1.15rem; border-radius: 11px; text-decoration: none;
+      cursor: pointer; border: none; transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+    }
+    .btn:disabled { opacity: 0.55; cursor: wait; }
+    .btn-primary { background: var(--grad); color: #fff; box-shadow: 0 6px 18px rgba(110, 168, 254, 0.25); }
+    .btn-primary:hover:not(:disabled) { transform: translateY(-1px); }
+    .btn-ghost { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+    .btn-danger { background: rgba(248, 113, 113, 0.12); color: var(--danger); border: 1px solid rgba(248, 113, 113, 0.35); }
+    .btn-sm { padding: 0.45rem 0.9rem; font-size: 0.84rem; }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 18px; padding: 1.6rem;
+    }
+    h1 { font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 0.4rem; }
+    .sub { color: var(--muted); font-size: 0.95rem; }
+    /* login */
+    #login { max-width: 460px; margin: 8vh auto 0; }
+    #login label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--muted); margin: 1.2rem 0 0.4rem; }
+    #login input {
+      width: 100%; padding: 0.75rem 1rem; border-radius: 11px;
+      border: 1px solid var(--border); background: rgba(255,255,255,0.05);
+      color: var(--text); font-size: 0.95rem; font-family: ui-monospace, monospace;
+    }
+    #login input:focus { outline: none; border-color: var(--accent); }
+    .hint { font-size: 0.8rem; color: var(--muted); margin-top: 0.8rem; }
+    .hint a { color: var(--accent); }
+    .remember { display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; font-size: 0.85rem; color: var(--muted); }
+    /* dashboard */
+    .stats { display: flex; gap: 1rem; margin: 1.6rem 0; flex-wrap: wrap; }
+    .stat {
+      flex: 1; min-width: 130px; text-align: center;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1rem;
+    }
+    .stat .n { font-family: var(--font-display); font-size: 1.7rem; font-weight: 800; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .stat .l { font-size: 0.78rem; color: var(--muted); }
+    h2 { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; margin: 2rem 0 1rem; }
+    .draft {
+      display: grid; grid-template-columns: 150px 1fr; gap: 1.1rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1rem; margin-bottom: 1rem; align-items: start;
+    }
+    @media (max-width: 620px) { .draft { grid-template-columns: 1fr; } }
+    .draft img { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 10px; border: 1px solid var(--border); }
+    .draft h3 { font-family: var(--font-display); font-size: 1.02rem; line-height: 1.35; margin-bottom: 0.25rem; }
+    .draft .meta { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.4rem; }
+    .draft p { font-size: 0.87rem; color: var(--muted); margin-bottom: 0.8rem; }
+    .draft .actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .pub-item {
+      display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+      padding: 0.8rem 1.1rem; border: 1px solid var(--border); border-radius: 12px;
+      margin-bottom: 0.6rem; background: rgba(255,255,255,0.02);
+    }
+    .pub-item .t { font-size: 0.92rem; font-weight: 600; }
+    .pub-item .d { font-size: 0.78rem; color: var(--muted); }
+    .pub-item a { color: var(--accent); font-size: 0.85rem; text-decoration: none; white-space: nowrap; }
+    #toast {
+      position: fixed; bottom: 1.4rem; left: 50%; transform: translateX(-50%);
+      background: var(--surface-solid); border: 1px solid var(--border);
+      border-radius: 12px; padding: 0.8rem 1.3rem; font-size: 0.9rem;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.5); display: none; z-index: 10; max-width: 92vw;
+    }
+    #toast.ok { border-color: rgba(52, 211, 153, 0.4); }
+    #toast.err { border-color: rgba(248, 113, 113, 0.4); }
+    .empty { color: var(--muted); font-size: 0.92rem; padding: 1.4rem; text-align: center; border: 1px dashed var(--border); border-radius: 14px; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="logo" href="../index.html">Gihan<span>.</span><em>Admin</em></a>
+      <button class="btn btn-ghost btn-sm hidden" id="logout">Sign out</button>
+    </div>
+
+    <!-- ======== LOGIN ======== -->
+    <div id="login" class="card">
+      <h1>Admin sign-in</h1>
+      <p class="sub">Publish and manage blog posts on gihanmunasinghe.lk.</p>
+      <label for="token">Access token</label>
+      <input id="token" type="password" placeholder="github_pat_…" autocomplete="current-password" />
+      <label class="remember"><input type="checkbox" id="remember" checked /> Remember on this device</label>
+      <div style="margin-top:1.3rem;">
+        <button class="btn btn-primary" id="signin" style="width:100%;">Sign in</button>
+      </div>
+      <p class="hint">
+        One-time setup: create a <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">fine-grained access token</a>
+        — Repository access: <strong>Only select repositories → portfolio</strong>;
+        Permissions: <strong>Contents → Read and write</strong>. Paste it here once.
+      </p>
+    </div>
+
+    <!-- ======== DASHBOARD ======== -->
+    <div id="dash" class="hidden">
+      <h1>Blog control room</h1>
+      <p class="sub">Approve AI drafts, manage published posts. Publishing takes ~30 seconds to go live.</p>
+      <div class="stats">
+        <div class="stat"><div class="n" id="n-pending">–</div><div class="l">Drafts awaiting approval</div></div>
+        <div class="stat"><div class="n" id="n-published">–</div><div class="l">Published posts</div></div>
+      </div>
+
+      <h2>📥 Awaiting your approval</h2>
+      <div id="pending-list"></div>
+
+      <h2>🌍 Published</h2>
+      <div id="published-list"></div>
+    </div>
+
+    <div id="toast"></div>
+  </div>
+
+  <script>
+    const OWNER = "GihanMunasinghe", REPO = "portfolio", BRANCH = "main";
+    const API = `https://api.github.com/repos/${OWNER}/${REPO}`;
+    const SITE = "https://www.gihanmunasinghe.lk";
+    let TOKEN = null;
+
+    const $ = (id) => document.getElementById(id);
+    const b64decode = (s) => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\n/g, "")), (c) => c.charCodeAt(0)));
+    const b64encode = (s) => { const b = new TextEncoder().encode(s); let out = ""; b.forEach((c) => out += String.fromCharCode(c)); return btoa(out); };
+
+    function toast(msg, cls) {
+      const t = $("toast");
+      t.textContent = msg; t.className = cls || ""; t.style.display = "block";
+      clearTimeout(t._h); t._h = setTimeout(() => (t.style.display = "none"), 5000);
+    }
+
+    async function gh(path, opts = {}) {
+      const res = await fetch(API + path, {
+        ...opts,
+        headers: {
+          "Authorization": "Bearer " + TOKEN,
+          "Accept": "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2022-11-28",
+          ...(opts.body ? { "Content-Type": "application/json" } : {}),
+        },
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || res.status + " " + res.statusText);
+      }
+      return res.json();
+    }
+
+    const getFile = async (path) => {
+      const f = await gh(`/contents/${path}?ref=${BRANCH}&t=` + Date.now());
+      return { sha: f.sha, data: JSON.parse(b64decode(f.content)) };
+    };
+    const putFile = (path, obj, sha, message) =>
+      gh(`/contents/${path}`, {
+        method: "PUT",
+        body: JSON.stringify({ message, branch: BRANCH, sha, content: b64encode(JSON.stringify(obj, null, 2) + "\n") }),
+      });
+
+    /* ---------- auth ---------- */
+    async function signIn(token, remember, silent) {
+      TOKEN = token;
+      try {
+        const repo = await gh("");
+        if (!repo.permissions || !repo.permissions.push) throw new Error("This token cannot write to the repository.");
+        if (remember) localStorage.setItem("gm_admin_token", token);
+        $("login").classList.add("hidden");
+        $("dash").classList.remove("hidden");
+        $("logout").classList.remove("hidden");
+        await refresh();
+      } catch (e) {
+        TOKEN = null;
+        localStorage.removeItem("gm_admin_token");
+        if (!silent) toast("Sign-in failed: " + e.message, "err");
+        $("login").classList.remove("hidden");
+      }
+    }
+    $("signin").addEventListener("click", () => {
+      const t = $("token").value.trim();
+      if (!t) return toast("Paste your access token first.", "err");
+      signIn(t, $("remember").checked, false);
+    });
+    $("token").addEventListener("keydown", (e) => e.key === "Enter" && $("signin").click());
+    $("logout").addEventListener("click", () => {
+      localStorage.removeItem("gm_admin_token");
+      location.reload();
+    });
+
+    /* ---------- dashboard ---------- */
+    async function refresh() {
+      const [pending, published] = await Promise.all([
+        getFile("drafts/pending.json"),
+        getFile("blog/posts.json"),
+      ]);
+      $("n-pending").textContent = pending.data.length;
+      $("n-published").textContent = published.data.length;
+
+      $("pending-list").innerHTML = pending.data.length
+        ? pending.data.map((p) => `
+          <div class="draft" data-slug="${p.slug}">
+            <img src="../${p.image}" alt="" onerror="this.style.display='none'" />
+            <div>
+              <h3>${p.title}</h3>
+              <div class="meta">${p.date} · ${p.readTime}${p.media ? " · " + p.media : ""}</div>
+              <p>${p.excerpt}</p>
+              <div class="actions">
+                <a class="btn btn-ghost btn-sm" href="../blog/${p.slug}.html" target="_blank" rel="noopener">👁 Preview</a>
+                <button class="btn btn-primary btn-sm" onclick="publish('${p.slug}', this)">🚀 Publish</button>
+                <button class="btn btn-danger btn-sm" onclick="reject('${p.slug}', this)">✕ Reject</button>
+              </div>
+            </div>
+          </div>`).join("")
+        : '<div class="empty">No drafts waiting. The next AI draft arrives tomorrow morning. ☕</div>';
+
+      $("published-list").innerHTML = published.data.map((p) => `
+        <div class="pub-item">
+          <div><div class="t">${p.title}</div><div class="d">${p.date} · ${p.readTime}</div></div>
+          <a href="${SITE}/blog/${p.slug}.html" target="_blank" rel="noopener">View ↗</a>
+        </div>`).join("");
+    }
+
+    async function publish(slug, btn) {
+      btn.disabled = true; btn.textContent = "Publishing…";
+      try {
+        const pending = await getFile("drafts/pending.json");
+        const posts = await getFile("blog/posts.json");
+        const entry = pending.data.find((p) => p.slug === slug);
+        if (!entry) throw new Error("Draft not found — refresh the page.");
+        await putFile("blog/posts.json", [entry, ...posts.data.filter((p) => p.slug !== slug)], posts.sha,
+          `Publish blog post: ${entry.title} (via admin panel)`);
+        const pending2 = await getFile("drafts/pending.json");
+        await putFile("drafts/pending.json", pending2.data.filter((p) => p.slug !== slug), pending2.sha,
+          `Remove published draft from queue: ${slug}`);
+        toast("🚀 Published! Live at " + SITE + "/blog/" + slug + ".html in ~30s", "ok");
+        await refresh();
+      } catch (e) {
+        toast("Publish failed: " + e.message, "err");
+      } finally { btn.disabled = false; btn.textContent = "🚀 Publish"; }
+    }
+
+    async function reject(slug, btn) {
+      if (!confirm("Reject and delete this draft?")) return;
+      btn.disabled = true; btn.textContent = "Rejecting…";
+      try {
+        const pending = await getFile("drafts/pending.json");
+        await putFile("drafts/pending.json", pending.data.filter((p) => p.slug !== slug), pending.sha,
+          `Reject draft: ${slug}`);
+        try {
+          const f = await gh(`/contents/blog/${slug}.html?ref=${BRANCH}`);
+          await gh(`/contents/blog/${slug}.html`, {
+            method: "DELETE",
+            body: JSON.stringify({ message: `Delete rejected draft: ${slug}`, branch: BRANCH, sha: f.sha }),
+          });
+        } catch (_) { /* post file may not exist; queue entry removal is what matters */ }
+        toast("Draft rejected and removed.", "ok");
+        await refresh();
+      } catch (e) {
+        toast("Reject failed: " + e.message, "err");
+      } finally { btn.disabled = false; btn.textContent = "✕ Reject"; }
+    }
+
+    /* auto sign-in if remembered */
+    const saved = localStorage.getItem("gm_admin_token");
+    if (saved) signIn(saved, true, true);
+  </script>
+</body>
+</html>

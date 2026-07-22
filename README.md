@@ -21,15 +21,25 @@ Personal portfolio site, deployed to GitHub Pages at https://www.gihanmunasinghe
 3. Push to `main` — the homepage blog grid renders from `posts.json`
    automatically.
 
-### Daily AI drafts (approval workflow)
+### Daily AI drafts (approval via the admin panel)
 
 A scheduled Claude agent researches current software-engineering topics
-every morning and opens a pull request titled `Daily blog draft: …` with a
-complete post following the conventions above. Nothing publishes without
-approval: **merging the PR is the approval** and triggers deployment.
-Close the PR to reject a draft. Review checklist: read the post, check the
-sources it cites, adjust voice/details as needed (PRs are editable before
-merging).
+every morning and commits a complete draft post directly to `main`:
+
+- the post HTML at `blog/<slug>.html` (rendered and previewable, but
+  **not** publicly listed anywhere),
+- its cover image in `blog/images/`,
+- its metadata entry appended to `drafts/pending.json` (the approval
+  queue). The homepage only lists posts from `blog/posts.json`, so
+  nothing is visible to visitors until approved.
+
+**Approval happens at https://www.gihanmunasinghe.lk/admin/** — sign in
+with a fine-grained GitHub token (repo: portfolio, permission:
+Contents read/write; the page explains it). The dashboard shows pending
+drafts with Preview / Publish / Reject. Publish moves the entry from
+`drafts/pending.json` into `blog/posts.json` (live in ~30s); Reject
+removes the entry and deletes the draft file. The agent skips a day if
+two or more drafts are already waiting.
 
 ### Comments, reactions & sharing
 
