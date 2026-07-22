@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Portfolio of Gihan Munasinghe" />
+  <title>Gihan Munasinghe — Portfolio</title>
+  <style>
+    :root {
+      --bg: #0f1115;
+      --surface: #181b22;
+      --text: #e8eaf0;
+      --muted: #9aa1b0;
+      --accent: #6ea8fe;
+      --border: #262b36;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #fafbfc;
+        --surface: #ffffff;
+        --text: #1a1d24;
+        --muted: #5b6472;
+        --accent: #2563eb;
+        --border: #e4e7ec;
+      }
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container { max-width: 800px; margin: 0 auto; padding: 0 1.5rem; }
+    header { padding: 6rem 0 3rem; }
+    h1 { font-size: 2.5rem; letter-spacing: -0.02em; }
+    .tagline { color: var(--muted); font-size: 1.15rem; margin-top: 0.5rem; }
+    .links { margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+    .links a {
+      color: var(--accent);
+      text-decoration: none;
+      border: 1px solid var(--border);
+      padding: 0.4rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+    .links a:hover { border-color: var(--accent); }
+    section { padding: 2rem 0; }
+    h2 {
+      font-size: 1.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .card h3 { font-size: 1.1rem; margin-bottom: 0.25rem; }
+    .card p { color: var(--muted); font-size: 0.95rem; }
+    .skills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .skills span {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.3rem 0.85rem;
+      font-size: 0.9rem;
+    }
+    footer {
+      padding: 3rem 0 4rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Gihan Munasinghe</h1>
+      <p class="tagline">Software developer. This is my corner of the web.</p>
+      <div class="links">
+        <a href="https://github.com/GihanMunasinghe">GitHub</a>
+        <a href="mailto:gihanmunasinghe266@gmail.com">Email</a>
+      </div>
+    </header>
+
+    <section id="about">
+      <h2>About</h2>
+      <div class="card">
+        <p>
+          Write a short introduction about yourself here — what you do, what
+          you're interested in, and what you're currently working on.
+        </p>
+      </div>
+    </section>
+
+    <section id="projects">
+      <h2>Projects</h2>
+      <div class="card">
+        <h3>Project One</h3>
+        <p>A short description of the project, what it does, and what you built it with.</p>
+      </div>
+      <div class="card">
+        <h3>Project Two</h3>
+        <p>A short description of the project, what it does, and what you built it with.</p>
+      </div>
+    </section>
+
+    <section id="skills">
+      <h2>Skills</h2>
+      <div class="skills">
+        <span>JavaScript</span>
+        <span>Python</span>
+        <span>Git</span>
+        <span>HTML &amp; CSS</span>
+      </div>
+    </section>
+
+    <footer>
+      © 2026 Gihan Munasinghe
+    </footer>
+  </div>
+</body>
+</html>
