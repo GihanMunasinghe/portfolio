@@ -1,0 +1,11 @@
+[
+  {
+    "slug": "launching-my-portfolio-github-pages",
+    "title": "How I launched this site: GitHub Pages, Cloudflare DNS and a custom .lk domain",
+    "excerpt": "The full walkthrough of shipping this portfolio for $0/month — automatic deployments, free HTTPS, and a custom domain — plus the pitfalls I hit along the way.",
+    "date": "22 Jul 2026",
+    "readTime": "6 min read",
+    "image": "blog/images/portfolio-launch.jpg",
+    "media": "Guide"
+  }
+]

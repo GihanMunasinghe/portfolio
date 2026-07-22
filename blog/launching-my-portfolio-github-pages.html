@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How I launched this site — Gihan Munasinghe</title>
+  <meta name="description" content="Shipping a portfolio for $0/month with GitHub Pages, GitHub Actions, Cloudflare DNS and a custom .lk domain — a full walkthrough." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👨🏽‍💻</text></svg>" />
+  <style>
+    :root {
+      --bg: #07090d;
+      --surface: rgba(255, 255, 255, 0.04);
+      --border: rgba(255, 255, 255, 0.09);
+      --text: #eef1f7;
+      --muted: #98a1b3;
+      --accent: #6ea8fe;
+      --accent-2: #8b5cf6;
+      --accent-3: #22d3ee;
+      --grad: linear-gradient(100deg, #6ea8fe, #8b5cf6 55%, #22d3ee);
+      --font-display: "Sora", -apple-system, sans-serif;
+      --font-body: "Inter", -apple-system, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-body);
+      background:
+        radial-gradient(600px 400px at 85% -5%, rgba(139, 92, 246, 0.15), transparent 70%),
+        radial-gradient(700px 500px at -10% 20%, rgba(110, 168, 254, 0.10), transparent 70%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+    ::selection { background: rgba(110, 168, 254, 0.35); }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 0 1.4rem 5rem; }
+    nav { padding: 1.4rem 0 0; }
+    nav a { color: var(--muted); text-decoration: none; font-size: 0.92rem; font-weight: 500; }
+    nav a:hover { color: var(--text); }
+    header { padding: 3rem 0 2rem; }
+    .kicker {
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      background: var(--grad);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      margin-bottom: 0.8rem;
+    }
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(1.7rem, 4.5vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .meta { color: var(--muted); font-size: 0.9rem; display: flex; gap: 0.8rem; flex-wrap: wrap; }
+    .cover {
+      width: 100%;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      margin: 1.6rem 0 0;
+    }
+    article h2 {
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin: 2.6rem 0 0.9rem;
+      letter-spacing: -0.01em;
+    }
+    article p { color: #c6ccd8; margin-bottom: 1.15rem; }
+    article strong { color: var(--text); }
+    article a { color: var(--accent); }
+    article ul, article ol { margin: 0 0 1.15rem 1.4rem; color: #c6ccd8; }
+    article li { margin-bottom: 0.4rem; }
+    figure { margin: 1.8rem 0; }
+    figure img {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+    figcaption { font-size: 0.85rem; color: var(--muted); text-align: center; margin-top: 0.6rem; }
+    .video-embed {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin: 1.8rem 0;
+      background: var(--surface);
+    }
+    .video-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    pre {
+      background: #0d1118;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem 1.3rem;
+      overflow-x: auto;
+      margin: 0 0 1.15rem;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+    code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: #a5d6ff; }
+    p code, li code {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.1rem 0.4rem;
+      font-size: 0.85em;
+    }
+    .callout {
+      border-left: 3px solid var(--accent-2);
+      background: rgba(139, 92, 246, 0.08);
+      border-radius: 0 12px 12px 0;
+      padding: 1rem 1.3rem;
+      margin: 0 0 1.15rem;
+      color: #c6ccd8;
+    }
+    .post-footer {
+      margin-top: 3.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 0.72rem 1.35rem;
+      border-radius: 12px;
+      text-decoration: none;
+      background: var(--grad);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav><a href="../index.html#blog">← Back to gihanmunasinghe.lk</a></nav>
+
+    <header>
+      <div class="kicker">Guide · DevOps</div>
+      <h1>How I launched this site: GitHub Pages, Cloudflare DNS and a custom .lk domain</h1>
+      <div class="meta"><span>Gihan Munasinghe</span><span>·</span><span>22 Jul 2026</span><span>·</span><span>6 min read</span></div>
+      <img class="cover" src="images/portfolio-launch.jpg" alt="The gihanmunasinghe.lk homepage" />
+    </header>
+
+    <article>
+      <p>
+        This site — the one you're reading right now — costs me exactly <strong>$0/month</strong>
+        to run. It deploys itself automatically every time I push a change, serves over
+        HTTPS with a certificate that renews itself, and sits on my own domain,
+        <code>www.gihanmunasinghe.lk</code>. Here's exactly how it's put together, including
+        the two pitfalls that briefly broke the first deployment.
+      </p>
+
+      <h2>The architecture</h2>
+      <p>
+        There are only three moving parts, and none of them are servers I have to maintain:
+      </p>
+      <ul>
+        <li><strong>GitHub Pages</strong> hosts the static files on a global CDN, for free.</li>
+        <li><strong>GitHub Actions</strong> redeploys the site on every push to <code>main</code>.</li>
+        <li><strong>Cloudflare</strong> manages DNS for the domain.</li>
+      </ul>
+
+      <h2>The deployment workflow</h2>
+      <p>
+        The entire CI/CD pipeline is one small workflow file at
+        <code>.github/workflows/deploy.yml</code>:
+      </p>
+      <pre><code>name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - uses: actions/deploy-pages@v4</code></pre>
+      <p>
+        Push to <code>main</code>, and roughly twenty seconds later the change is live
+        worldwide. No build step, no servers, no kubectl.
+      </p>
+
+      <h2>Pitfall #1: the workflow can't always enable Pages by itself</h2>
+      <p>
+        My first deployment failed with
+        <code>Create Pages site failed: Resource not accessible by integration</code>.
+        The token GitHub gives to workflow runs isn't allowed to switch Pages on for a
+        personal repository. The fix takes ten seconds, but you have to know it exists:
+      </p>
+      <div class="callout">
+        Go to <strong>Settings → Pages</strong> and set <strong>Source</strong> to
+        <strong>"GitHub Actions"</strong> manually, then re-run the workflow. After that
+        one-time step, every deployment is fully automatic.
+      </div>
+
+      <h2>Pointing a custom domain at it</h2>
+      <p>
+        Two pieces make the custom domain work. First, a file literally named
+        <code>CNAME</code> in the repository root, containing one line —
+        <code>www.gihanmunasinghe.lk</code> — which tells GitHub which hostname to serve.
+        Second, the DNS records in Cloudflare:
+      </p>
+      <ul>
+        <li><code>CNAME</code> record: <code>www</code> → <code>gihanmunasinghe.github.io</code></li>
+        <li>Four <code>A</code> records on the root (<code>@</code>) pointing to GitHub Pages'
+            IPs: <code>185.199.108.153</code> through <code>185.199.111.153</code> — so the
+            bare domain works too.</li>
+      </ul>
+
+      <h2>Pitfall #2: Cloudflare's orange cloud</h2>
+      <p>
+        Cloudflare proxies traffic through its own network by default (the "orange cloud").
+        During initial setup that's a problem: GitHub needs to see your domain directly to
+        verify it and issue the HTTPS certificate. Proxied DNS can leave you stuck in
+        verification limbo — or worse, an infinite redirect loop.
+      </p>
+      <div class="callout">
+        Set the records to <strong>"DNS only"</strong> (grey cloud) until GitHub shows the
+        domain verified and "Enforce HTTPS" is on. If you want Cloudflare's proxy afterwards,
+        switch its SSL/TLS mode to <strong>Full (strict)</strong> first.
+      </div>
+
+      <h2>The result</h2>
+      <figure>
+        <img src="images/portfolio-launch.jpg" alt="The finished homepage of gihanmunasinghe.lk" />
+        <figcaption>The finished site — deployed on every push, HTTPS included, $0/month.</figcaption>
+      </figure>
+      <p>
+        Total cost: the domain registration. Total maintenance: none. For a portfolio,
+        a product landing page, documentation, or any static site, this stack is very hard
+        to beat — and because the whole thing is just files in a Git repository, the site's
+        own history doubles as its changelog.
+      </p>
+      <p>
+        Questions about the setup, or want help shipping something similar?
+        <a href="../index.html#contact">Get in touch</a> — this is exactly the kind of thing
+        I help teams with.
+      </p>
+
+      <!--
+        HOW TO EMBED A VIDEO IN A POST
+        ==============================
+        Copy this block anywhere in the article. Replace VIDEO_ID with the part
+        after "v=" in the YouTube URL (e.g. https://www.youtube.com/watch?v=VIDEO_ID).
+
+        <div class="video-embed">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/VIDEO_ID"
+            title="Video title"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
+        </div>
+      -->
+    </article>
+
+    <div class="post-footer">
+      <a href="../index.html#blog" style="color:var(--muted); text-decoration:none;">← All posts</a>
+      <a class="btn" href="../index.html#contact">Work with me</a>
+    </div>
+  </div>
+</body>
+</html>
