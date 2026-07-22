@@ -195,62 +195,74 @@
     }
     .stat .lbl { font-size: 0.85rem; color: var(--muted); }
 
-    /* portrait orbit */
+    /* profile card */
     .hero-visual { justify-self: center; position: relative; }
-    .orbit-wrap {
-      position: relative;
-      width: min(320px, 62vw);
-      aspect-ratio: 1;
-      display: grid;
-      place-items: center;
+    .profile-card {
+      width: min(300px, 78vw);
+      border-radius: 26px;
+      padding: 1px;
+      background: linear-gradient(160deg, rgba(110,168,254,0.55), rgba(139,92,246,0.35) 45%, rgba(34,211,238,0.4));
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55), 0 0 50px rgba(139, 92, 246, 0.12);
+      animation: cardfloat 7s ease-in-out infinite;
     }
-    .orbit-ring {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      background: conic-gradient(from 0deg, #6ea8fe, #8b5cf6, #22d3ee, #6ea8fe);
-      animation: spin 9s linear infinite;
-      filter: blur(1px);
+    @keyframes cardfloat { 50% { transform: translateY(-8px); } }
+    .profile-inner {
+      background: #0d1017;
+      border-radius: 25px;
+      padding: 12px 12px 1.2rem;
+      text-align: center;
     }
-    .orbit-ring::after {
-      content: "";
-      position: absolute;
-      inset: 5px;
-      border-radius: 50%;
-      background: var(--bg);
+    .profile-inner img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 18px;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .portrait {
-      position: relative;
-      width: calc(100% - 26px);
-      aspect-ratio: 1;
-      border-radius: 50%;
-      object-fit: cover;
-      object-position: top;
-      z-index: 1;
-      box-shadow: 0 24px 70px rgba(0,0,0,0.6);
+    .pc-name {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.15rem;
+      margin-top: 1rem;
+      letter-spacing: -0.01em;
     }
-    .orbit-chip {
-      position: absolute;
-      z-index: 2;
-      display: flex;
+    .pc-role { color: var(--muted); font-size: 0.86rem; margin-top: 0.15rem; }
+    .pc-status {
+      display: inline-flex;
       align-items: center;
-      gap: 0.45rem;
-      background: rgba(17, 21, 29, 0.92);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
-      padding: 0.5rem 0.9rem;
-      border-radius: 12px;
-      font-size: 0.8rem;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
-      white-space: nowrap;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.45);
-      animation: floaty 5.5s ease-in-out infinite;
+      color: #34d399;
+      background: rgba(52, 211, 153, 0.1);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
     }
-    .oc-1 { top: 4%; left: -12%; animation-delay: 0s; }
-    .oc-2 { top: 42%; right: -18%; animation-delay: 1.7s; }
-    .oc-3 { bottom: 2%; left: 2%; animation-delay: 3.2s; }
-    @keyframes floaty { 50% { transform: translateY(-9px); } }
+    .pc-status .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #34d399;
+      box-shadow: 0 0 8px #34d399;
+      animation: pulse 2.2s infinite;
+    }
+    .pc-badges {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 0.9rem;
+      padding: 0 0.4rem;
+    }
+    .pc-badges span {
+      font-size: 0.74rem;
+      font-weight: 500;
+      color: var(--muted);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      padding: 0.28rem 0.7rem;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
 
     .scroll-hint {
       position: absolute;
@@ -296,8 +308,7 @@
         padding-bottom: 5.5rem;
       }
       .hero-sub, .hero-ctas, .stats { margin-left: auto; margin-right: auto; justify-content: center; }
-      .orbit-wrap { width: min(220px, 58vw); }
-      .oc-1 { left: -22%; } .oc-2 { right: -24%; }
+      .profile-card { width: min(260px, 74vw); }
       .scroll-hint { display: none; }
     }
 
@@ -580,7 +591,7 @@
     .reveal.in { opacity: 1; transform: none; }
     @media (prefers-reduced-motion: reduce) {
       .reveal { opacity: 1; transform: none; transition: none; }
-      .orbit-chip, .orbit-ring, .ticker-track, h1 .grad { animation: none; }
+      .profile-card, .ticker-track, h1 .grad { animation: none; }
       #particles { display: none; }
       html { scroll-behavior: auto; }
     }
@@ -626,12 +637,18 @@
       </div>
     </div>
     <div class="hero-visual">
-      <div class="orbit-wrap">
-        <div class="orbit-ring" aria-hidden="true"></div>
-        <img class="portrait" src="assets/gihan-formal.jpg" alt="Portrait of Gihan Munasinghe" width="900" height="900" />
-        <div class="orbit-chip oc-1">☕ Java · Spring</div>
-        <div class="orbit-chip oc-2">🏦 Banking-grade</div>
-        <div class="orbit-chip oc-3">🧑🏽‍🏫 Engineering coach</div>
+      <div class="profile-card">
+        <div class="profile-inner">
+          <img src="assets/gihan-formal.jpg" alt="Portrait of Gihan Munasinghe" width="900" height="900" />
+          <div class="pc-name">Gihan Munasinghe</div>
+          <div class="pc-role">Tech Lead · Consultant · Educator</div>
+          <div class="pc-status"><span class="dot"></span> Open to consulting &amp; teaching</div>
+          <div class="pc-badges">
+            <span>☕ Java · Spring</span>
+            <span>🏦 Banking-grade</span>
+            <span>🧑🏽‍🏫 Coach</span>
+          </div>
+        </div>
       </div>
     </div>
     <a class="scroll-hint" href="#apps"><span class="mouse"></span>Scroll</a>
