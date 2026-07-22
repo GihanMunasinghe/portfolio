@@ -1,0 +1,140 @@
+name: Daily blog draft
+
+on:
+  schedule:
+    - cron: "0 23 * * *" # 07:00 Singapore time
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  actions: write
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    env:
+      HAS_API_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+      HAS_OAUTH: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN != '' }}
+    steps:
+      - name: Check credentials
+        id: creds
+        run: |
+          if [ "$HAS_API_KEY" = "true" ] || [ "$HAS_OAUTH" = "true" ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN secret configured — skipping draft generation."
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.creds.outputs.ok == 'true'
+
+      - name: Configure git identity
+        if: steps.creds.outputs.ok == 'true'
+        run: |
+          git config user.name "Claude Blog Agent"
+          git config user.email "noreply@anthropic.com"
+
+      - name: Count pending drafts (before)
+        if: steps.creds.outputs.ok == 'true'
+        id: before
+        run: echo "count=$(jq length drafts/pending.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Draft today's post with Claude
+        if: steps.creds.outputs.ok == 'true' && steps.before.outputs.count < 2
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--allowedTools Bash,Read,Write,Edit,Glob,Grep,WebSearch,WebFetch"
+          prompt: |
+            You are drafting today's tech blog post for Gihan Munasinghe's portfolio site
+            (this repo, live at https://www.gihanmunasinghe.lk). Drafts go into an approval
+            queue; Gihan approves them in his admin panel at
+            https://www.gihanmunasinghe.lk/admin/. You NEVER publish: never touch
+            blog/posts.json, and never remove anything from the queue.
+
+            1. Read README.md ("Blog" section), drafts/pending.json, blog/posts.json and one
+               existing post HTML in blog/ to learn the exact conventions (template
+               structure, inline CSS, #share/#comments sections, post-extras.js include,
+               canonical/OpenGraph meta with absolute URLs, metadata fields).
+
+            2. Use WebSearch to research what is currently hot in software engineering and
+               the IT industry (AI-assisted development, platform engineering, cloud
+               architecture, Java/Spring ecosystem, Kafka/event-driven systems, security,
+               engineering leadership, notable releases). Pick ONE timely, substantive
+               topic fitting Gihan's profile: Singapore-based tech lead, 8+ years in
+               banking/telecom/e-commerce, deep in Java, Spring, Kafka, microservices,
+               AWS/GCP/Kubernetes; consultant and educator. Avoid topics already present in
+               blog/posts.json or drafts/pending.json.
+
+            3. Write the post in Gihan's voice: first person, practical, professional but
+               warm. Integrity rules: never invent personal anecdotes, employers, projects
+               or metrics beyond what existing posts establish (8+ years;
+               banking/telecom/e-commerce; the stack above). Attribute news, benchmarks and
+               releases to real sources found via WebSearch and link them inline. 6-10 min
+               read. Include at least one code snippet or inline SVG diagram where it
+               genuinely helps. Keep the commented video-embed help block, the #share and
+               #comments sections, and the post-extras.js include exactly as in existing
+               posts. Set canonical and og: meta to absolute https://www.gihanmunasinghe.lk
+               URLs. Save as blog/<slug>.html.
+
+            4. Create a 1200x675 cover image matching the site style (dark #07090d
+               background, bold display typography, gradient accents
+               #6ea8fe/#8b5cf6/#22d3ee). Preferred method: write a small standalone HTML
+               file, install Chromium with 'npx -y playwright install --with-deps chromium',
+               screenshot it at 1200x675 with Playwright, and save an optimized JPEG at
+               blog/images/<slug>.jpg (target under 200 KB). If that fails, generate an SVG
+               cover and rasterize it, or fall back to a simple solid-style JPEG — never
+               ship a post without a cover.
+
+            5. Append the post's metadata entry to the END of the array in
+               drafts/pending.json (fields: slug, title, excerpt, date like "23 Jul 2026",
+               readTime, image "blog/images/<slug>.jpg", media badge like "AI" / "Cloud" /
+               "Architecture"). Do NOT touch blog/posts.json.
+
+            6. Commit blog/<slug>.html, blog/images/<slug>.jpg and drafts/pending.json to
+               the current branch (main) with message: Add blog draft for approval: <title>
+               Then push with 'git push origin main'. Do not create a branch or PR.
+
+      - name: Count pending drafts (after)
+        if: steps.creds.outputs.ok == 'true'
+        id: after
+        run: |
+          git pull --ff-only origin main || true
+          echo "count=$(jq length drafts/pending.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy site so the draft is previewable
+        if: steps.creds.outputs.ok == 'true' && steps.after.outputs.count > steps.before.outputs.count
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref main
+
+      - name: Notify owner (GitHub issue -> push/email notification)
+        if: steps.creds.outputs.ok == 'true' && steps.after.outputs.count > steps.before.outputs.count
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE=$(jq -r '.[-1].title' drafts/pending.json)
+          COUNT=${{ steps.after.outputs.count }}
+          gh issue create \
+            --title "🌅 Blog draft ready for approval: $TITLE" \
+            --body "$COUNT draft(s) are waiting for your review.
+
+          **Review & publish:** https://www.gihanmunasinghe.lk/admin/
+
+          Preview, then Publish or Reject from the admin panel. You can close this issue once handled." \
+            --repo "${{ github.repository }}"
+
+      - name: Reminder when queue is full
+        if: steps.creds.outputs.ok == 'true' && steps.before.outputs.count >= 2
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "⏳ ${{ steps.before.outputs.count }} blog drafts still awaiting review" \
+            --body "No new draft was generated today because the queue is full.
+
+          **Review & publish:** https://www.gihanmunasinghe.lk/admin/" \
+            --repo "${{ github.repository }}"

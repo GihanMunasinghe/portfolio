@@ -23,8 +23,18 @@ Personal portfolio site, deployed to GitHub Pages at https://www.gihanmunasinghe
 
 ### Daily AI drafts (approval via the admin panel)
 
-A scheduled Claude agent researches current software-engineering topics
-every morning and commits a complete draft post directly to `main`:
+`.github/workflows/daily-blog-draft.yml` runs Claude every morning at
+07:00 Singapore time (23:00 UTC). One-time setup: add a repository secret
+(**Settings → Secrets and variables → Actions**) named either
+`CLAUDE_CODE_OAUTH_TOKEN` (from running `claude setup-token` locally,
+uses your Claude subscription) or `ANTHROPIC_API_KEY` (from
+console.anthropic.com). Until a secret exists the workflow skips
+harmlessly. Test any time from the Actions tab → "Daily blog draft" →
+Run workflow. Each new draft triggers a GitHub issue, which sends you a
+push/email notification with a link to the admin panel.
+
+The agent researches current software-engineering topics
+and commits a complete draft post directly to `main`:
 
 - the post HTML at `blog/<slug>.html` (rendered and previewable, but
   **not** publicly listed anywhere),
