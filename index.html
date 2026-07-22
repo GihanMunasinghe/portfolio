@@ -3,128 +3,663 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Portfolio of Gihan Munasinghe" />
-  <title>Gihan Munasinghe — Portfolio</title>
+  <title>Gihan Munasinghe — Software Engineer, Consultant & Educator</title>
+  <meta name="description" content="Gihan Munasinghe builds and ships production software, offers software consultancy, and teaches software engineering to individuals and small groups." />
+  <meta property="og:title" content="Gihan Munasinghe — Software Engineer, Consultant & Educator" />
+  <meta property="og:description" content="Apps, software consultancy, and hands-on software engineering coaching." />
+  <meta property="og:image" content="https://www.gihanmunasinghe.lk/assets/gihan-formal.jpg" />
+  <meta property="og:url" content="https://www.gihanmunasinghe.lk/" />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👨🏽‍💻</text></svg>" />
   <style>
     :root {
-      --bg: #0f1115;
-      --surface: #181b22;
-      --text: #e8eaf0;
-      --muted: #9aa1b0;
+      --bg: #07090d;
+      --bg-soft: #0c0f15;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface-solid: #11151d;
+      --border: rgba(255, 255, 255, 0.09);
+      --text: #eef1f7;
+      --muted: #98a1b3;
       --accent: #6ea8fe;
-      --border: #262b36;
-    }
-    @media (prefers-color-scheme: light) {
-      :root {
-        --bg: #fafbfc;
-        --surface: #ffffff;
-        --text: #1a1d24;
-        --muted: #5b6472;
-        --accent: #2563eb;
-        --border: #e4e7ec;
-      }
+      --accent-2: #8b5cf6;
+      --accent-3: #22d3ee;
+      --grad: linear-gradient(100deg, #6ea8fe, #8b5cf6 55%, #22d3ee);
+      --radius: 20px;
+      --font-display: "Sora", -apple-system, sans-serif;
+      --font-body: "Inter", -apple-system, sans-serif;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: var(--font-body);
       background: var(--bg);
       color: var(--text);
-      line-height: 1.6;
+      line-height: 1.65;
+      overflow-x: hidden;
     }
-    .container { max-width: 800px; margin: 0 auto; padding: 0 1.5rem; }
-    header { padding: 6rem 0 3rem; }
-    h1 { font-size: 2.5rem; letter-spacing: -0.02em; }
-    .tagline { color: var(--muted); font-size: 1.15rem; margin-top: 0.5rem; }
-    .links { margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap; }
-    .links a {
-      color: var(--accent);
-      text-decoration: none;
-      border: 1px solid var(--border);
-      padding: 0.4rem 0.9rem;
-      border-radius: 8px;
-      font-size: 0.95rem;
+    ::selection { background: rgba(110, 168, 254, 0.35); }
+
+    /* ---------- backdrop ---------- */
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(600px 400px at 85% -5%, rgba(139, 92, 246, 0.18), transparent 70%),
+        radial-gradient(700px 500px at -10% 25%, rgba(110, 168, 254, 0.14), transparent 70%),
+        radial-gradient(500px 400px at 70% 100%, rgba(34, 211, 238, 0.10), transparent 70%);
     }
-    .links a:hover { border-color: var(--accent); }
-    section { padding: 2rem 0; }
-    h2 {
+    .backdrop::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, black 30%, transparent 75%);
+    }
+
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 1.4rem; }
+
+    /* ---------- nav ---------- */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      transition: background 0.3s, border-color 0.3s, backdrop-filter 0.3s;
+      border-bottom: 1px solid transparent;
+    }
+    nav.scrolled {
+      background: rgba(7, 9, 13, 0.72);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom-color: var(--border);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+    }
+    .logo {
+      font-family: var(--font-display);
+      font-weight: 800;
       font-size: 1.25rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      margin-bottom: 1.25rem;
+      text-decoration: none;
+      color: var(--text);
+      letter-spacing: -0.02em;
     }
+    .logo span { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .nav-links { display: flex; gap: 1.75rem; align-items: center; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 0.72rem 1.35rem;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary {
+      background: var(--grad);
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(110, 168, 254, 0.25);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(139, 92, 246, 0.35); }
+    .btn-ghost {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
+    .nav-cta { padding: 0.55rem 1.1rem; font-size: 0.88rem; }
+    @media (max-width: 760px) { .nav-links a:not(.btn) { display: none; } }
+
+    /* ---------- hero ---------- */
+    .hero {
+      padding: 10.5rem 0 5rem;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 3.5rem;
+      align-items: center;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      padding: 0.45rem 1rem;
+      border-radius: 999px;
+      margin-bottom: 1.4rem;
+    }
+    .eyebrow .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #34d399;
+      box-shadow: 0 0 10px #34d399;
+      animation: pulse 2.2s infinite;
+    }
+    @keyframes pulse { 50% { opacity: 0.4; } }
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 5.2vw, 3.9rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.3rem;
+    }
+    h1 .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .hero-sub {
+      color: var(--muted);
+      font-size: 1.12rem;
+      max-width: 34rem;
+      margin-bottom: 2.2rem;
+    }
+    .hero-ctas { display: flex; gap: 0.9rem; flex-wrap: wrap; margin-bottom: 2.6rem; }
+    .hero-tags { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .hero-tags span {
+      font-size: 0.82rem;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+    }
+
+    .hero-visual { position: relative; justify-self: center; }
+    .portrait-card {
+      position: relative;
+      width: min(340px, 78vw);
+      border-radius: 28px;
+      padding: 8px;
+      background: linear-gradient(150deg, rgba(110,168,254,0.6), rgba(139,92,246,0.5) 50%, rgba(34,211,238,0.5));
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55), 0 0 60px rgba(139, 92, 246, 0.15);
+    }
+    .portrait-card img {
+      display: block;
+      width: 100%;
+      border-radius: 22px;
+      object-fit: cover;
+      aspect-ratio: 1 / 1.08;
+      object-position: top;
+    }
+    .float-chip {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(17, 21, 29, 0.9);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      padding: 0.6rem 1rem;
+      border-radius: 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+      animation: floaty 5.5s ease-in-out infinite;
+    }
+    .float-chip .ico { font-size: 1.05rem; }
+    .chip-1 { top: 8%; left: -3.2rem; animation-delay: 0s; }
+    .chip-2 { bottom: 18%; right: -3rem; animation-delay: 1.6s; }
+    .chip-3 { bottom: -1.4rem; left: 8%; animation-delay: 3.1s; }
+    @keyframes floaty { 50% { transform: translateY(-9px); } }
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; padding-top: 8.5rem; text-align: center; }
+      .hero-sub, .hero-ctas, .hero-tags { margin-left: auto; margin-right: auto; justify-content: center; }
+      .hero-visual { order: -1; }
+      .chip-1 { left: -0.6rem; } .chip-2 { right: -0.6rem; }
+    }
+
+    /* ---------- sections ---------- */
+    section { padding: 5.5rem 0; }
+    .section-head { max-width: 40rem; margin-bottom: 3rem; }
+    .kicker {
+      font-family: var(--font-display);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      background: var(--grad);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      margin-bottom: 0.8rem;
+    }
+    h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.7rem, 3.4vw, 2.5rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 0.9rem;
+    }
+    .section-head p { color: var(--muted); font-size: 1.05rem; }
+
+    /* ---------- apps ---------- */
+    .app-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.4rem; }
+    @media (max-width: 860px) { .app-grid { grid-template-columns: 1fr; } }
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1rem;
+      border-radius: var(--radius);
+      padding: 2rem;
+      transition: transform 0.25s, border-color 0.25s, background 0.25s;
+      position: relative;
+      overflow: hidden;
     }
-    .card h3 { font-size: 1.1rem; margin-bottom: 0.25rem; }
-    .card p { color: var(--muted); font-size: 0.95rem; }
-    .skills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .skills span {
-      background: var(--surface);
-      border: 1px solid var(--border);
+    .card:hover { transform: translateY(-5px); border-color: rgba(110, 168, 254, 0.4); background: rgba(255,255,255,0.055); }
+    .app-featured::before {
+      content: "";
+      position: absolute;
+      top: -120px; right: -120px;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(110,168,254,0.22), transparent 70%);
+      pointer-events: none;
+    }
+    .app-icon {
+      width: 58px; height: 58px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      font-size: 1.6rem;
+      background: var(--grad);
+      box-shadow: 0 10px 26px rgba(110, 168, 254, 0.3);
+      margin-bottom: 1.3rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.28rem 0.75rem;
       border-radius: 999px;
-      padding: 0.3rem 0.85rem;
-      font-size: 0.9rem;
+      letter-spacing: 0.03em;
     }
+    .badge-live { background: rgba(52, 211, 153, 0.14); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3); }
+    .badge-soon { background: rgba(255, 255, 255, 0.07); color: var(--muted); border: 1px solid var(--border); }
+    .card h3 { font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; margin: 0.4rem 0 0.6rem; }
+    .card p { color: var(--muted); font-size: 0.98rem; }
+    .card .top-row { display: flex; justify-content: space-between; align-items: flex-start; }
+    .app-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin-top: 1.4rem;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+    }
+    .app-link:hover { text-decoration: underline; }
+    .app-tech { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1.2rem; }
+    .app-tech span {
+      font-size: 0.78rem;
+      color: var(--muted);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+    }
+
+    /* ---------- services ---------- */
+    .svc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
+    @media (max-width: 860px) { .svc-grid { grid-template-columns: 1fr; } }
+    .svc-grid .card ul { list-style: none; margin-top: 1.1rem; }
+    .svc-grid .card li {
+      color: var(--muted);
+      font-size: 0.93rem;
+      padding-left: 1.5rem;
+      position: relative;
+      margin-bottom: 0.55rem;
+    }
+    .svc-grid .card li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--accent-3);
+      font-weight: 700;
+    }
+
+    /* ---------- teaching ---------- */
+    .teach-wrap {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+    @media (max-width: 860px) { .teach-wrap { grid-template-columns: 1fr; } }
+    .teach-visual { position: relative; justify-self: center; }
+    .teach-visual img {
+      width: min(320px, 80vw);
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+    }
+    .teach-cards { display: grid; gap: 1.2rem; }
+    .teach-cards .card { display: flex; gap: 1.2rem; align-items: flex-start; }
+    .teach-ico {
+      flex-shrink: 0;
+      width: 48px; height: 48px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      font-size: 1.3rem;
+      background: rgba(139, 92, 246, 0.15);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+    .teach-cards h3 { font-size: 1.12rem; margin: 0 0 0.35rem; }
+
+    /* ---------- about ---------- */
+    .about-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr;
+      gap: 3rem;
+      align-items: center;
+    }
+    @media (max-width: 860px) { .about-wrap { grid-template-columns: 1fr; } }
+    .about-img img {
+      width: 100%;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+    }
+    .about-text p { color: var(--muted); margin-bottom: 1.1rem; font-size: 1.02rem; }
+    .about-text strong { color: var(--text); }
+
+    /* ---------- contact ---------- */
+    .contact-card {
+      text-align: center;
+      padding: 4rem 2rem;
+      border-radius: 28px;
+      border: 1px solid var(--border);
+      background:
+        radial-gradient(500px 260px at 50% -40%, rgba(139, 92, 246, 0.22), transparent 70%),
+        var(--surface);
+    }
+    .contact-card h2 { margin-bottom: 1rem; }
+    .contact-card p { color: var(--muted); max-width: 32rem; margin: 0 auto 2.2rem; }
+    .contact-ctas { display: flex; gap: 0.9rem; justify-content: center; flex-wrap: wrap; }
+
     footer {
-      padding: 3rem 0 4rem;
+      border-top: 1px solid var(--border);
+      padding: 2.4rem 0 3rem;
+      margin-top: 3rem;
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
       color: var(--muted);
       font-size: 0.9rem;
-      border-top: 1px solid var(--border);
-      margin-top: 2rem;
+    }
+    .footer-inner a { color: var(--muted); text-decoration: none; margin-left: 1.2rem; }
+    .footer-inner a:hover { color: var(--text); }
+
+    /* ---------- reveal animation ---------- */
+    .reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .float-chip { animation: none; }
+      html { scroll-behavior: auto; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>Gihan Munasinghe</h1>
-      <p class="tagline">Software developer. This is my corner of the web.</p>
-      <div class="links">
-        <a href="https://github.com/GihanMunasinghe">GitHub</a>
-        <a href="mailto:gihanmunasinghe266@gmail.com">Email</a>
-      </div>
-    </header>
+  <div class="backdrop" aria-hidden="true"></div>
 
-    <section id="about">
-      <h2>About</h2>
-      <div class="card">
+  <nav id="nav" aria-label="Main navigation">
+    <div class="container nav-inner">
+      <a class="logo" href="#top">Gihan<span>.</span></a>
+      <div class="nav-links">
+        <a href="#apps">Apps</a>
+        <a href="#services">Consulting</a>
+        <a href="#teaching">Teaching</a>
+        <a href="#about">About</a>
+        <a class="btn btn-primary nav-cta" href="#contact">Work with me</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero container" id="top">
+    <div>
+      <span class="eyebrow"><span class="dot"></span> Available for consulting &amp; teaching</span>
+      <h1>I build software, ship products &amp; <span class="grad">teach the craft.</span></h1>
+      <p class="hero-sub">
+        I'm Gihan Munasinghe — a software engineer who takes ideas from whiteboard to
+        production. I build my own apps, help teams and founders as a consultant, and
+        coach the next generation of engineers one-on-one and in small groups.
+      </p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="#apps">Explore my apps ↓</a>
+        <a class="btn btn-ghost" href="#contact">Get in touch</a>
+      </div>
+      <div class="hero-tags">
+        <span>Product engineering</span>
+        <span>Cloud &amp; deployment</span>
+        <span>Software consultancy</span>
+        <span>1-on-1 mentoring</span>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="portrait-card">
+        <img src="assets/gihan-formal.jpg" alt="Portrait of Gihan Munasinghe" width="900" height="900" />
+      </div>
+      <div class="float-chip chip-1"><span class="ico">🚀</span> Apps in production</div>
+      <div class="float-chip chip-2"><span class="ico">🧑🏽‍🏫</span> Engineering coach</div>
+      <div class="float-chip chip-3"><span class="ico">💼</span> Consultant</div>
+    </div>
+  </header>
+
+  <main>
+    <section id="apps" class="container">
+      <div class="section-head reveal">
+        <div class="kicker">Apps</div>
+        <h2>Products I've built &amp; run</h2>
+        <p>Real software, live in production — designed, built, deployed and maintained end to end.</p>
+      </div>
+      <div class="app-grid">
+        <article class="card app-featured reveal">
+          <div class="top-row">
+            <div class="app-icon">🗓️</div>
+            <span class="badge badge-live"><span>●</span> Live</span>
+          </div>
+          <h3>Atteo</h3>
+          <p>
+            A modern attendance management platform that makes tracking effortless —
+            capture attendance in seconds, keep clean records, and see everything at a
+            glance instead of wrestling with spreadsheets.
+          </p>
+          <div class="app-tech">
+            <span>Web app</span><span>Cloud hosted</span><span>AWS</span>
+          </div>
+          <a class="app-link" href="https://attendance.gihanmunasinghe.lk" target="_blank" rel="noopener">Open Atteo →</a>
+        </article>
+        <article class="card reveal">
+          <div class="top-row">
+            <div class="app-icon" style="background: rgba(255,255,255,0.07); box-shadow: none; border: 1px solid var(--border);">✨</div>
+            <span class="badge badge-soon">In the works</span>
+          </div>
+          <h3>More on the way</h3>
+          <p>
+            I'm always building. New tools and apps land here as they ship — check back,
+            or get in touch if you'd like early access to what's next.
+          </p>
+          <a class="app-link" href="#contact">Ask me what's cooking →</a>
+        </article>
+      </div>
+    </section>
+
+    <section id="services" class="container">
+      <div class="section-head reveal">
+        <div class="kicker">Consulting</div>
+        <h2>Software consultancy that ships</h2>
+        <p>Hands-on help for founders, teams and businesses — from a first idea to software running reliably in production.</p>
+      </div>
+      <div class="svc-grid">
+        <article class="card reveal">
+          <div class="app-icon" style="font-size:1.4rem;">🧭</div>
+          <h3>Advisory &amp; architecture</h3>
+          <p>Clarity before code — make the right technical calls early.</p>
+          <ul>
+            <li>System &amp; solution architecture</li>
+            <li>Tech-stack selection</li>
+            <li>Code &amp; architecture reviews</li>
+          </ul>
+        </article>
+        <article class="card reveal">
+          <div class="app-icon" style="font-size:1.4rem;">⚡</div>
+          <h3>Build &amp; delivery</h3>
+          <p>From prototype to production-grade product, built properly.</p>
+          <ul>
+            <li>MVPs &amp; full product builds</li>
+            <li>Web apps &amp; internal tools</li>
+            <li>APIs &amp; integrations</li>
+          </ul>
+        </article>
+        <article class="card reveal">
+          <div class="app-icon" style="font-size:1.4rem;">☁️</div>
+          <h3>Cloud &amp; operations</h3>
+          <p>Get it live, keep it fast, and keep it running.</p>
+          <ul>
+            <li>Cloud deployment &amp; AWS</li>
+            <li>CI/CD &amp; automation</li>
+            <li>Performance &amp; reliability</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="teaching" class="container">
+      <div class="section-head reveal">
+        <div class="kicker">Teaching</div>
+        <h2>Learn software engineering with me</h2>
+        <p>Personal, practical coaching — not recorded lectures. We write real code, build real projects, and grow real skills.</p>
+      </div>
+      <div class="teach-wrap">
+        <div class="teach-visual reveal">
+          <img src="assets/gihan-cartoon.jpg" alt="Illustration of Gihan coding with a coffee in hand" />
+        </div>
+        <div class="teach-cards">
+          <article class="card reveal">
+            <div class="teach-ico">🎯</div>
+            <div>
+              <h3>1-on-1 mentoring</h3>
+              <p>Private sessions built entirely around you — your goals, your pace, your projects. Ideal for students, career-switchers and junior developers who want focused guidance.</p>
+            </div>
+          </article>
+          <article class="card reveal">
+            <div class="teach-ico">👥</div>
+            <div>
+              <h3>Small-group classes</h3>
+              <p>Learn alongside a handful of peers in interactive, hands-on sessions. Small enough that everyone codes, asks questions and gets individual attention.</p>
+            </div>
+          </article>
+          <article class="card reveal">
+            <div class="teach-ico">🛠️</div>
+            <div>
+              <h3>Project-based learning</h3>
+              <p>We don't stop at theory. You'll design, build and deploy working software — the same way it's done professionally, from Git to the cloud.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="container">
+      <div class="about-wrap">
+        <div class="about-img reveal">
+          <img src="assets/gihan-casual.jpg" alt="Gihan Munasinghe" />
+        </div>
+        <div class="about-text reveal">
+          <div class="kicker">About</div>
+          <h2>Engineer by craft, teacher at heart</h2>
+          <p>
+            I'm <strong>Gihan Munasinghe</strong>, a software engineer who loves the whole
+            journey of building — from sketching an idea, through clean architecture and
+            code, to the moment real users get value from it.
+          </p>
+          <p>
+            That end-to-end mindset is what I bring to everything here: the apps I run,
+            the <strong>consulting</strong> I do for businesses and founders, and the
+            <strong>coaching</strong> I offer to individuals and small groups who want to
+            master software engineering properly.
+          </p>
+          <p>
+            If you're building something — or want to learn how — I'd love to hear from you.
+          </p>
+          <div class="hero-tags" style="margin-top:1.4rem;">
+            <span>Clean architecture</span>
+            <span>Cloud &amp; AWS</span>
+            <span>Web platforms</span>
+            <span>Mentorship</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="container">
+      <div class="contact-card reveal">
+        <div class="kicker">Contact</div>
+        <h2>Let's build — or learn — together</h2>
         <p>
-          Write a short introduction about yourself here — what you do, what
-          you're interested in, and what you're currently working on.
+          Whether you need a consultant on your project, want to enrol in mentoring or a
+          small-group class, or just want to talk software — my inbox is open.
         </p>
+        <div class="contact-ctas">
+          <a class="btn btn-primary" href="mailto:gihanmunasinghe266@gmail.com?subject=Let%27s%20work%20together">✉️ Email me</a>
+          <a class="btn btn-ghost" href="https://github.com/GihanMunasinghe" target="_blank" rel="noopener">GitHub</a>
+        </div>
       </div>
     </section>
+  </main>
 
-    <section id="projects">
-      <h2>Projects</h2>
-      <div class="card">
-        <h3>Project One</h3>
-        <p>A short description of the project, what it does, and what you built it with.</p>
+  <footer>
+    <div class="container footer-inner">
+      <div>© <span id="year"></span> Gihan Munasinghe · gihanmunasinghe.lk</div>
+      <div>
+        <a href="#apps">Apps</a>
+        <a href="#services">Consulting</a>
+        <a href="#teaching">Teaching</a>
+        <a href="#contact">Contact</a>
       </div>
-      <div class="card">
-        <h3>Project Two</h3>
-        <p>A short description of the project, what it does, and what you built it with.</p>
-      </div>
-    </section>
+    </div>
+  </footer>
 
-    <section id="skills">
-      <h2>Skills</h2>
-      <div class="skills">
-        <span>JavaScript</span>
-        <span>Python</span>
-        <span>Git</span>
-        <span>HTML &amp; CSS</span>
-      </div>
-    </section>
+  <script>
+    const nav = document.getElementById("nav");
+    const onScroll = () => nav.classList.toggle("scrolled", window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
 
-    <footer>
-      © 2026 Gihan Munasinghe
-    </footer>
-  </div>
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && e.target.classList.add("in")),
+      { threshold: 0.12 }
+    );
+    document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
