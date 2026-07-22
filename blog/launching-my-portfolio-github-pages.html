@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>How I launched this site — Gihan Munasinghe</title>
   <meta name="description" content="Shipping a portfolio for $0/month with GitHub Pages, GitHub Actions, Cloudflare DNS and a custom .lk domain — a full walkthrough." />
+  <link rel="canonical" href="https://www.gihanmunasinghe.lk/blog/launching-my-portfolio-github-pages.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="How I launched this site: GitHub Pages, Cloudflare DNS and a custom .lk domain" />
+  <meta property="og:description" content="Shipping a portfolio for $0/month — automatic deployments, free HTTPS and a custom domain, plus the pitfalls along the way." />
+  <meta property="og:url" content="https://www.gihanmunasinghe.lk/blog/launching-my-portfolio-github-pages.html" />
+  <meta property="og:image" content="https://www.gihanmunasinghe.lk/blog/images/portfolio-launch.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -119,6 +126,30 @@
       margin: 0 0 1.15rem;
       color: #c6ccd8;
     }
+    .share-bar {
+      margin-top: 3rem;
+      padding: 1.5rem 1.6rem;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface);
+    }
+    .share-bar h3 { font-family: var(--font-display); font-size: 1.05rem; margin-bottom: 0.9rem; }
+    .share-btns { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .share-btns a, .share-btns button {
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.88rem;
+      color: var(--text);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.5rem 1rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .share-btns a:hover, .share-btns button:hover { background: rgba(110,168,254,0.15); border-color: var(--accent); }
+    .comments { margin-top: 2.2rem; }
     .post-footer {
       margin-top: 3.5rem;
       padding-top: 2rem;
@@ -278,10 +309,14 @@ jobs:
       -->
     </article>
 
+    <section id="share" class="share-bar" aria-label="Share this post"></section>
+    <section id="comments" class="comments" aria-label="Comments"></section>
+
     <div class="post-footer">
       <a href="../index.html#blog" style="color:var(--muted); text-decoration:none;">← All posts</a>
       <a class="btn" href="../index.html#contact">Work with me</a>
     </div>
   </div>
+  <script src="post-extras.js"></script>
 </body>
 </html>
