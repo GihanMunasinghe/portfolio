@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gihan Munasinghe — Software Engineer, Consultant & Educator</title>
-  <meta name="description" content="Gihan Munasinghe builds and ships production software, offers software consultancy, and teaches software engineering to individuals and small groups." />
+  <meta name="description" content="Gihan Munasinghe — Singapore-based tech lead with 8+ years building cloud-native backend systems for banking, telecom and e-commerce. Apps, software consultancy, and hands-on engineering coaching." />
   <meta property="og:title" content="Gihan Munasinghe — Software Engineer, Consultant & Educator" />
-  <meta property="og:description" content="Apps, software consultancy, and hands-on software engineering coaching." />
+  <meta property="og:description" content="8+ years engineering cloud-native systems for banking, telecom and e-commerce. Apps, consultancy, and software engineering coaching." />
   <meta property="og:image" content="https://www.gihanmunasinghe.lk/assets/gihan-formal.jpg" />
   <meta property="og:url" content="https://www.gihanmunasinghe.lk/" />
   <meta property="og:type" content="website" />
@@ -385,6 +385,33 @@
     .about-text p { color: var(--muted); margin-bottom: 1.1rem; font-size: 1.02rem; }
     .about-text strong { color: var(--text); }
 
+    /* ---------- experience ---------- */
+    .timeline { position: relative; max-width: 46rem; }
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 7px; top: 6px; bottom: 6px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent), var(--accent-2), transparent);
+      opacity: 0.5;
+    }
+    .t-item { position: relative; padding: 0 0 2rem 2.2rem; }
+    .t-item:last-child { padding-bottom: 0; }
+    .t-item::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 6px;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 3px solid var(--accent);
+    }
+    .t-item:first-child::before { background: var(--accent); box-shadow: 0 0 14px rgba(110,168,254,0.7); }
+    .t-date { font-size: 0.8rem; font-weight: 600; color: var(--accent-3); letter-spacing: 0.05em; text-transform: uppercase; }
+    .t-item h3 { font-family: var(--font-display); font-size: 1.08rem; font-weight: 700; margin: 0.25rem 0 0.15rem; }
+    .t-item .t-org { color: var(--muted); font-size: 0.92rem; font-weight: 500; margin-bottom: 0.35rem; }
+    .t-item p { color: var(--muted); font-size: 0.93rem; }
+
     /* ---------- contact ---------- */
     .contact-card {
       text-align: center;
@@ -436,7 +463,7 @@
         <a href="#apps">Apps</a>
         <a href="#services">Consulting</a>
         <a href="#teaching">Teaching</a>
-        <a href="#about">About</a>
+        <a href="#experience">Experience</a>
         <a class="btn btn-primary nav-cta" href="#contact">Work with me</a>
       </div>
     </div>
@@ -444,31 +471,32 @@
 
   <header class="hero container" id="top">
     <div>
-      <span class="eyebrow"><span class="dot"></span> Available for consulting &amp; teaching</span>
+      <span class="eyebrow"><span class="dot"></span> Singapore · Available for consulting &amp; teaching</span>
       <h1>I build software, ship products &amp; <span class="grad">teach the craft.</span></h1>
       <p class="hero-sub">
-        I'm Gihan Munasinghe — a software engineer who takes ideas from whiteboard to
-        production. I build my own apps, help teams and founders as a consultant, and
-        coach the next generation of engineers one-on-one and in small groups.
+        I'm Gihan Munasinghe — a tech lead with <strong style="color:var(--text)">8+ years</strong>
+        designing and running cloud-native backend systems for banking, telecom and
+        e-commerce. I build my own apps, consult for teams and founders, and coach
+        engineers one-on-one and in small groups.
       </p>
       <div class="hero-ctas">
         <a class="btn btn-primary" href="#apps">Explore my apps ↓</a>
         <a class="btn btn-ghost" href="#contact">Get in touch</a>
       </div>
       <div class="hero-tags">
-        <span>Product engineering</span>
-        <span>Cloud &amp; deployment</span>
-        <span>Software consultancy</span>
-        <span>1-on-1 mentoring</span>
+        <span>Java &amp; Spring</span>
+        <span>Microservices</span>
+        <span>Kafka &amp; event-driven</span>
+        <span>AWS · GCP · Kubernetes</span>
       </div>
     </div>
     <div class="hero-visual">
       <div class="portrait-card">
         <img src="assets/gihan-formal.jpg" alt="Portrait of Gihan Munasinghe" width="900" height="900" />
       </div>
-      <div class="float-chip chip-1"><span class="ico">🚀</span> Apps in production</div>
+      <div class="float-chip chip-1"><span class="ico">🚀</span> 8+ years in production</div>
       <div class="float-chip chip-2"><span class="ico">🧑🏽‍🏫</span> Engineering coach</div>
-      <div class="float-chip chip-3"><span class="ico">💼</span> Consultant</div>
+      <div class="float-chip chip-3"><span class="ico">🏦</span> Banking-grade systems</div>
     </div>
   </header>
 
@@ -515,27 +543,27 @@
       <div class="section-head reveal">
         <div class="kicker">Consulting</div>
         <h2>Software consultancy that ships</h2>
-        <p>Hands-on help for founders, teams and businesses — from a first idea to software running reliably in production.</p>
+        <p>Hands-on help for founders, teams and businesses — backed by 8+ years engineering high-availability systems for banks, telcos and e-commerce platforms.</p>
       </div>
       <div class="svc-grid">
         <article class="card reveal">
           <div class="app-icon" style="font-size:1.4rem;">🧭</div>
-          <h3>Advisory &amp; architecture</h3>
-          <p>Clarity before code — make the right technical calls early.</p>
+          <h3>Architecture &amp; modernization</h3>
+          <p>Clarity before code — and a proven path out of legacy.</p>
           <ul>
             <li>System &amp; solution architecture</li>
-            <li>Tech-stack selection</li>
+            <li>Monolith → microservices migration</li>
             <li>Code &amp; architecture reviews</li>
           </ul>
         </article>
         <article class="card reveal">
           <div class="app-icon" style="font-size:1.4rem;">⚡</div>
-          <h3>Build &amp; delivery</h3>
-          <p>From prototype to production-grade product, built properly.</p>
+          <h3>Backend build &amp; delivery</h3>
+          <p>Production-grade services, built the way banks demand.</p>
           <ul>
-            <li>MVPs &amp; full product builds</li>
-            <li>Web apps &amp; internal tools</li>
-            <li>APIs &amp; integrations</li>
+            <li>Java · Spring Boot microservices</li>
+            <li>REST APIs &amp; integrations</li>
+            <li>Event-driven systems (Kafka, Pub/Sub)</li>
           </ul>
         </article>
         <article class="card reveal">
@@ -543,9 +571,9 @@
           <h3>Cloud &amp; operations</h3>
           <p>Get it live, keep it fast, and keep it running.</p>
           <ul>
-            <li>Cloud deployment &amp; AWS</li>
-            <li>CI/CD &amp; automation</li>
-            <li>Performance &amp; reliability</li>
+            <li>AWS · GCP · Kubernetes · OpenShift</li>
+            <li>CI/CD &amp; DevOps automation</li>
+            <li>Observability &amp; reliability</li>
           </ul>
         </article>
       </div>
@@ -555,7 +583,7 @@
       <div class="section-head reveal">
         <div class="kicker">Teaching</div>
         <h2>Learn software engineering with me</h2>
-        <p>Personal, practical coaching — not recorded lectures. We write real code, build real projects, and grow real skills.</p>
+        <p>Personal, practical coaching from a working tech lead — not recorded lectures. We write real code, build real projects, and grow real skills in Java, Spring, microservices and the cloud.</p>
       </div>
       <div class="teach-wrap">
         <div class="teach-visual reveal">
@@ -596,25 +624,70 @@
           <div class="kicker">About</div>
           <h2>Engineer by craft, teacher at heart</h2>
           <p>
-            I'm <strong>Gihan Munasinghe</strong>, a software engineer who loves the whole
-            journey of building — from sketching an idea, through clean architecture and
-            code, to the moment real users get value from it.
+            I'm <strong>Gihan Munasinghe</strong>, a Singapore-based engineering lead with
+            8+ years designing, building and operating cloud-native, high-availability
+            backend systems. Today I lead engineering at a major bank in Singapore, driving
+            legacy-to-microservices migrations and setting engineering standards adopted
+            across teams.
           </p>
           <p>
-            That end-to-end mindset is what I bring to everything here: the apps I run,
-            the <strong>consulting</strong> I do for businesses and founders, and the
-            <strong>coaching</strong> I offer to individuals and small groups who want to
-            master software engineering properly.
+            Along the way I've shipped software for <strong>banking</strong> (treasury and
+            client platforms), <strong>telecom</strong> (millions-of-users self-care apps)
+            and <strong>e-commerce</strong> — across Java 7–21, the Spring ecosystem,
+            Kafka, and AWS, GCP, Kubernetes and OpenShift.
           </p>
           <p>
-            If you're building something — or want to learn how — I'd love to hear from you.
+            That production-hardened experience is what I bring to my own apps, my
+            <strong>consulting</strong>, and the <strong>coaching</strong> I offer to
+            individuals and small groups. If you're building something — or want to learn
+            how — I'd love to hear from you.
           </p>
           <div class="hero-tags" style="margin-top:1.4rem;">
-            <span>Clean architecture</span>
-            <span>Cloud &amp; AWS</span>
-            <span>Web platforms</span>
-            <span>Mentorship</span>
+            <span>Java · Spring</span>
+            <span>Microservices &amp; Kafka</span>
+            <span>AWS · GCP · K8s</span>
+            <span>BSc Computing (UK)</span>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="experience" class="container">
+      <div class="section-head reveal">
+        <div class="kicker">Experience</div>
+        <h2>Where I've built</h2>
+        <p>Eight-plus years across banking, telecom and e-commerce — from writing services to leading the teams that ship them.</p>
+      </div>
+      <div class="timeline">
+        <div class="t-item reveal">
+          <div class="t-date">Feb 2024 — Present · Singapore</div>
+          <h3>Manager, Group Engineering</h3>
+          <div class="t-org">OCBC</div>
+          <p>Leading legacy-to-microservices migration design and delivery, defining engineering governance (APIs, security, observability, CI/CD) adopted across teams, and architecting a containerized multi-channel client platform.</p>
+        </div>
+        <div class="t-item reveal">
+          <div class="t-date">Oct 2022 — Feb 2024 · Singapore</div>
+          <h3>Senior Software Engineer</h3>
+          <div class="t-org">Percept Solutions — Banking / Treasury</div>
+          <p>Built and maintained treasury static data systems for banking clients — Java/Spring services with Kafka and Pub/Sub messaging, hardened for data integrity, security and regulatory compliance.</p>
+        </div>
+        <div class="t-item reveal">
+          <div class="t-date">Jul 2019 — Oct 2022 · Malaysia &amp; Sri Lanka</div>
+          <h3>Technical Lead / Senior Software Engineer</h3>
+          <div class="t-org">Axiata Digital Labs — Celcom Life</div>
+          <p>Designed scalable microservices backends for a national telco's self-care app — authentication, billing and customer profile services — and led triage of critical production incidents.</p>
+        </div>
+        <div class="t-item reveal">
+          <div class="t-date">Sep 2021 — Oct 2022 · Sri Lanka</div>
+          <h3>Senior Software Engineer</h3>
+          <div class="t-org">Aeturnum — E-commerce</div>
+          <p>Enhanced e-commerce backend services and partner integrations, improving order-processing reliability and scalability.</p>
+        </div>
+        <div class="t-item reveal">
+          <div class="t-date">Jul 2017 — Jul 2019 · Sri Lanka</div>
+          <h3>Software Engineer</h3>
+          <div class="t-org">Virtusa</div>
+          <p>Built developer tooling and automation integrating security scanning (Veracode) into CI pipelines, embedding secure coding practices into delivery workflows.</p>
         </div>
       </div>
     </section>
@@ -629,6 +702,7 @@
         </p>
         <div class="contact-ctas">
           <a class="btn btn-primary" href="mailto:gihanmunasinghe266@gmail.com?subject=Let%27s%20work%20together">✉️ Email me</a>
+          <a class="btn btn-ghost" href="https://www.linkedin.com/in/gihan-munasinghe-7a484575" target="_blank" rel="noopener">LinkedIn</a>
           <a class="btn btn-ghost" href="https://github.com/GihanMunasinghe" target="_blank" rel="noopener">GitHub</a>
         </div>
       </div>
@@ -642,6 +716,7 @@
         <a href="#apps">Apps</a>
         <a href="#services">Consulting</a>
         <a href="#teaching">Teaching</a>
+        <a href="https://www.linkedin.com/in/gihan-munasinghe-7a484575" target="_blank" rel="noopener">LinkedIn</a>
         <a href="#contact">Contact</a>
       </div>
     </div>
