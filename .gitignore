@@ -1,2 +1,3 @@
 infra/lambda.zip
 infra/src/node_modules
+infra/build/
