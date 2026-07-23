@@ -159,6 +159,36 @@ ${lines.slice(0, 4).map((l, i) => `<text x="88" y="${250 + i * 84}" font-family=
 </svg>`;
 }
 
+/* Pull today's trending tech stories from free public sources (no API keys). */
+async function fetchTrends() {
+  const out = [];
+  const grab = async (fn) => { try { await fn(); } catch (e) { console.error("trend source failed:", e.message); } };
+  await grab(async () => {
+    const r = await fetch("https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=40");
+    const j = await r.json();
+    for (const h of j.hits || []) {
+      if (!h.title) continue;
+      out.push({ title: h.title, url: h.url || `https://news.ycombinator.com/item?id=${h.objectID}`, score: h.points || 0, src: "HN" });
+    }
+  });
+  await grab(async () => {
+    const r = await fetch("https://dev.to/api/articles?top=1&per_page=25");
+    const j = await r.json();
+    for (const a of j || []) {
+      if (!a.title) continue;
+      out.push({ title: a.title, url: a.url, score: a.positive_reactions_count || 0, src: "dev.to", tags: (a.tag_list || []).join(",") });
+    }
+  });
+  // keep tech-relevant, de-dup, sort by score, cap
+  const KEEP = /\b(ai|llm|gpt|claude|agent|java|spring|kotlin|kafka|micro|service|cloud|aws|gcp|azure|kubernetes|k8s|docker|api|database|sql|postgres|rust|go|python|typescript|javascript|react|devops|ci\/cd|security|observability|architecture|distributed|serverless|lambda|performance|scal|open ?source|framework|compiler|linux)\b/i;
+  const seen = new Set();
+  return out
+    .filter((t) => KEEP.test(t.title + " " + (t.tags || "")))
+    .filter((t) => (seen.has(t.title) ? false : seen.add(t.title)))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 25);
+}
+
 async function dailyDraft() {
   const drafts = (await listPosts(true)).filter((p) => p.status === "draft");
   if (drafts.length >= 2) {
@@ -167,23 +197,34 @@ async function dailyDraft() {
     return { skipped: true, pending: drafts.length };
   }
   const existing = (await listPosts(true)).map((p) => p.title).join("; ");
-  const system = `You draft blog posts for Gihan Munasinghe (${SITE}), a Singapore-based tech lead with 8+ years in banking, telecom and e-commerce; expert in Java, Spring, Kafka, microservices, AWS/GCP/Kubernetes; also a consultant and educator. Write in his first-person voice: practical, professional, warm, opinionated but grounded.
+  const trends = await fetchTrends();
+
+  const system = `You are the trend analyst and ghost-writer for Gihan Munasinghe's blog (${SITE}). Gihan is a software engineer, consultant and educator, strong in Java, Spring, Kafka, microservices, and cloud (AWS/GCP/Kubernetes), with a practical interest in how AI is changing engineering. Write in his first-person voice: practical, opinionated, warm, senior-but-approachable.
 
 INTEGRITY RULES (critical):
-- NEVER invent personal anecdotes, employers, projects, dates or metrics beyond the profile above.
-- You do NOT have live internet access. Do NOT cite breaking news, version numbers, release dates, benchmark figures or statistics you are not certain about, and NEVER fabricate URLs. Prefer timeless, concept-driven engineering writing. If you reference a canonical source, use only well-known stable ones (e.g. the official Kafka, Spring, AWS, or Kubernetes documentation) and keep "sources" empty if unsure.`;
-  const ask = `Write ONE substantive, evergreen software-engineering blog post on a topic that fits Gihan's expertise and would genuinely help senior engineers, tech leads or teams. Choose a fresh angle NOT similar to these existing posts: ${existing || "(none)"}.
+- NEVER invent personal anecdotes, employers, job titles, years of experience, projects, or metrics. Do NOT claim where Gihan has worked. Keep it about ideas and engineering, not resume.
+- You may ONLY cite URLs that appear in the TRENDING list provided below — never invent or guess URLs. Do not fabricate version numbers, benchmark figures, dates or statistics; if you're unsure of a specific number, speak qualitatively.`;
 
-Good topic areas: microservices & distributed systems patterns, event-driven architecture with Kafka, Java/Spring performance & design, cloud architecture on AWS/GCP, Kubernetes in production, API design, observability, engineering leadership, or pragmatic adoption of AI tooling in engineering teams.
+  const trendBlock = trends.length
+    ? trends.map((t, i) => `${i + 1}. [${t.src}] ${t.title} — ${t.url}`).join("\n")
+    : "(trend feed unavailable today)";
 
-Respond with ONLY a JSON object (no markdown fences, no prose before or after) with keys:
+  const ask = `Below are today's trending software/tech headlines. Do TREND ANALYSIS: identify what is genuinely hot right now, pick ONE theme that fits Gihan's expertise and audience, and write a blog post giving his practical, opinionated take — connecting the trend to real engineering decisions (architecture, trade-offs, how to actually use or evaluate it). Reference 1-3 of the trending items and link their exact URLs. If nothing in the list fits well, choose the closest software-engineering angle and write a strong evergreen piece instead.
+
+Avoid topics too similar to existing posts: ${existing || "(none)"}.
+
+TRENDING NOW:
+${trendBlock}
+
+Respond with ONLY a JSON object (no markdown fences, no prose before/after):
 - "slug": kebab-case url slug
 - "title": post title (max 80 chars)
 - "excerpt": 1-2 sentence card summary
 - "readTime": like "7 min read"
-- "media": one-word badge (AI, Cloud, Architecture, Security, Java, Kafka, Leadership, ...)
-- "sources": array of stable canonical URLs actually referenced (may be empty)
-- "html": the FULL article body as HTML using ONLY these tags: <p>, <h2>, <ul>, <ol>, <li>, <strong>, <em>, <a href>, <pre><code>, <blockquote>. 6-10 minute read, with concrete guidance and at least one <pre><code> example where useful. No <html>/<head>/<body> wrappers and no <img>.`;
+- "media": one-word badge (AI, Cloud, Architecture, Security, Java, Kafka, DevOps, Leadership, ...)
+- "sources": array of the trending URLs you actually referenced (only from the list above)
+- "html": the FULL article body as HTML using ONLY these tags: <p>, <h2>, <ul>, <ol>, <li>, <strong>, <em>, <a href>, <pre><code>, <blockquote>. 6-10 minute read, concrete and useful, with at least one <pre><code> example where it helps. No <html>/<head>/<body> wrappers, no <img>.`;
+
   const text = await bedrockText(system, ask, 6000);
   const jsonStr = text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1);
   const draft = JSON.parse(jsonStr);
@@ -217,8 +258,9 @@ async function listComments(slug) {
 
 /* ---------- handler ---------- */
 export const handler = async (event) => {
-  /* scheduled agent runs */
+  /* scheduled agent runs (only invokable via authenticated AWS invoke, not the public URL) */
   if (event.job === "daily-draft") return dailyDraft();
+  if (event.job === "test-trends") return { trends: await fetchTrends() };
 
   const method = event.requestContext?.http?.method || "GET";
   const path = (event.rawPath || "/").replace(/\/+$/, "") || "/";

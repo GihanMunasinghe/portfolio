@@ -35,12 +35,12 @@ instant — no deploy wait.
 ## Daily AI drafts
 
 An EventBridge schedule invokes the backend Lambda every morning at 07:00
-Singapore time. It researches current software-engineering topics (web
-search), writes a post in Gihan's voice with a generated cover, saves it as
-a **draft**, and emails a summary to the notify address via SES. Nothing is
-published without approval in the admin panel. Requires a valid
-`ANTHROPIC_API_KEY` on the Lambda (set at deploy time or via
-`aws lambda update-function-configuration`).
+Singapore time. It pulls today's trending tech stories from free public
+sources (Hacker News + dev.to), has **AWS Bedrock** (Claude) analyse them
+and pick a hot topic fitting Gihan's expertise, writes a post in his voice
+with a generated cover, saves it as a **draft**, and emails a summary via SES. Nothing is
+published without approval in the admin panel. Requires Bedrock model access for Anthropic Claude in the account
+(submit the one-time Bedrock use-case form in the console).
 
 ## Deploying / updating the backend
 
