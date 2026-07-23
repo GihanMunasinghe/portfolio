@@ -118,7 +118,17 @@
     .btn-ghost { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
     .btn-ghost:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
     .nav-cta { padding: 0.55rem 1.1rem; font-size: 0.88rem; }
-    @media (max-width: 820px) { .nav-links a:not(.btn) { display: none; } }
+    .hamburger { display: none; flex-direction: column; gap: 5px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 9px; cursor: pointer; }
+    .hamburger span { display: block; width: 20px; height: 2px; background: var(--text); border-radius: 2px; transition: transform 0.25s, opacity 0.25s; }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .mobile-menu { display: none; flex-direction: column; background: rgba(7,9,13,0.97); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); padding: 0.3rem 1.4rem 1rem; }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { color: var(--text); text-decoration: none; padding: 0.95rem 0; border-bottom: 1px solid var(--border); font-weight: 500; font-size: 1.02rem; }
+    .mobile-menu a:last-child { border-bottom: none; color: var(--accent); font-weight: 600; }
+    @media (max-width: 820px) { .nav-links { display: none; } .hamburger { display: flex; } }
+    @media (min-width: 821px) { .mobile-menu { display: none !important; } }
 
     /* ---------- hero ---------- */
     .hero {
@@ -630,6 +640,16 @@
         <a href="#expertise">Expertise</a>
         <a class="btn btn-primary nav-cta" href="#contact">Work with me</a>
       </div>
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#apps">Apps</a>
+      <a href="#blog">Blog</a>
+      <a href="shop.html">🛒 Shop</a>
+      <a href="#services">Consulting</a>
+      <a href="#teaching">Teaching</a>
+      <a href="#expertise">Expertise</a>
+      <a href="#contact">Work with me →</a>
     </div>
   </nav>
 
@@ -939,6 +959,15 @@
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
+
+    /* mobile menu */
+    const hb = document.getElementById("hamburger");
+    const mm = document.getElementById("mobileMenu");
+    if (hb && mm) {
+      const toggle = (open) => { hb.classList.toggle("open", open); mm.classList.toggle("open", open); hb.setAttribute("aria-expanded", open ? "true" : "false"); };
+      hb.addEventListener("click", () => toggle(!mm.classList.contains("open")));
+      mm.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => toggle(false)));
+    }
 
     /* reveal on scroll */
     const io = new IntersectionObserver(
