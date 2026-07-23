@@ -25,12 +25,16 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import { SESv2Client, SendEmailCommand } from "@aws-sdk/client-sesv2";
 import { BedrockRuntimeClient, ConverseCommand } from "@aws-sdk/client-bedrock-runtime";
+import { S3Client } from "@aws-sdk/client-s3";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}), {
   marshallOptions: { removeUndefinedValues: true },
 });
 const ses = new SESv2Client({});
 const bedrock = new BedrockRuntimeClient({});
+const s3 = new S3Client({});
 
 const TABLE = process.env.TABLE_NAME;
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -39,6 +43,10 @@ const AGENT_KEY = process.env.AGENT_KEY;
 const BEDROCK_MODEL_ID = process.env.BEDROCK_MODEL_ID || "anthropic.claude-3-5-sonnet-20240620-v1:0";
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL;
 const SITE = process.env.SITE_URL || "https://www.gihanmunasinghe.lk";
+const MEDIA_BUCKET = process.env.MEDIA_BUCKET;          // S3 bucket for product photos
+const MEDIA_BASE = process.env.MEDIA_BASE;              // public base URL for the media bucket
+const STRIPE_SECRET = process.env.STRIPE_SECRET_KEY;    // sk_live_… / sk_test_…
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 
 /* ---------- tiny JWT (HS256) ---------- */
 const b64u = (buf) => Buffer.from(buf).toString("base64url");
@@ -257,6 +265,81 @@ async function listComments(slug) {
   return (out.Items || []).map(({ pk, sk, ...c }) => c);
 }
 
+/* ================= SHOP ================= */
+const prodKey = (id) => ({ pk: `PRODUCT#${id}`, sk: "META" });
+const pubProduct = ({ pk, sk, gsi1pk, ...p }) => p;
+
+async function shopConfig() {
+  const out = await ddb.send(new GetCommand({ TableName: TABLE, Key: { pk: "SETTINGS", sk: "SHOP" } }));
+  return out.Item || { currency: "USD", shipPhysical: 0, shipDigital: 0, shopEnabled: true, countries: ["SG"] };
+}
+
+async function listProducts(all) {
+  const out = await ddb.send(new QueryCommand({
+    TableName: TABLE, IndexName: "gsi1",
+    KeyConditionExpression: "gsi1pk = :p",
+    ExpressionAttributeValues: { ":p": "PRODUCTS" },
+    ScanIndexForward: false,
+  }));
+  const items = (out.Items || []).map(pubProduct);
+  return all ? items : items.filter((p) => p.status !== "hidden");
+}
+const getProduct = async (id) =>
+  (await ddb.send(new GetCommand({ TableName: TABLE, Key: prodKey(id) }))).Item || null;
+
+async function saveProduct(input) {
+  const existing = input.id ? await getProduct(input.id) : null;
+  const id = existing?.id || (input.id && /^[a-z0-9-]+$/.test(input.id) ? input.id
+    : (clean(input.title, 80).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") + "-" + crypto.randomBytes(2).toString("hex")));
+  const now = new Date().toISOString();
+  const item = {
+    ...prodKey(id), gsi1pk: "PRODUCTS", id,
+    title: clean(input.title, 140),
+    description: clean(input.description, 4000),
+    category: clean(input.category, 40) || "Other",       // Books / Gaming / Other
+    kind: input.kind === "digital" ? "digital" : "physical",
+    condition: clean(input.condition, 40) || "Pre-loved", // Like New / Good / Fair …
+    price: Math.max(0, Math.round(Number(input.price) || 0)),   // minor units (cents)
+    currency: clean(input.currency, 8) || (await shopConfig()).currency,
+    images: Array.isArray(input.images) ? input.images.slice(0, 8).map((u) => clean(u, 400)) : (existing?.images || []),
+    stock: input.stock === undefined ? (existing?.stock ?? 1) : Math.max(0, Math.round(Number(input.stock) || 0)),
+    status: input.status || existing?.status || "available",     // available | sold | hidden
+    createdAt: existing?.createdAt || now,
+    updatedAt: now,
+  };
+  if (!item.title || !item.price) throw new Error("title and price are required");
+  await ddb.send(new PutCommand({ TableName: TABLE, Item: item }));
+  return item;
+}
+
+/* Stripe REST (no SDK): form-encode nested params */
+function stripeForm(obj, prefix = "", out = []) {
+  for (const [k, v] of Object.entries(obj)) {
+    if (v === undefined || v === null) continue;
+    const key = prefix ? `${prefix}[${k}]` : k;
+    if (typeof v === "object") stripeForm(v, key, out);
+    else out.push(`${encodeURIComponent(key)}=${encodeURIComponent(v)}`);
+  }
+  return out;
+}
+async function stripe(path, params) {
+  const r = await fetch("https://api.stripe.com/v1/" + path, {
+    method: "POST",
+    headers: { Authorization: "Bearer " + STRIPE_SECRET, "Content-Type": "application/x-www-form-urlencoded" },
+    body: stripeForm(params).join("&"),
+  });
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error?.message || "Stripe error");
+  return j;
+}
+/* verify Stripe webhook signature (t + v1 HMAC-SHA256 over `${t}.${rawBody}`) */
+function stripeVerify(rawBody, sigHeader) {
+  const parts = Object.fromEntries((sigHeader || "").split(",").map((s) => s.split("=")));
+  if (!parts.t || !parts.v1) return false;
+  const expected = crypto.createHmac("sha256", STRIPE_WEBHOOK_SECRET).update(`${parts.t}.${rawBody}`).digest("hex");
+  try { return crypto.timingSafeEqual(Buffer.from(parts.v1), Buffer.from(expected)); } catch { return false; }
+}
+
 /* ---------- handler ---------- */
 export const handler = async (event) => {
   /* scheduled agent runs (only invokable via authenticated AWS invoke, not the public URL) */
@@ -429,6 +512,173 @@ export const handler = async (event) => {
           .map(([path, count]) => ({ path, count })),
         engagement: posts.map((p) => ({ slug: p.slug, title: p.title, likes: p.likes || 0 })).sort((a, b) => b.likes - a.likes),
       });
+    }
+
+    /* ---------- shop: config ---------- */
+    if (method === "GET" && path === "/shop-config") {
+      const c = await shopConfig();
+      return res(200, { currency: c.currency, shipPhysical: c.shipPhysical, shipDigital: c.shipDigital, shopEnabled: c.shopEnabled !== false, countries: c.countries, checkout: Boolean(STRIPE_SECRET) });
+    }
+    if (method === "PUT" && path === "/shop-config") {
+      if (!admin) return res(401, { error: "Auth required" });
+      const c = await shopConfig();
+      const next = {
+        pk: "SETTINGS", sk: "SHOP",
+        currency: clean(body.currency, 8) || c.currency || "USD",
+        shipPhysical: body.shipPhysical === undefined ? (c.shipPhysical || 0) : Math.max(0, Math.round(Number(body.shipPhysical) || 0)),
+        shipDigital: body.shipDigital === undefined ? (c.shipDigital || 0) : Math.max(0, Math.round(Number(body.shipDigital) || 0)),
+        shopEnabled: body.shopEnabled === undefined ? (c.shopEnabled !== false) : Boolean(body.shopEnabled),
+        countries: Array.isArray(body.countries) ? body.countries.slice(0, 50).map((x) => clean(x, 2).toUpperCase()) : (c.countries || ["SG"]),
+      };
+      await ddb.send(new PutCommand({ TableName: TABLE, Item: next }));
+      return res(200, next);
+    }
+
+    /* ---------- shop: products ---------- */
+    if (method === "GET" && path === "/products") {
+      return res(200, await listProducts(Boolean(qs.all && admin)));
+    }
+    if (method === "GET" && path === "/product") {
+      const p = await getProduct(qs.id);
+      if (!p || (p.status === "hidden" && !admin)) return res(404, { error: "Not found" });
+      return res(200, pubProduct(p));
+    }
+    if (method === "POST" && path === "/products") {
+      if (!admin) return res(401, { error: "Auth required" });
+      return res(200, pubProduct(await saveProduct(body)));
+    }
+    if (method === "PUT" && path === "/product") {
+      if (!admin) return res(401, { error: "Auth required" });
+      const p = await getProduct(qs.id);
+      if (!p) return res(404, { error: "Not found" });
+      const a = body.action;
+      if (a === "markSold") p.status = "sold";
+      else if (a === "markAvailable") { p.status = "available"; if (!p.stock) p.stock = 1; }
+      else if (a === "hide") p.status = "hidden";
+      else if (a === "update") return res(200, pubProduct(await saveProduct({ ...p, ...body, id: p.id })));
+      else return res(400, { error: "Unknown action" });
+      p.updatedAt = new Date().toISOString();
+      await ddb.send(new PutCommand({ TableName: TABLE, Item: p }));
+      return res(200, pubProduct(p));
+    }
+    if (method === "DELETE" && path === "/product") {
+      if (!admin) return res(401, { error: "Auth required" });
+      await ddb.send(new DeleteCommand({ TableName: TABLE, Key: prodKey(qs.id) }));
+      return res(200, { deleted: qs.id });
+    }
+
+    /* ---------- shop: image upload (presigned S3 PUT) ---------- */
+    if (method === "POST" && path === "/upload-url") {
+      if (!admin) return res(401, { error: "Auth required" });
+      if (!MEDIA_BUCKET) return res(400, { error: "Media bucket not configured" });
+      const ext = (clean(body.filename, 100).split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 5);
+      const ct = clean(body.contentType, 100) || "image/jpeg";
+      if (!ct.startsWith("image/")) return res(400, { error: "Images only" });
+      const key = `products/${Date.now()}-${crypto.randomBytes(4).toString("hex")}.${ext}`;
+      const url = await getSignedUrl(s3, new PutObjectCommand({ Bucket: MEDIA_BUCKET, Key: key, ContentType: ct }), { expiresIn: 300 });
+      return res(200, { uploadUrl: url, publicUrl: `${MEDIA_BASE}/${key}`, contentType: ct });
+    }
+
+    /* ---------- shop: checkout (Stripe hosted → Apple/Google Pay + cards) ---------- */
+    if (method === "POST" && path === "/checkout") {
+      if (!STRIPE_SECRET) return res(503, { error: "Payments not configured yet" });
+      const cart = Array.isArray(body.items) ? body.items : [];
+      if (!cart.length) return res(400, { error: "Cart is empty" });
+      const cfg = await shopConfig();
+      const line = [], ids = [];
+      let anyPhysical = false;
+      for (const it of cart) {
+        const p = await getProduct(clean(it.id, 120));
+        if (!p || p.status !== "available" || (p.stock ?? 1) < 1) return res(409, { error: `"${p?.title || it.id}" is no longer available` });
+        ids.push(p.id);
+        if (p.kind !== "digital") anyPhysical = true;
+        line.push({
+          price_data: { currency: (p.currency || cfg.currency).toLowerCase(), product_data: { name: p.title, images: (p.images || []).slice(0, 1) }, unit_amount: p.price },
+          quantity: 1,
+        });
+      }
+      const orderId = `${Date.now()}-${crypto.randomBytes(4).toString("hex")}`;
+      const params = {
+        mode: "payment",
+        success_url: `${SITE}/shop.html?success=1`,
+        cancel_url: `${SITE}/shop.html?canceled=1`,
+        line_items: line,
+        metadata: { orderId, productIds: ids.join(",") },
+        client_reference_id: orderId,
+      };
+      if (body.email) params.customer_email = clean(body.email, 200);
+      if (anyPhysical) {
+        params.shipping_address_collection = { allowed_countries: (cfg.countries && cfg.countries.length ? cfg.countries : ["SG"]) };
+        if (cfg.shipPhysical > 0) params.shipping_options = [{ shipping_rate_data: { type: "fixed_amount", fixed_amount: { amount: cfg.shipPhysical, currency: cfg.currency.toLowerCase() }, display_name: "Shipping" } }];
+      }
+      const session = await stripe("checkout/sessions", params);
+      await ddb.send(new PutCommand({ TableName: TABLE, Item: {
+        pk: `ORDER#${orderId}`, sk: "META", gsi1pk: "ORDERS", orderId, productIds: ids,
+        status: "pending", amount: line.reduce((s, l) => s + l.price_data.unit_amount, 0),
+        currency: cfg.currency, stripeSession: session.id, createdAt: new Date().toISOString(),
+      } }));
+      return res(200, { url: session.url });
+    }
+
+    /* ---------- shop: Stripe webhook ---------- */
+    if (method === "POST" && path === "/stripe-webhook") {
+      if (!STRIPE_WEBHOOK_SECRET) return res(503, { error: "Webhook not configured" });
+      const raw = event.body || "";
+      if (!stripeVerify(raw, event.headers?.["stripe-signature"] || event.headers?.["Stripe-Signature"]))
+        return res(400, { error: "Bad signature" });
+      const evt = JSON.parse(raw);
+      if (evt.type === "checkout.session.completed") {
+        const s = evt.data.object;
+        const orderId = s.metadata?.orderId || s.client_reference_id;
+        const ids = (s.metadata?.productIds || "").split(",").filter(Boolean);
+        for (const id of ids) {
+          try {
+            await ddb.send(new UpdateCommand({
+              TableName: TABLE, Key: prodKey(id),
+              UpdateExpression: "SET #s = :sold, stock = :z, updatedAt = :n",
+              ExpressionAttributeNames: { "#s": "status" },
+              ExpressionAttributeValues: { ":sold": "sold", ":z": 0, ":n": new Date().toISOString() },
+            }));
+          } catch (_) {}
+        }
+        if (orderId) {
+          await ddb.send(new UpdateCommand({
+            TableName: TABLE, Key: { pk: `ORDER#${orderId}`, sk: "META" },
+            UpdateExpression: "SET #st = :paid, buyerEmail = :e, buyerName = :n, shipping = :sh, paidAt = :t",
+            ExpressionAttributeNames: { "#st": "status" },
+            ExpressionAttributeValues: {
+              ":paid": "paid", ":e": s.customer_details?.email || "", ":n": s.customer_details?.name || "",
+              ":sh": s.shipping_details ? JSON.stringify(s.shipping_details) : "", ":t": new Date().toISOString(),
+            },
+          })).catch(() => {});
+        }
+        await notify(`🛒 New order paid: ${s.metadata?.productIds || orderId}`,
+          `A shop order was just paid.\n\nAmount: ${(s.amount_total / 100).toFixed(2)} ${(s.currency || "").toUpperCase()}\nBuyer: ${s.customer_details?.email || "?"}\n\nManage orders: ${SITE}/admin/`);
+      }
+      return res(200, { received: true });
+    }
+
+    /* ---------- shop: orders (admin) ---------- */
+    if (method === "GET" && path === "/orders") {
+      if (!admin) return res(401, { error: "Auth required" });
+      const out = await ddb.send(new QueryCommand({
+        TableName: TABLE, IndexName: "gsi1",
+        KeyConditionExpression: "gsi1pk = :p",
+        ExpressionAttributeValues: { ":p": "ORDERS" }, ScanIndexForward: false,
+      }));
+      return res(200, (out.Items || []).map(({ pk, sk, gsi1pk, ...o }) => o));
+    }
+    if (method === "PUT" && path === "/order") {
+      if (!admin) return res(401, { error: "Auth required" });
+      const out = await ddb.send(new UpdateCommand({
+        TableName: TABLE, Key: { pk: `ORDER#${qs.id}`, sk: "META" },
+        UpdateExpression: "SET #s = :s, updatedAt = :n",
+        ExpressionAttributeNames: { "#s": "status" },
+        ExpressionAttributeValues: { ":s": clean(body.status, 30) || "fulfilled", ":n": new Date().toISOString() },
+        ReturnValues: "ALL_NEW",
+      }));
+      const { pk, sk, gsi1pk, ...o } = out.Attributes;
+      return res(200, o);
     }
 
     return res(404, { error: "Not found: " + method + " " + path });

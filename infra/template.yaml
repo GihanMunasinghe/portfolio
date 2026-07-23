@@ -23,6 +23,24 @@ Parameters:
     Type: String
     Default: apac.amazon.nova-pro-v1:0
     Description: Bedrock model used to draft daily posts
+  MediaBucket:
+    Type: String
+    Default: ""
+    Description: S3 bucket for shop product photos (public-read)
+  MediaBase:
+    Type: String
+    Default: ""
+    Description: Public base URL of the media bucket
+  StripeSecretKey:
+    Type: String
+    NoEcho: true
+    Default: ""
+    Description: Stripe secret key (enables shop checkout)
+  StripeWebhookSecret:
+    Type: String
+    NoEcho: true
+    Default: ""
+    Description: Stripe webhook signing secret
   NotifyEmail:
     Type: String
     Description: SES-verified email that receives morning notifications
@@ -87,6 +105,9 @@ Resources:
                 Resource:
                   - arn:aws:bedrock:*::foundation-model/*
                   - !Sub "arn:aws:bedrock:*:${AWS::AccountId}:inference-profile/*"
+              - Effect: Allow
+                Action: [s3:PutObject]
+                Resource: !Sub "arn:aws:s3:::${MediaBucket}/*"
 
   Fn:
     Type: AWS::Lambda::Function
@@ -107,6 +128,10 @@ Resources:
           JWT_SECRET: !Ref JwtSecret
           AGENT_KEY: !Ref AgentKey
           BEDROCK_MODEL_ID: !Ref BedrockModelId
+          MEDIA_BUCKET: !Ref MediaBucket
+          MEDIA_BASE: !Ref MediaBase
+          STRIPE_SECRET_KEY: !Ref StripeSecretKey
+          STRIPE_WEBHOOK_SECRET: !Ref StripeWebhookSecret
           NOTIFY_EMAIL: !Ref NotifyEmail
           SITE_URL: !Ref SiteUrl
 

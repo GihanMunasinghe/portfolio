@@ -80,6 +80,10 @@
     th, td { text-align: left; padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--border); }
     th { color: var(--muted); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; }
     td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .p-images { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; }
+    .pimg { position: relative; width: 72px; height: 72px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+    .pimg img { width: 100%; height: 100%; object-fit: cover; }
+    .pimg button { position: absolute; top: 2px; right: 2px; width: 20px; height: 20px; border-radius: 50%; border: none; background: rgba(7,9,13,0.8); color: #fff; cursor: pointer; font-size: 0.7rem; }
     .bars { display: flex; align-items: flex-end; gap: 3px; height: 90px; margin: 0.5rem 0 0.2rem; }
     .bars .b { flex: 1; background: var(--grad); border-radius: 3px 3px 0 0; min-height: 2px; opacity: 0.85; }
   </style>
@@ -110,6 +114,8 @@
         <button data-tab="drafts" class="active">📥 Drafts <span id="tab-n-drafts"></span></button>
         <button data-tab="published">🌍 Published</button>
         <button data-tab="new">✍️ New post</button>
+        <button data-tab="shop">🛒 Shop</button>
+        <button data-tab="orders">📦 Orders</button>
         <button data-tab="comments">💬 Comments</button>
         <button data-tab="analytics">📊 Analytics</button>
       </div>
@@ -142,6 +148,57 @@
 
       <div id="tab-analytics" class="hidden">
         <div id="analytics-body"><div class="empty">Loading analytics…</div></div>
+      </div>
+
+      <div id="tab-shop" class="hidden">
+        <div class="card" style="margin-bottom:1.2rem;">
+          <h2 style="margin-top:0;">Shop settings</h2>
+          <div class="ed-grid">
+            <div><label>Currency (e.g. USD, SGD)</label><input id="sh-currency" class="mono" placeholder="USD" /></div>
+            <div><label>Shipping fee — physical (minor units, e.g. 500 = 5.00)</label><input id="sh-ship" type="number" placeholder="0" /></div>
+          </div>
+          <label>Ship-to countries (comma-separated ISO codes, e.g. SG, LK, MY)</label>
+          <input id="sh-countries" class="mono" placeholder="SG" />
+          <div style="margin-top:0.9rem;"><button class="btn btn-primary btn-sm" onclick="saveShopSettings()">Save settings</button>
+            <span class="sub" id="sh-checkout-note" style="margin-left:0.8rem;"></span></div>
+        </div>
+
+        <div class="card" style="margin-bottom:1.2rem;">
+          <h2 style="margin-top:0;" id="prod-form-title">Add a product</h2>
+          <div class="ed-grid">
+            <div><label>Title</label><input id="p-title" /></div>
+            <div><label>Price (minor units, e.g. 1800 = 18.00)</label><input id="p-price" type="number" /></div>
+            <div><label>Category</label><input id="p-category" placeholder="Books / Gaming / Other" /></div>
+            <div><label>Condition</label><input id="p-condition" placeholder="Like New / Good / Fair / New code" /></div>
+            <div><label>Type</label>
+              <select id="p-kind" style="width:100%;padding:0.7rem 0.95rem;border-radius:11px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);">
+                <option value="physical">Physical (ships)</option>
+                <option value="digital">Digital (email/code)</option>
+              </select>
+            </div>
+            <div><label>Stock (usually 1 for pre-loved)</label><input id="p-stock" type="number" value="1" /></div>
+          </div>
+          <label>Description</label>
+          <textarea id="p-desc" style="min-height:70px;"></textarea>
+          <label>Photos</label>
+          <div id="p-images" class="p-images"></div>
+          <div style="margin-top:0.5rem;">
+            <input type="file" id="p-file" accept="image/*" multiple style="display:none;" />
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('p-file').click()">📷 Upload photos</button>
+            <span class="sub" id="p-upstatus" style="margin-left:0.6rem;"></span>
+          </div>
+          <div style="margin-top:1rem;">
+            <button class="btn btn-primary" id="p-save" onclick="saveProduct()">Save product</button>
+            <button class="btn btn-ghost hidden" id="p-cancel" onclick="resetProductForm()">Cancel edit</button>
+          </div>
+        </div>
+
+        <h2>Products</h2>
+        <div id="products-list"></div>
+      </div>
+
+      <div id="tab-orders" class="hidden">
+        <div id="orders-list"><div class="empty">Loading orders…</div></div>
       </div>
     </div>
 
@@ -211,9 +268,11 @@
     document.querySelectorAll(".tabs button").forEach((b) => b.addEventListener("click", () => {
       document.querySelectorAll(".tabs button").forEach((x) => x.classList.remove("active"));
       b.classList.add("active");
-      ["drafts", "published", "new", "comments", "analytics"].forEach((t) => $("tab-" + t).classList.toggle("hidden", t !== b.dataset.tab));
+      ["drafts", "published", "new", "comments", "analytics", "shop", "orders"].forEach((t) => $("tab-" + t).classList.toggle("hidden", t !== b.dataset.tab));
       if (b.dataset.tab === "comments") loadComments();
       if (b.dataset.tab === "analytics") loadAnalytics();
+      if (b.dataset.tab === "shop") loadShop();
+      if (b.dataset.tab === "orders") loadOrders();
     }));
 
     const thumb = (p) => p.coverSvg ? `<div class="thumb">${p.coverSvg}</div>` : (p.image ? `<div class="thumb"><img src="../${esc(p.image)}" onerror="this.parentNode.style.display='none'"></div>` : '<div class="thumb"></div>');
@@ -381,6 +440,119 @@
           </div>`;
       } catch (e) { body.innerHTML = '<div class="empty">Could not load analytics: ' + esc(e.message) + "</div>"; }
     }
+
+    /* ---------- shop ---------- */
+    const money = (m, c) => new Intl.NumberFormat(undefined, { style: "currency", currency: c || "USD" }).format((m || 0) / 100);
+    let SHOPCFG = { currency: "USD" }, EDIT_IMAGES = [], EDIT_ID = null;
+
+    async function loadShop() {
+      try {
+        SHOPCFG = await api("/shop-config");
+        $("sh-currency").value = SHOPCFG.currency || "USD";
+        $("sh-ship").value = SHOPCFG.shipPhysical || 0;
+        $("sh-countries").value = (SHOPCFG.countries || ["SG"]).join(", ");
+        $("sh-checkout-note").textContent = SHOPCFG.checkout ? "✓ Stripe connected — checkout live" : "⚠ Stripe not connected yet — buyers can browse but not pay";
+      } catch (e) { toast(e.message, "err"); }
+      renderImages();
+      let products = [];
+      try { products = await api("/products?all=1"); } catch (e) { return toast(e.message, "err"); }
+      $("products-list").innerHTML = products.length ? products.map((p) => `
+        <div class="row">
+          <div class="thumb">${(p.images && p.images[0]) ? `<img src="${esc(p.images[0])}">` : '<div style="display:grid;place-items:center;height:100%;color:var(--muted);font-size:1.6rem;">📦</div>'}</div>
+          <div><h3>${esc(p.title)} <span style="color:var(--muted);font-weight:400;font-size:0.82rem;">${money(p.price, p.currency)}</span></h3>
+            <div class="meta">${esc(p.category)} · ${esc(p.condition)} · ${p.kind === "digital" ? "Digital" : "Physical"} · <b style="color:${p.status === "available" ? "var(--ok)" : p.status === "sold" ? "var(--danger)" : "var(--muted)"}">${esc(p.status)}</b> · stock ${p.stock ?? 1}</div>
+            <div class="actions">
+              <button class="btn btn-ghost btn-sm" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&#39;")})'>✏️ Edit</button>
+              ${p.status === "available" ? `<button class="btn btn-ghost btn-sm" onclick="prodAction('${esc(p.id)}','markSold',this)">Mark sold</button>` : `<button class="btn btn-ghost btn-sm" onclick="prodAction('${esc(p.id)}','markAvailable',this)">Mark available</button>`}
+              <button class="btn btn-ghost btn-sm" onclick="prodAction('${esc(p.id)}','${p.status === "hidden" ? "markAvailable" : "hide"}',this)">${p.status === "hidden" ? "Unhide" : "Hide"}</button>
+              <button class="btn btn-danger btn-sm" onclick="delProduct('${esc(p.id)}',this)">🗑</button>
+            </div>
+          </div>
+        </div>`).join("") : '<div class="empty">No products yet. Add your first item above. 📚🎮</div>';
+    }
+
+    async function saveShopSettings() {
+      try {
+        await api("/shop-config", { method: "PUT", body: JSON.stringify({
+          currency: $("sh-currency").value.trim().toUpperCase() || "USD",
+          shipPhysical: Number($("sh-ship").value) || 0,
+          countries: $("sh-countries").value.split(",").map((s) => s.trim().toUpperCase()).filter(Boolean),
+        }) });
+        toast("Settings saved ✓", "ok"); loadShop();
+      } catch (e) { toast(e.message, "err"); }
+    }
+
+    function renderImages() {
+      $("p-images").innerHTML = EDIT_IMAGES.length ? EDIT_IMAGES.map((u, i) => `
+        <div class="pimg"><img src="${esc(u)}"><button onclick="EDIT_IMAGES.splice(${i},1);renderImages()">✕</button></div>`).join("") : '<span class="sub">No photos yet.</span>';
+    }
+    $("p-file").addEventListener("change", async (e) => {
+      const files = [...e.target.files]; e.target.value = "";
+      for (const f of files) {
+        $("p-upstatus").textContent = "Uploading " + f.name + "…";
+        try {
+          const { uploadUrl, publicUrl, contentType } = await api("/upload-url", { method: "POST", body: JSON.stringify({ filename: f.name, contentType: f.type }) });
+          const put = await fetch(uploadUrl, { method: "PUT", headers: { "content-type": contentType }, body: f });
+          if (!put.ok) throw new Error("upload failed");
+          EDIT_IMAGES.push(publicUrl); renderImages();
+        } catch (err) { toast("Upload failed: " + err.message, "err"); }
+      }
+      $("p-upstatus").textContent = "";
+    });
+
+    async function saveProduct() {
+      const body = {
+        id: EDIT_ID || undefined,
+        title: $("p-title").value.trim(), price: Number($("p-price").value) || 0,
+        category: $("p-category").value.trim() || "Other", condition: $("p-condition").value.trim() || "Pre-loved",
+        kind: $("p-kind").value, stock: Number($("p-stock").value) || 0,
+        description: $("p-desc").value.trim(), images: EDIT_IMAGES, currency: SHOPCFG.currency,
+      };
+      if (!body.title || !body.price) return toast("Title and price are required.", "err");
+      $("p-save").disabled = true;
+      try {
+        if (EDIT_ID) await api("/product?id=" + encodeURIComponent(EDIT_ID), { method: "PUT", body: JSON.stringify({ action: "update", ...body }) });
+        else await api("/products", { method: "POST", body: JSON.stringify(body) });
+        toast("Product saved ✓", "ok"); resetProductForm(); loadShop();
+      } catch (e) { toast(e.message, "err"); }
+      finally { $("p-save").disabled = false; }
+    }
+    function editProduct(p) {
+      EDIT_ID = p.id; EDIT_IMAGES = (p.images || []).slice();
+      $("prod-form-title").textContent = "Edit: " + p.title;
+      $("p-title").value = p.title || ""; $("p-price").value = p.price || 0;
+      $("p-category").value = p.category || ""; $("p-condition").value = p.condition || "";
+      $("p-kind").value = p.kind || "physical"; $("p-stock").value = p.stock ?? 1; $("p-desc").value = p.description || "";
+      $("p-cancel").classList.remove("hidden"); renderImages(); window.scrollTo(0, 0);
+    }
+    function resetProductForm() {
+      EDIT_ID = null; EDIT_IMAGES = [];
+      $("prod-form-title").textContent = "Add a product";
+      ["p-title", "p-price", "p-category", "p-condition", "p-desc"].forEach((i) => $(i).value = "");
+      $("p-stock").value = 1; $("p-kind").value = "physical"; $("p-cancel").classList.add("hidden"); renderImages();
+    }
+    async function prodAction(id, action, btn) { btn.disabled = true; try { await api("/product?id=" + encodeURIComponent(id), { method: "PUT", body: JSON.stringify({ action }) }); toast("Done ✓", "ok"); loadShop(); } catch (e) { toast(e.message, "err"); btn.disabled = false; } }
+    async function delProduct(id, btn) { if (!confirm("Delete this product?")) return; btn.disabled = true; try { await api("/product?id=" + encodeURIComponent(id), { method: "DELETE" }); toast("Deleted.", "ok"); loadShop(); } catch (e) { toast(e.message, "err"); btn.disabled = false; } }
+
+    async function loadOrders() {
+      let orders = [];
+      try { orders = await api("/orders"); } catch (e) { return $("orders-list").innerHTML = '<div class="empty">' + esc(e.message) + "</div>"; }
+      const paid = orders.filter((o) => o.status !== "pending");
+      $("orders-list").innerHTML = paid.length ? paid.map((o) => `
+        <div class="disc">
+          <h3>${money(o.amount, o.currency)} <span style="color:${o.status === "paid" ? "var(--ok)" : "var(--muted)"};font-size:0.82rem;">· ${esc(o.status)}</span></h3>
+          <div class="cmt"><div class="body">
+            <b>${esc(o.buyerName || "")}</b> · ${esc(o.buyerEmail || "")}<br>
+            Items: ${(o.productIds || []).join(", ")}<br>
+            ${o.shipping ? "Ship to: " + esc(o.shipping).slice(0, 200) : "Digital / no shipping"}<br>
+            <span class="sub">${new Date(o.paidAt || o.createdAt).toLocaleString()}</span>
+          </div>
+          <div class="actions">
+            ${o.status !== "fulfilled" ? `<button class="btn btn-primary btn-sm" onclick="fulfil('${esc(o.orderId)}',this)">Mark fulfilled</button>` : '<span class="sub">✓ Fulfilled</span>'}
+          </div></div>
+        </div>`).join("") : '<div class="empty">No paid orders yet.</div>';
+    }
+    async function fulfil(id, btn) { btn.disabled = true; try { await api("/order?id=" + encodeURIComponent(id), { method: "PUT", body: JSON.stringify({ status: "fulfilled" }) }); toast("Marked fulfilled ✓", "ok"); loadOrders(); } catch (e) { toast(e.message, "err"); btn.disabled = false; } }
 
     boot();
   </script>
