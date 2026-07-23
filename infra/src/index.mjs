@@ -374,14 +374,23 @@ export const handler = async (event) => {
 
     if (method === "POST" && path === "/like") {
       const slug = clean(body.slug, 120);
-      const out = await ddb.send(new UpdateCommand({
-        TableName: TABLE, Key: postKey(slug),
-        ConditionExpression: "attribute_exists(pk)",
-        UpdateExpression: "ADD likes :one",
-        ExpressionAttributeValues: { ":one": body.undo ? -1 : 1 },
-        ReturnValues: "ALL_NEW",
-      }));
-      return res(200, { likes: Math.max(0, out.Attributes.likes) });
+      try {
+        const out = await ddb.send(new UpdateCommand({
+          TableName: TABLE, Key: postKey(slug),
+          // like: post must exist; unlike: only if the count is above zero (never go negative)
+          ConditionExpression: body.undo ? "likes > :z" : "attribute_exists(pk)",
+          UpdateExpression: "SET likes = if_not_exists(likes, :z) + :d",
+          ExpressionAttributeValues: { ":d": body.undo ? -1 : 1, ":z": 0 },
+          ReturnValues: "ALL_NEW",
+        }));
+        return res(200, { likes: out.Attributes.likes });
+      } catch (e) {
+        if (e.name === "ConditionalCheckFailedException") {
+          const p = await getPost(slug);
+          return res(200, { likes: p ? Math.max(0, p.likes || 0) : 0 });
+        }
+        throw e;
+      }
     }
 
     if (method === "POST" && path === "/track") {
