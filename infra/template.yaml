@@ -21,7 +21,7 @@ Parameters:
     Description: Shared secret for non-interactive draft creation
   BedrockModelId:
     Type: String
-    Default: anthropic.claude-3-5-sonnet-20240620-v1:0
+    Default: apac.amazon.nova-pro-v1:0
     Description: Bedrock model used to draft daily posts
   NotifyEmail:
     Type: String
