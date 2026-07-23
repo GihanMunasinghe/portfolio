@@ -261,6 +261,13 @@ export const handler = async (event) => {
   /* scheduled agent runs (only invokable via authenticated AWS invoke, not the public URL) */
   if (event.job === "daily-draft") return dailyDraft();
   if (event.job === "test-trends") return { trends: await fetchTrends() };
+  if (event.job === "cors-check") {
+    const base = process.env.SELF_URL || SITE;
+    const r = await fetch(base + "/posts", { headers: { origin: "https://www.gihanmunasinghe.lk" } });
+    const h = {}; r.headers.forEach((v, k) => (h[k] = v));
+    const body = await r.text();
+    return { status: r.status, acao: h["access-control-allow-origin"] || null, headers: h, bodyStart: body.slice(0, 80) };
+  }
 
   const method = event.requestContext?.http?.method || "GET";
   const path = (event.rawPath || "/").replace(/\/+$/, "") || "/";

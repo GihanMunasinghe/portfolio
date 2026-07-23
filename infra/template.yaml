@@ -110,24 +110,48 @@ Resources:
           NOTIFY_EMAIL: !Ref NotifyEmail
           SITE_URL: !Ref SiteUrl
 
-  FnUrl:
-    Type: AWS::Lambda::Url
+  # Public entry is an HTTP API (not a Lambda Function URL): some accounts
+  # block public Function URLs at the org level, which returns 403 to browsers.
+  HttpApi:
+    Type: AWS::ApiGatewayV2::Api
     Properties:
-      TargetFunctionArn: !GetAtt Fn.Arn
-      AuthType: NONE
-      Cors:
+      Name: gihan-blog-public
+      ProtocolType: HTTP
+      CorsConfiguration:
         AllowOrigins: ["*"]
         AllowMethods: ["*"]
-        AllowHeaders: ["content-type", "authorization", "x-agent-key"]
+        AllowHeaders: ["content-type", "authorization"]
         MaxAge: 86400
 
-  FnUrlPermission:
+  HttpIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref HttpApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !GetAtt Fn.Arn
+      PayloadFormatVersion: "2.0"
+
+  HttpDefaultRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref HttpApi
+      RouteKey: "$default"
+      Target: !Sub "integrations/${HttpIntegration}"
+
+  HttpStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref HttpApi
+      StageName: "$default"
+      AutoDeploy: true
+
+  ApiInvokePermission:
     Type: AWS::Lambda::Permission
     Properties:
       FunctionName: !Ref Fn
-      Action: lambda:InvokeFunctionUrl
-      Principal: "*"
-      FunctionUrlAuthType: NONE
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${HttpApi}/*/*"
 
   DailyDraftRule:
     Type: AWS::Events::Rule
@@ -152,6 +176,6 @@ Resources:
 Outputs:
   ApiUrl:
     Description: Base URL of the blog API (paste into site-config.json "api")
-    Value: !GetAtt FnUrl.FunctionUrl
+    Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com"
   TableName:
     Value: !Ref Table
