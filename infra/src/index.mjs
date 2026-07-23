@@ -110,6 +110,7 @@ async function savePost(input, { asDraft }) {
     date: clean(input.date, 40) || now.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
     readTime: clean(input.readTime, 30) || "6 min read",
     media: clean(input.media, 30),
+    image: typeof input.image === "string" ? input.image.slice(0, 300) : existing?.image,
     coverSvg: typeof input.coverSvg === "string" ? input.coverSvg.slice(0, 20000) : (existing?.coverSvg),
     html: String(input.html).slice(0, 250000),
     sources: Array.isArray(input.sources) ? input.sources.slice(0, 10).map((s) => clean(s, 300)) : existing?.sources,
@@ -263,14 +264,22 @@ export const handler = async (event) => {
   if (event.job === "test-trends") return { trends: await fetchTrends() };
   if (event.job === "cors-check") {
     const base = process.env.SELF_URL || SITE;
-    const r = await fetch(base + "/posts", { headers: { origin: "https://www.gihanmunasinghe.lk" } });
-    const h = {}; r.headers.forEach((v, k) => (h[k] = v));
-    const body = await r.text();
-    return { status: r.status, acao: h["access-control-allow-origin"] || null, headers: h, bodyStart: body.slice(0, 80) };
+    const O = "https://www.gihanmunasinghe.lk";
+    const out = {};
+    let r = await fetch(base + "/posts", { headers: { origin: O } });
+    out.get_posts = { status: r.status, acao: r.headers.get("access-control-allow-origin") };
+    r = await fetch(base + "/like", { method: "OPTIONS", headers: { origin: O, "access-control-request-method": "POST", "access-control-request-headers": "content-type" } });
+    out.preflight = { status: r.status, acao: r.headers.get("access-control-allow-origin"), methods: r.headers.get("access-control-allow-methods"), headers: r.headers.get("access-control-allow-headers") };
+    r = await fetch(base + "/like", { method: "POST", headers: { origin: O, "content-type": "application/json" }, body: JSON.stringify({ slug: "monolith-to-microservices-lessons", undo: true }) });
+    out.post_like = { status: r.status, acao: r.headers.get("access-control-allow-origin"), body: (await r.text()).slice(0, 80) };
+    return out;
   }
 
   const method = event.requestContext?.http?.method || "GET";
   const path = (event.rawPath || "/").replace(/\/+$/, "") || "/";
+
+  // CORS preflight: API Gateway adds the CORS headers; we just need a 2xx status.
+  if (method === "OPTIONS") return { statusCode: 204, headers: {}, body: "" };
   const qs = event.queryStringParameters || {};
   let body = {};
   try { body = event.body ? JSON.parse(event.body) : {}; } catch {}
@@ -311,6 +320,7 @@ export const handler = async (event) => {
       else if (a === "update") {
         for (const k of ["title", "excerpt", "date", "readTime", "media"]) if (body[k] !== undefined) p[k] = clean(body[k], 500);
         if (body.html !== undefined) p.html = String(body.html).slice(0, 250000);
+        if (body.image !== undefined) p.image = String(body.image).slice(0, 300);
         if (body.coverSvg !== undefined) p.coverSvg = String(body.coverSvg).slice(0, 20000);
       } else return res(400, { error: "Unknown action" });
       p.updatedAt = new Date().toISOString();
@@ -364,14 +374,23 @@ export const handler = async (event) => {
 
     if (method === "POST" && path === "/like") {
       const slug = clean(body.slug, 120);
-      const out = await ddb.send(new UpdateCommand({
-        TableName: TABLE, Key: postKey(slug),
-        ConditionExpression: "attribute_exists(pk)",
-        UpdateExpression: "ADD likes :one",
-        ExpressionAttributeValues: { ":one": body.undo ? -1 : 1 },
-        ReturnValues: "ALL_NEW",
-      }));
-      return res(200, { likes: Math.max(0, out.Attributes.likes) });
+      try {
+        const out = await ddb.send(new UpdateCommand({
+          TableName: TABLE, Key: postKey(slug),
+          // like: post must exist; unlike: only if the count is above zero (never go negative)
+          ConditionExpression: body.undo ? "likes > :z" : "attribute_exists(pk)",
+          UpdateExpression: "SET likes = if_not_exists(likes, :z) + :d",
+          ExpressionAttributeValues: { ":d": body.undo ? -1 : 1, ":z": 0 },
+          ReturnValues: "ALL_NEW",
+        }));
+        return res(200, { likes: out.Attributes.likes });
+      } catch (e) {
+        if (e.name === "ConditionalCheckFailedException") {
+          const p = await getPost(slug);
+          return res(200, { likes: p ? Math.max(0, p.likes || 0) : 0 });
+        }
+        throw e;
+      }
     }
 
     if (method === "POST" && path === "/track") {
