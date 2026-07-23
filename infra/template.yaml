@@ -19,9 +19,10 @@ Parameters:
     Type: String
     NoEcho: true
     Description: Shared secret for non-interactive draft creation
-  AnthropicApiKey:
+  BedrockModelId:
     Type: String
-    NoEcho: true
+    Default: anthropic.claude-3-5-sonnet-20240620-v1:0
+    Description: Bedrock model used to draft daily posts
   NotifyEmail:
     Type: String
     Description: SES-verified email that receives morning notifications
@@ -81,6 +82,11 @@ Resources:
               - Effect: Allow
                 Action: [ses:SendEmail]
                 Resource: "*"
+              - Effect: Allow
+                Action: [bedrock:InvokeModel]
+                Resource:
+                  - arn:aws:bedrock:*::foundation-model/*
+                  - !Sub "arn:aws:bedrock:*:${AWS::AccountId}:inference-profile/*"
 
   Fn:
     Type: AWS::Lambda::Function
@@ -100,7 +106,7 @@ Resources:
           ADMIN_PASSWORD_HASH: !Ref AdminPasswordHash
           JWT_SECRET: !Ref JwtSecret
           AGENT_KEY: !Ref AgentKey
-          ANTHROPIC_API_KEY: !Ref AnthropicApiKey
+          BEDROCK_MODEL_ID: !Ref BedrockModelId
           NOTIFY_EMAIL: !Ref NotifyEmail
           SITE_URL: !Ref SiteUrl
 

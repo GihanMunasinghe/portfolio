@@ -2,8 +2,8 @@
 # Deploy the blog backend. Requires AWS credentials in the environment.
 # Usage:
 #   ADMIN_PASSWORD='choose-a-strong-password' \
-#   ANTHROPIC_API_KEY='sk-ant-...' \
 #   NOTIFY_EMAIL='gihanmunasinghe266@gmail.com' \
+#   [BEDROCK_MODEL_ID='anthropic.claude-3-5-sonnet-20240620-v1:0'] \
 #   ./deploy.sh [region]
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -12,18 +12,26 @@ REGION="${1:-ap-southeast-1}"
 STACK="gihan-blog"
 ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 BUCKET="gihan-blog-code-${ACCOUNT}"
+BEDROCK_MODEL_ID="${BEDROCK_MODEL_ID:-anthropic.claude-3-5-sonnet-20240620-v1:0}"
 
 : "${ADMIN_PASSWORD:?Set ADMIN_PASSWORD}"
-: "${ANTHROPIC_API_KEY:?Set ANTHROPIC_API_KEY}"
 : "${NOTIFY_EMAIL:?Set NOTIFY_EMAIL}"
 
 ADMIN_HASH=$(printf '%s' "$ADMIN_PASSWORD" | sha256sum | cut -d' ' -f1)
 JWT_SECRET="${JWT_SECRET:-$(openssl rand -hex 32)}"
 AGENT_KEY="${AGENT_KEY:-$(openssl rand -hex 24)}"
 
-echo "==> Packaging lambda"
+echo "==> Packaging lambda (bundling AWS SDK clients)"
 rm -f lambda.zip
-(cd src && zip -q -X ../lambda.zip index.mjs)
+rm -rf build && mkdir build
+cp src/index.mjs build/
+cat > build/package.json <<'JSON'
+{ "type": "module", "dependencies": {
+  "@aws-sdk/client-dynamodb": "^3", "@aws-sdk/lib-dynamodb": "^3",
+  "@aws-sdk/client-sesv2": "^3", "@aws-sdk/client-bedrock-runtime": "^3" } }
+JSON
+(cd build && npm install --omit=dev --no-audit --no-fund --silent)
+(cd build && zip -qr -X ../lambda.zip index.mjs package.json node_modules)
 
 echo "==> Uploading code to s3://${BUCKET}"
 aws s3 mb "s3://${BUCKET}" --region "$REGION" 2>/dev/null || true
@@ -40,7 +48,7 @@ aws cloudformation deploy \
     AdminPasswordHash="$ADMIN_HASH" \
     JwtSecret="$JWT_SECRET" \
     AgentKey="$AGENT_KEY" \
-    AnthropicApiKey="$ANTHROPIC_API_KEY" \
+    BedrockModelId="$BEDROCK_MODEL_ID" \
     NotifyEmail="$NOTIFY_EMAIL"
 
 echo "==> Forcing lambda code refresh"
