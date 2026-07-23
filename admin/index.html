@@ -11,123 +11,77 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>" />
   <style>
     :root {
-      --bg: #07090d;
-      --surface: rgba(255, 255, 255, 0.04);
-      --surface-solid: #11151d;
-      --border: rgba(255, 255, 255, 0.09);
-      --text: #eef1f7;
-      --muted: #98a1b3;
-      --accent: #6ea8fe;
-      --accent-2: #8b5cf6;
-      --accent-3: #22d3ee;
-      --ok: #34d399;
-      --danger: #f87171;
-      --grad: linear-gradient(100deg, #6ea8fe, #8b5cf6 55%, #22d3ee);
-      --font-display: "Sora", -apple-system, sans-serif;
-      --font-body: "Inter", -apple-system, sans-serif;
+      --bg: #07090d; --surface: rgba(255,255,255,0.04); --surface-solid: #11151d; --border: rgba(255,255,255,0.09);
+      --text: #eef1f7; --muted: #98a1b3; --accent: #6ea8fe; --accent-2: #8b5cf6; --accent-3: #22d3ee;
+      --ok: #34d399; --danger: #f87171; --grad: linear-gradient(100deg, #6ea8fe, #8b5cf6 55%, #22d3ee);
+      --font-display: "Sora", -apple-system, sans-serif; --font-body: "Inter", -apple-system, sans-serif;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: var(--font-body);
-      background:
-        radial-gradient(600px 400px at 85% -5%, rgba(139, 92, 246, 0.16), transparent 70%),
-        radial-gradient(700px 500px at -10% 30%, rgba(110, 168, 254, 0.12), transparent 70%),
-        var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      min-height: 100vh;
+      background: radial-gradient(600px 400px at 85% -5%, rgba(139,92,246,0.16), transparent 70%), radial-gradient(700px 500px at -10% 30%, rgba(110,168,254,0.12), transparent 70%), var(--bg);
+      color: var(--text); line-height: 1.6; min-height: 100vh;
     }
     .wrap { max-width: 900px; margin: 0 auto; padding: 1.5rem 1.4rem 4rem; }
-    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.8rem; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.6rem; }
     .logo { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; color: var(--text); text-decoration: none; }
     .logo span { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .logo em { font-style: normal; color: var(--muted); font-weight: 500; font-size: 0.85rem; margin-left: 0.5rem; }
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem;
-      font-family: var(--font-body); font-weight: 600; font-size: 0.9rem;
-      padding: 0.6rem 1.15rem; border-radius: 11px; text-decoration: none;
-      cursor: pointer; border: none; transition: transform 0.15s, background 0.2s;
-    }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; font-family: var(--font-body); font-weight: 600; font-size: 0.9rem; padding: 0.6rem 1.15rem; border-radius: 11px; text-decoration: none; cursor: pointer; border: none; transition: transform 0.15s, background 0.2s; }
     .btn:disabled { opacity: 0.55; cursor: wait; }
-    .btn-primary { background: var(--grad); color: #fff; box-shadow: 0 6px 18px rgba(110, 168, 254, 0.25); }
+    .btn-primary { background: var(--grad); color: #fff; box-shadow: 0 6px 18px rgba(110,168,254,0.25); }
     .btn-primary:hover:not(:disabled) { transform: translateY(-1px); }
     .btn-ghost { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
-    .btn-danger { background: rgba(248, 113, 113, 0.12); color: var(--danger); border: 1px solid rgba(248, 113, 113, 0.35); }
+    .btn-danger { background: rgba(248,113,113,0.12); color: var(--danger); border: 1px solid rgba(248,113,113,0.35); }
     .btn-sm { padding: 0.42rem 0.85rem; font-size: 0.82rem; }
     .card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 1.6rem; }
     h1 { font-family: var(--font-display); font-size: 1.55rem; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 0.35rem; }
     h2 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; margin: 1.6rem 0 0.9rem; }
     .sub { color: var(--muted); font-size: 0.93rem; }
     label { display: block; font-size: 0.83rem; font-weight: 600; color: var(--muted); margin: 1rem 0 0.35rem; }
-    input[type="text"], input[type="password"], textarea {
-      width: 100%; padding: 0.7rem 0.95rem; border-radius: 11px;
-      border: 1px solid var(--border); background: rgba(255,255,255,0.05);
-      color: var(--text); font-size: 0.92rem; font-family: var(--font-body);
-    }
+    input, textarea { width: 100%; padding: 0.7rem 0.95rem; border-radius: 11px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: var(--text); font-size: 0.92rem; font-family: var(--font-body); }
     input:focus, textarea:focus { outline: none; border-color: var(--accent); }
     .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace !important; }
-    .hint { font-size: 0.8rem; color: var(--muted); margin-top: 0.7rem; }
-    .hint a { color: var(--accent); }
-    #login { max-width: 460px; margin: 7vh auto 0; }
+    #login { max-width: 440px; margin: 8vh auto 0; }
     .remember { display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; font-size: 0.85rem; color: var(--muted); }
-    /* tabs */
-    .tabs { display: flex; gap: 0.5rem; margin: 1.4rem 0 1.6rem; flex-wrap: wrap; }
-    .tabs button {
-      font-family: var(--font-body); font-weight: 600; font-size: 0.88rem;
-      padding: 0.55rem 1.05rem; border-radius: 999px; cursor: pointer;
-      background: var(--surface); color: var(--muted); border: 1px solid var(--border);
-    }
+    .remember input { width: auto; }
+    .tabs { display: flex; gap: 0.5rem; margin: 1.3rem 0 1.5rem; flex-wrap: wrap; }
+    .tabs button { font-family: var(--font-body); font-weight: 600; font-size: 0.86rem; padding: 0.5rem 1rem; border-radius: 999px; cursor: pointer; background: var(--surface); color: var(--muted); border: 1px solid var(--border); width: auto; }
     .tabs button.active { background: var(--grad); color: #fff; border-color: transparent; }
     .stats { display: flex; gap: 1rem; margin-bottom: 1.4rem; flex-wrap: wrap; }
-    .stat { flex: 1; min-width: 120px; text-align: center; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 0.9rem; }
+    .stat { flex: 1; min-width: 110px; text-align: center; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 0.9rem; }
     .stat .n { font-family: var(--font-display); font-size: 1.55rem; font-weight: 800; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .stat .l { font-size: 0.76rem; color: var(--muted); }
-    .draft {
-      display: grid; grid-template-columns: 140px 1fr; gap: 1rem;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 16px; padding: 1rem; margin-bottom: 1rem; align-items: start;
-    }
-    @media (max-width: 620px) { .draft { grid-template-columns: 1fr; } }
-    .draft img { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 10px; border: 1px solid var(--border); }
-    .draft h3 { font-family: var(--font-display); font-size: 1rem; line-height: 1.35; margin-bottom: 0.2rem; }
-    .draft .meta { font-size: 0.77rem; color: var(--muted); margin-bottom: 0.35rem; }
-    .draft p { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.75rem; }
+    .stat .l { font-size: 0.75rem; color: var(--muted); }
+    .row { display: grid; grid-template-columns: 130px 1fr; gap: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1rem; margin-bottom: 1rem; align-items: start; }
+    @media (max-width: 620px) { .row { grid-template-columns: 1fr; } }
+    .row .thumb { width: 100%; aspect-ratio: 16/9; border-radius: 10px; border: 1px solid var(--border); overflow: hidden; background: var(--bg); }
+    .row .thumb img, .row .thumb svg { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .row h3 { font-family: var(--font-display); font-size: 1rem; line-height: 1.35; margin-bottom: 0.2rem; }
+    .row .meta { font-size: 0.77rem; color: var(--muted); margin-bottom: 0.35rem; }
+    .row p { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.75rem; }
     .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
     .empty { color: var(--muted); font-size: 0.92rem; padding: 1.4rem; text-align: center; border: 1px dashed var(--border); border-radius: 14px; }
     .hidden { display: none !important; }
-    #toast {
-      position: fixed; bottom: 1.4rem; left: 50%; transform: translateX(-50%);
-      background: var(--surface-solid); border: 1px solid var(--border);
-      border-radius: 12px; padding: 0.8rem 1.3rem; font-size: 0.9rem;
-      box-shadow: 0 14px 40px rgba(0,0,0,0.5); display: none; z-index: 40; max-width: 92vw;
-    }
-    #toast.ok { border-color: rgba(52, 211, 153, 0.4); }
-    #toast.err { border-color: rgba(248, 113, 113, 0.4); }
-    /* editor overlay */
-    #editor {
-      position: fixed; inset: 0; z-index: 30; background: rgba(4, 5, 8, 0.92);
-      backdrop-filter: blur(6px); overflow-y: auto; padding: 1.2rem;
-    }
+    #toast { position: fixed; bottom: 1.4rem; left: 50%; transform: translateX(-50%); background: var(--surface-solid); border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem 1.3rem; font-size: 0.9rem; box-shadow: 0 14px 40px rgba(0,0,0,0.5); display: none; z-index: 40; max-width: 92vw; }
+    #toast.ok { border-color: rgba(52,211,153,0.4); } #toast.err { border-color: rgba(248,113,113,0.4); }
+    #editor { position: fixed; inset: 0; z-index: 30; background: rgba(4,5,8,0.93); backdrop-filter: blur(6px); overflow-y: auto; padding: 1.2rem; }
     #editor .panel { max-width: 860px; margin: 0 auto; background: var(--surface-solid); border: 1px solid var(--border); border-radius: 18px; padding: 1.6rem; }
-    #editor textarea#ed-html { min-height: 46vh; font-size: 0.8rem; line-height: 1.5; }
+    #editor textarea#ed-html { min-height: 44vh; font-size: 0.8rem; line-height: 1.5; }
     .ed-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
     @media (max-width: 620px) { .ed-grid { grid-template-columns: 1fr; } }
-    /* comments */
     .disc { border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.2rem; margin-bottom: 1rem; background: var(--surface); }
-    .disc h3 { font-size: 0.95rem; font-family: var(--font-display); margin-bottom: 0.2rem; }
-    .disc .dmeta { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.8rem; }
-    .cmt { border-top: 1px solid var(--border); padding: 0.8rem 0 0.6rem; }
-    .cmt.reply { margin-left: 1.6rem; border-top-style: dashed; }
+    .disc h3 { font-size: 0.95rem; font-family: var(--font-display); margin-bottom: 0.6rem; }
+    .cmt { border-top: 1px solid var(--border); padding: 0.7rem 0 0.5rem; }
+    .cmt.reply { margin-left: 1.4rem; border-top-style: dashed; }
     .cmt .who { font-size: 0.82rem; font-weight: 600; }
-    .cmt .when { font-size: 0.74rem; color: var(--muted); margin-left: 0.5rem; font-weight: 400; }
-    .cmt .body { font-size: 0.88rem; color: #c6ccd8; margin: 0.3rem 0 0.5rem; white-space: pre-wrap; word-break: break-word; }
-    .replybox { margin: 0.5rem 0 0.8rem; }
-    .replybox textarea { min-height: 70px; font-size: 0.88rem; }
-    .replybox .actions { margin-top: 0.5rem; }
+    .cmt .when { font-size: 0.73rem; color: var(--muted); margin-left: 0.4rem; font-weight: 400; }
+    .cmt .body { font-size: 0.88rem; color: #c6ccd8; margin: 0.25rem 0 0.4rem; white-space: pre-wrap; word-break: break-word; }
     table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-    th, td { text-align: left; padding: 0.55rem 0.6rem; border-bottom: 1px solid var(--border); }
-    th { color: var(--muted); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    th, td { text-align: left; padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--border); }
+    th { color: var(--muted); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; }
     td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .bars { display: flex; align-items: flex-end; gap: 3px; height: 90px; margin: 0.5rem 0 0.2rem; }
+    .bars .b { flex: 1; background: var(--grad); border-radius: 3px 3px 0 0; min-height: 2px; opacity: 0.85; }
   </style>
 </head>
 <body>
@@ -137,108 +91,73 @@
       <button class="btn btn-ghost btn-sm hidden" id="logout">Sign out</button>
     </div>
 
-    <!-- ======== LOGIN ======== -->
+    <!-- LOGIN -->
     <div id="login" class="card">
       <h1>Admin sign-in</h1>
-      <p class="sub">Publish and manage blog posts on gihanmunasinghe.lk.</p>
-      <label for="token">Access token</label>
-      <input id="token" type="password" class="mono" placeholder="github_pat_…" autocomplete="current-password" />
-      <label class="remember"><input type="checkbox" id="remember" checked /> Remember on this device</label>
-      <div style="margin-top:1.3rem;">
-        <button class="btn btn-primary" id="signin" style="width:100%;">Sign in</button>
-      </div>
-      <p class="hint">
-        One-time setup: create a <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">fine-grained access token</a>
-        — Repository access: <strong>Only select repositories → portfolio</strong>;
-        Permissions: <strong>Contents → Read and write</strong>, and
-        <strong>Discussions → Read and write</strong> (for comment moderation). Paste it here once.
-      </p>
+      <p class="sub">Manage your blog — posts, comments, analytics.</p>
+      <label for="pw">Password</label>
+      <input id="pw" type="password" placeholder="Your admin password" autocomplete="current-password" />
+      <label class="remember"><input type="checkbox" id="remember" checked /> Keep me signed in on this device</label>
+      <div style="margin-top:1.3rem;"><button class="btn btn-primary" id="signin" style="width:100%;">Sign in</button></div>
+      <p class="sub" id="login-note" style="margin-top:1rem;"></p>
     </div>
 
-    <!-- ======== DASHBOARD ======== -->
+    <!-- DASHBOARD -->
     <div id="dash" class="hidden">
       <h1>Blog control room</h1>
-      <p class="sub">Changes go live in ~30 seconds after saving or publishing.</p>
-
+      <p class="sub">Changes are live instantly — no deploy wait.</p>
       <div class="tabs">
         <button data-tab="drafts" class="active">📥 Drafts <span id="tab-n-drafts"></span></button>
         <button data-tab="published">🌍 Published</button>
+        <button data-tab="new">✍️ New post</button>
         <button data-tab="comments">💬 Comments</button>
         <button data-tab="analytics">📊 Analytics</button>
       </div>
 
-      <!-- drafts -->
-      <div id="tab-drafts">
-        <div id="pending-list"></div>
+      <div id="tab-drafts"><div id="drafts-list"></div></div>
+      <div id="tab-published" class="hidden"><div id="published-list"></div></div>
+
+      <div id="tab-new" class="hidden">
+        <div class="card">
+          <h2 style="margin-top:0;">Write a new post</h2>
+          <p class="sub">Saved as a draft. Publish it from the Drafts tab when ready.</p>
+          <div class="ed-grid">
+            <div><label>Title</label><input id="n-title" /></div>
+            <div><label>Badge (AI, Cloud, …)</label><input id="n-media" /></div>
+            <div><label>Read time</label><input id="n-readTime" placeholder="7 min read" /></div>
+            <div><label>Slug (optional)</label><input id="n-slug" class="mono" placeholder="auto from title" /></div>
+          </div>
+          <label>Excerpt (blog-card summary)</label>
+          <textarea id="n-excerpt" style="min-height:60px;"></textarea>
+          <label>Post body (HTML: &lt;p&gt; &lt;h2&gt; &lt;ul&gt; &lt;pre&gt;&lt;code&gt; &lt;strong&gt; &lt;a&gt; &lt;blockquote&gt;)</label>
+          <textarea id="n-html" class="mono" style="min-height:34vh;" spellcheck="false"></textarea>
+          <div style="margin-top:1rem;"><button class="btn btn-primary" id="n-save">Save draft</button></div>
+        </div>
       </div>
 
-      <!-- published -->
-      <div id="tab-published" class="hidden">
-        <div id="published-list"></div>
-      </div>
-
-      <!-- comments -->
       <div id="tab-comments" class="hidden">
         <div id="comments-status" class="empty">Loading comments…</div>
-        <div id="engagement"></div>
         <div id="comments-list"></div>
       </div>
 
-      <!-- analytics -->
       <div id="tab-analytics" class="hidden">
-        <div class="card">
-          <h2 style="margin-top:0;">📈 Traffic (GoatCounter)</h2>
-          <div id="gc-setup">
-            <p class="sub">
-              Free, privacy-friendly analytics. One-time setup:
-              create an account at <a href="https://www.goatcounter.com/signup" target="_blank" rel="noopener" style="color:var(--accent)">goatcounter.com</a>
-              (pick a site code, e.g. <em>gihan</em>), then enter it below and press
-              <strong>Activate</strong> — tracking starts on every page automatically.
-            </p>
-            <label>GoatCounter site code</label>
-            <input type="text" id="gc-code" class="mono" placeholder="e.g. gihan (from gihan.goatcounter.com)" />
-            <div style="margin-top:0.9rem;"><button class="btn btn-primary btn-sm" onclick="saveSiteConfig('goatcounter')">Activate on site</button></div>
-            <label>API token (optional — shows stats right here)</label>
-            <input type="password" id="gc-token" class="mono" placeholder="GoatCounter → Settings → API tokens" />
-            <p class="hint">The API token is stored only in this browser, never in the repo.</p>
-            <div style="margin-top:0.9rem;"><button class="btn btn-ghost btn-sm" onclick="loadStats()">Load stats</button>
-              <a class="btn btn-ghost btn-sm" id="gc-dash-link" target="_blank" rel="noopener" style="display:none;">Open full dashboard ↗</a></div>
-          </div>
-          <div id="gc-stats" style="margin-top:1.2rem;"></div>
-        </div>
-
-        <div class="card" style="margin-top:1.2rem;">
-          <h2 style="margin-top:0;">💬 Comments engine (giscus)</h2>
-          <p class="sub">
-            Backed by GitHub Discussions. One-time setup: enable
-            <strong>Discussions</strong> in the repo settings, install the
-            <a href="https://github.com/apps/giscus" target="_blank" rel="noopener" style="color:var(--accent)">giscus app</a>,
-            then open <a href="https://giscus.app" target="_blank" rel="noopener" style="color:var(--accent)">giscus.app</a>,
-            select the repo and a category (create "Blog comments", type Announcement) and copy the two IDs below.
-          </p>
-          <div class="ed-grid">
-            <div><label>Category name</label><input type="text" id="gs-category" placeholder="Blog comments" /></div>
-            <div><label>Category ID</label><input type="text" id="gs-catid" class="mono" placeholder="DIC_kwDO…" /></div>
-          </div>
-          <div style="margin-top:0.9rem;"><button class="btn btn-primary btn-sm" onclick="saveSiteConfig('giscus')">Activate comments on site</button></div>
-        </div>
+        <div id="analytics-body"><div class="empty">Loading analytics…</div></div>
       </div>
     </div>
 
-    <!-- ======== EDITOR OVERLAY ======== -->
+    <!-- EDITOR -->
     <div id="editor" class="hidden">
       <div class="panel">
         <h1 id="ed-title">Edit post</h1>
-        <p class="sub">Metadata updates the blog card; the HTML is the full post page.</p>
         <div class="ed-grid">
-          <div><label>Title</label><input type="text" id="ed-m-title" /></div>
-          <div><label>Badge (e.g. AI, Cloud)</label><input type="text" id="ed-m-media" /></div>
-          <div><label>Date</label><input type="text" id="ed-m-date" /></div>
-          <div><label>Read time</label><input type="text" id="ed-m-readTime" /></div>
+          <div><label>Title</label><input id="ed-m-title" /></div>
+          <div><label>Badge</label><input id="ed-m-media" /></div>
+          <div><label>Date</label><input id="ed-m-date" /></div>
+          <div><label>Read time</label><input id="ed-m-readTime" /></div>
         </div>
-        <label>Excerpt (shown on the blog card)</label>
-        <textarea id="ed-m-excerpt" style="min-height:70px;"></textarea>
-        <label>Post HTML</label>
+        <label>Excerpt</label>
+        <textarea id="ed-m-excerpt" style="min-height:60px;"></textarea>
+        <label>Post body HTML</label>
         <textarea id="ed-html" class="mono" spellcheck="false"></textarea>
         <div class="actions" style="margin-top:1rem;">
           <button class="btn btn-primary" id="ed-save">💾 Save changes</button>
@@ -251,396 +170,219 @@
   </div>
 
   <script>
-    const OWNER = "GihanMunasinghe", REPO = "portfolio", BRANCH = "main";
-    const API = `https://api.github.com/repos/${OWNER}/${REPO}`;
-    const SITE = "https://www.gihanmunasinghe.lk";
-    let TOKEN = null;
-
     const $ = (id) => document.getElementById(id);
-    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-    const b64decode = (s) => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\n/g, "")), (c) => c.charCodeAt(0)));
-    const b64encode = (s) => { const b = new TextEncoder().encode(s); let out = ""; b.forEach((c) => out += String.fromCharCode(c)); return btoa(out); };
+    const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const SITE = location.origin;
+    let API = "", TOKEN = localStorage.getItem("gm_admin_jwt") || null;
 
-    function toast(msg, cls) {
-      const t = $("toast");
-      t.textContent = msg; t.className = cls || ""; t.style.display = "block";
-      clearTimeout(t._h); t._h = setTimeout(() => (t.style.display = "none"), 5500);
+    function toast(msg, cls) { const t = $("toast"); t.textContent = msg; t.className = cls || ""; t.style.display = "block"; clearTimeout(t._h); t._h = setTimeout(() => t.style.display = "none", 5000); }
+
+    async function api(path, opts = {}) {
+      const res = await fetch(API + path, { ...opts, headers: { ...(opts.body ? { "content-type": "application/json" } : {}), ...(TOKEN ? { authorization: "Bearer " + TOKEN } : {}), ...(opts.headers || {}) } });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(j.error || res.status + " " + res.statusText);
+      return j;
+    }
+    const auth = () => ({ headers: { authorization: "Bearer " + TOKEN } });
+
+    async function boot() {
+      try { API = ((await (await fetch("../site-config.json?t=" + Date.now())).json()).api || "").replace(/\/$/, ""); } catch {}
+      if (!API) { $("login-note").textContent = "Backend not configured (site-config.json has no api URL)."; }
+      if (TOKEN) { try { await api("/posts?all=1"); showDash(); return; } catch { TOKEN = null; localStorage.removeItem("gm_admin_jwt"); } }
     }
 
-    async function gh(path, opts = {}) {
-      const res = await fetch(API + path, {
-        ...opts,
-        headers: {
-          "Authorization": "Bearer " + TOKEN,
-          "Accept": "application/vnd.github+json",
-          "X-GitHub-Api-Version": "2022-11-28",
-          ...(opts.body ? { "Content-Type": "application/json" } : {}),
-        },
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.message || res.status + " " + res.statusText);
-      }
-      return res.status === 204 ? {} : res.json();
-    }
-    async function graphql(query, variables) {
-      const res = await fetch("https://api.github.com/graphql", {
-        method: "POST",
-        headers: { "Authorization": "Bearer " + TOKEN, "Content-Type": "application/json" },
-        body: JSON.stringify({ query, variables }),
-      });
-      const j = await res.json();
-      if (j.errors) throw new Error(j.errors.map((e) => e.message).join("; "));
-      return j.data;
-    }
-
-    const getRaw = async (path) => {
-      const f = await gh(`/contents/${encodeURIComponent(path).replace(/%2F/g, "/")}?ref=${BRANCH}&t=` + Date.now());
-      return { sha: f.sha, text: b64decode(f.content) };
-    };
-    const getJSON = async (path) => {
-      const f = await getRaw(path);
-      return { sha: f.sha, data: JSON.parse(f.text) };
-    };
-    const putRaw = (path, text, sha, message) =>
-      gh(`/contents/${path}`, {
-        method: "PUT",
-        body: JSON.stringify({ message, branch: BRANCH, sha, content: b64encode(text) }),
-      });
-    const putJSON = (path, obj, sha, message) => putRaw(path, JSON.stringify(obj, null, 2) + "\n", sha, message);
-
-    /* ---------- auth ---------- */
-    async function signIn(token, remember, silent) {
-      TOKEN = token;
+    $("signin").addEventListener("click", async () => {
+      const pw = $("pw").value;
+      if (!pw) return toast("Enter your password.", "err");
+      $("signin").disabled = true;
       try {
-        const repo = await gh("");
-        if (!repo.permissions || !repo.permissions.push) throw new Error("This token cannot write to the repository.");
-        if (remember) localStorage.setItem("gm_admin_token", token);
-        $("login").classList.add("hidden");
-        $("dash").classList.remove("hidden");
-        $("logout").classList.remove("hidden");
-        await refresh();
-        loadSiteConfigForm();
-      } catch (e) {
-        TOKEN = null;
-        localStorage.removeItem("gm_admin_token");
-        if (!silent) toast("Sign-in failed: " + e.message, "err");
-        $("login").classList.remove("hidden");
-      }
-    }
-    $("signin").addEventListener("click", () => {
-      const t = $("token").value.trim();
-      if (!t) return toast("Paste your access token first.", "err");
-      signIn(t, $("remember").checked, false);
+        const r = await api("/login", { method: "POST", body: JSON.stringify({ password: pw }) });
+        TOKEN = r.token;
+        if ($("remember").checked) localStorage.setItem("gm_admin_jwt", TOKEN);
+        showDash();
+      } catch (e) { toast("Sign-in failed: " + e.message, "err"); }
+      finally { $("signin").disabled = false; }
     });
-    $("token").addEventListener("keydown", (e) => e.key === "Enter" && $("signin").click());
-    $("logout").addEventListener("click", () => { localStorage.removeItem("gm_admin_token"); location.reload(); });
+    $("pw").addEventListener("keydown", (e) => e.key === "Enter" && $("signin").click());
+    $("logout").addEventListener("click", () => { localStorage.removeItem("gm_admin_jwt"); location.reload(); });
 
-    /* ---------- tabs ---------- */
-    document.querySelectorAll(".tabs button").forEach((b) => {
-      b.addEventListener("click", () => {
-        document.querySelectorAll(".tabs button").forEach((x) => x.classList.remove("active"));
-        b.classList.add("active");
-        ["drafts", "published", "comments", "analytics"].forEach((t) =>
-          $("tab-" + t).classList.toggle("hidden", t !== b.dataset.tab));
-        if (b.dataset.tab === "comments") loadComments();
-      });
-    });
+    function showDash() { $("login").classList.add("hidden"); $("dash").classList.remove("hidden"); $("logout").classList.remove("hidden"); refresh(); }
 
-    /* ---------- drafts & published ---------- */
+    document.querySelectorAll(".tabs button").forEach((b) => b.addEventListener("click", () => {
+      document.querySelectorAll(".tabs button").forEach((x) => x.classList.remove("active"));
+      b.classList.add("active");
+      ["drafts", "published", "new", "comments", "analytics"].forEach((t) => $("tab-" + t).classList.toggle("hidden", t !== b.dataset.tab));
+      if (b.dataset.tab === "comments") loadComments();
+      if (b.dataset.tab === "analytics") loadAnalytics();
+    }));
+
+    const thumb = (p) => p.coverSvg ? `<div class="thumb">${p.coverSvg}</div>` : (p.image ? `<div class="thumb"><img src="../${esc(p.image)}" onerror="this.parentNode.style.display='none'"></div>` : '<div class="thumb"></div>');
+
     async function refresh() {
-      const [pending, published] = await Promise.all([getJSON("drafts/pending.json"), getJSON("blog/posts.json")]);
-      $("tab-n-drafts").textContent = pending.data.length ? `(${pending.data.length})` : "";
+      let posts = [];
+      try { posts = await api("/posts?all=1"); } catch (e) { return toast("Load failed: " + e.message, "err"); }
+      const drafts = posts.filter((p) => p.status !== "published");
+      const pub = posts.filter((p) => p.status === "published");
+      $("tab-n-drafts").textContent = drafts.length ? `(${drafts.length})` : "";
 
-      $("pending-list").innerHTML = pending.data.length
-        ? pending.data.map((p) => `
-          <div class="draft">
-            <img src="../${esc(p.image)}" alt="" onerror="this.style.display='none'" />
-            <div>
-              <h3>${esc(p.title)}</h3>
-              <div class="meta">${esc(p.date)} · ${esc(p.readTime)}${p.media ? " · " + esc(p.media) : ""}</div>
-              <p>${esc(p.excerpt)}</p>
-              <div class="actions">
-                <a class="btn btn-ghost btn-sm" href="../blog/${esc(p.slug)}.html" target="_blank" rel="noopener">👁 Preview</a>
-                <button class="btn btn-ghost btn-sm" onclick="openEditor('${esc(p.slug)}', 'draft')">✏️ Edit</button>
-                <button class="btn btn-primary btn-sm" onclick="publish('${esc(p.slug)}', this)">🚀 Publish</button>
-                <button class="btn btn-danger btn-sm" onclick="reject('${esc(p.slug)}', this)">✕ Reject</button>
-              </div>
-            </div>
-          </div>`).join("")
-        : '<div class="empty">No drafts waiting. The next AI draft arrives tomorrow morning. ☕</div>';
-
-      $("published-list").innerHTML = published.data.map((p) => `
-        <div class="draft">
-          <img src="../${esc(p.image)}" alt="" onerror="this.style.display='none'" />
-          <div>
-            <h3>${esc(p.title)}</h3>
-            <div class="meta">${esc(p.date)} · ${esc(p.readTime)} · comments ${p.comments === false ? "off 🔇" : "on 💬"}</div>
+      $("drafts-list").innerHTML = drafts.length ? drafts.map((p) => `
+        <div class="row">${thumb(p)}
+          <div><h3>${esc(p.title)}</h3>
+            <div class="meta">${esc(p.date)} · ${esc(p.readTime)}${p.media ? " · " + esc(p.media) : ""}</div>
+            <p>${esc(p.excerpt)}</p>
             <div class="actions">
-              <a class="btn btn-ghost btn-sm" href="${SITE}/blog/${esc(p.slug)}.html" target="_blank" rel="noopener">👁 View</a>
-              <button class="btn btn-ghost btn-sm" onclick="openEditor('${esc(p.slug)}', 'published')">✏️ Edit</button>
-              <button class="btn btn-ghost btn-sm" onclick="toggleComments('${esc(p.slug)}', this)">${p.comments === false ? "🔊 Enable comments" : "🔇 Disable comments"}</button>
-              <button class="btn btn-danger btn-sm" onclick="unpublish('${esc(p.slug)}', this)">↩ Unpublish</button>
+              <a class="btn btn-ghost btn-sm" href="../blog/post.html?slug=${encodeURIComponent(p.slug)}" target="_blank" rel="noopener">👁 Preview</a>
+              <button class="btn btn-ghost btn-sm" onclick="editPost('${esc(p.slug)}')">✏️ Edit</button>
+              <button class="btn btn-primary btn-sm" onclick="act('${esc(p.slug)}','publish',this)">🚀 Publish</button>
+              <button class="btn btn-danger btn-sm" onclick="del('${esc(p.slug)}',this)">✕ Reject</button>
             </div>
           </div>
-        </div>`).join("");
+        </div>`).join("") : '<div class="empty">No drafts waiting. The next AI draft arrives tomorrow morning. ☕</div>';
+
+      $("published-list").innerHTML = pub.length ? pub.map((p) => `
+        <div class="row">${thumb(p)}
+          <div><h3>${esc(p.title)}</h3>
+            <div class="meta">${esc(p.date)} · ${esc(p.readTime)} · ❤️ ${p.likes || 0} · comments ${p.commentsEnabled === false ? "off 🔇" : "on 💬"}</div>
+            <div class="actions">
+              <a class="btn btn-ghost btn-sm" href="${SITE}/blog/post.html?slug=${encodeURIComponent(p.slug)}" target="_blank" rel="noopener">👁 View</a>
+              <button class="btn btn-ghost btn-sm" onclick="editPost('${esc(p.slug)}')">✏️ Edit</button>
+              <button class="btn btn-ghost btn-sm" onclick="act('${esc(p.slug)}','toggleComments',this)">${p.commentsEnabled === false ? "🔊 Enable comments" : "🔇 Disable comments"}</button>
+              <button class="btn btn-ghost btn-sm" onclick="act('${esc(p.slug)}','unpublish',this)">↩ Unpublish</button>
+              <button class="btn btn-danger btn-sm" onclick="del('${esc(p.slug)}',this)">🗑 Delete</button>
+            </div>
+          </div>
+        </div>`).join("") : '<div class="empty">No published posts yet.</div>';
     }
 
-    async function publish(slug, btn) {
+    async function act(slug, action, btn) {
+      if (btn) btn.disabled = true;
+      try { await api("/post?slug=" + encodeURIComponent(slug), { method: "PUT", body: JSON.stringify({ action }) }); toast("Done ✓", "ok"); await refresh(); }
+      catch (e) { toast(e.message, "err"); if (btn) btn.disabled = false; }
+    }
+    async function del(slug, btn) {
+      if (!confirm("Delete this post and its comments permanently?")) return;
       btn.disabled = true;
-      try {
-        const pending = await getJSON("drafts/pending.json");
-        const posts = await getJSON("blog/posts.json");
-        const entry = pending.data.find((p) => p.slug === slug);
-        if (!entry) throw new Error("Draft not found — refresh the page.");
-        await putJSON("blog/posts.json", [entry, ...posts.data.filter((p) => p.slug !== slug)], posts.sha, `Publish blog post: ${entry.title} (via admin panel)`);
-        const pending2 = await getJSON("drafts/pending.json");
-        await putJSON("drafts/pending.json", pending2.data.filter((p) => p.slug !== slug), pending2.sha, `Remove published draft from queue: ${slug}`);
-        toast("🚀 Published! Live in ~30s", "ok");
-        await refresh();
-      } catch (e) { toast("Publish failed: " + e.message, "err"); }
-      finally { btn.disabled = false; }
+      try { await api("/post?slug=" + encodeURIComponent(slug), { method: "DELETE" }); toast("Deleted.", "ok"); await refresh(); }
+      catch (e) { toast(e.message, "err"); btn.disabled = false; }
     }
 
-    async function reject(slug, btn) {
-      if (!confirm("Reject and delete this draft?")) return;
-      btn.disabled = true;
+    /* new post */
+    $("n-save").addEventListener("click", async () => {
+      const body = { title: $("n-title").value.trim(), media: $("n-media").value.trim(), readTime: $("n-readTime").value.trim(), slug: $("n-slug").value.trim(), excerpt: $("n-excerpt").value.trim(), html: $("n-html").value };
+      if (!body.title || !body.html) return toast("Title and body are required.", "err");
+      if (!body.slug) body.slug = body.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+      $("n-save").disabled = true;
       try {
-        const pending = await getJSON("drafts/pending.json");
-        await putJSON("drafts/pending.json", pending.data.filter((p) => p.slug !== slug), pending.sha, `Reject draft: ${slug}`);
-        try {
-          const f = await gh(`/contents/blog/${slug}.html?ref=${BRANCH}`);
-          await gh(`/contents/blog/${slug}.html`, { method: "DELETE", body: JSON.stringify({ message: `Delete rejected draft: ${slug}`, branch: BRANCH, sha: f.sha }) });
-        } catch (_) {}
-        toast("Draft rejected and removed.", "ok");
-        await refresh();
-      } catch (e) { toast("Reject failed: " + e.message, "err"); }
-      finally { btn.disabled = false; }
-    }
+        await api("/posts", { method: "POST", body: JSON.stringify(body) });
+        toast("Draft saved ✓", "ok");
+        ["n-title", "n-media", "n-readTime", "n-slug", "n-excerpt", "n-html"].forEach((i) => $(i).value = "");
+        document.querySelector('.tabs button[data-tab="drafts"]').click();
+      } catch (e) { toast(e.message, "err"); }
+      finally { $("n-save").disabled = false; }
+    });
 
-    async function unpublish(slug, btn) {
-      if (!confirm("Unpublish this post? It moves back to the drafts queue and disappears from the site.")) return;
-      btn.disabled = true;
-      try {
-        const posts = await getJSON("blog/posts.json");
-        const entry = posts.data.find((p) => p.slug === slug);
-        if (!entry) throw new Error("Post not found.");
-        await putJSON("blog/posts.json", posts.data.filter((p) => p.slug !== slug), posts.sha, `Unpublish blog post: ${entry.title} (via admin panel)`);
-        const pending = await getJSON("drafts/pending.json");
-        await putJSON("drafts/pending.json", [...pending.data, entry], pending.sha, `Move unpublished post back to drafts: ${slug}`);
-        toast("↩ Moved back to drafts.", "ok");
-        await refresh();
-      } catch (e) { toast("Unpublish failed: " + e.message, "err"); }
-      finally { btn.disabled = false; }
-    }
-
-    async function toggleComments(slug, btn) {
-      btn.disabled = true;
-      try {
-        const posts = await getJSON("blog/posts.json");
-        const entry = posts.data.find((p) => p.slug === slug);
-        if (!entry) throw new Error("Post not found.");
-        if (entry.comments === false) delete entry.comments; else entry.comments = false;
-        await putJSON("blog/posts.json", posts.data, posts.sha,
-          `${entry.comments === false ? "Disable" : "Enable"} comments: ${slug} (via admin panel)`);
-        toast(`Comments ${entry.comments === false ? "disabled 🔇" : "enabled 💬"} — live in ~30s`, "ok");
-        await refresh();
-      } catch (e) { toast("Toggle failed: " + e.message, "err"); }
-      finally { btn.disabled = false; }
-    }
-
-    /* ---------- editor ---------- */
+    /* editor */
     let ED = null;
-    async function openEditor(slug, kind) {
+    async function editPost(slug) {
       try {
-        toast("Loading post…");
-        const indexPath = kind === "draft" ? "drafts/pending.json" : "blog/posts.json";
-        const [file, index] = await Promise.all([getRaw(`blog/${slug}.html`), getJSON(indexPath)]);
-        const entry = index.data.find((p) => p.slug === slug);
-        ED = { slug, kind, indexPath, fileSha: file.sha };
-        $("ed-title").textContent = "Edit: " + (entry ? entry.title : slug);
-        $("ed-m-title").value = entry ? entry.title : "";
-        $("ed-m-media").value = entry && entry.media ? entry.media : "";
-        $("ed-m-date").value = entry ? entry.date : "";
-        $("ed-m-readTime").value = entry ? entry.readTime : "";
-        $("ed-m-excerpt").value = entry ? entry.excerpt : "";
-        $("ed-html").value = file.text;
-        $("editor").classList.remove("hidden");
-        window.scrollTo(0, 0);
-      } catch (e) { toast("Could not open editor: " + e.message, "err"); }
+        toast("Loading…");
+        const p = await api("/post?slug=" + encodeURIComponent(slug));
+        ED = slug;
+        $("ed-title").textContent = "Edit: " + p.title;
+        $("ed-m-title").value = p.title || ""; $("ed-m-media").value = p.media || "";
+        $("ed-m-date").value = p.date || ""; $("ed-m-readTime").value = p.readTime || "";
+        $("ed-m-excerpt").value = p.excerpt || ""; $("ed-html").value = p.html || "";
+        $("editor").classList.remove("hidden"); window.scrollTo(0, 0);
+      } catch (e) { toast(e.message, "err"); }
     }
     function closeEditor() { $("editor").classList.add("hidden"); ED = null; }
     $("ed-save").addEventListener("click", async () => {
       if (!ED) return;
-      const btn = $("ed-save"); btn.disabled = true; btn.textContent = "Saving…";
+      $("ed-save").disabled = true;
       try {
-        await putRaw(`blog/${ED.slug}.html`, $("ed-html").value, ED.fileSha, `Edit blog post: ${ED.slug} (via admin panel)`);
-        const index = await getJSON(ED.indexPath);
-        const entry = index.data.find((p) => p.slug === ED.slug);
-        if (entry) {
-          entry.title = $("ed-m-title").value.trim();
-          entry.media = $("ed-m-media").value.trim();
-          entry.date = $("ed-m-date").value.trim();
-          entry.readTime = $("ed-m-readTime").value.trim();
-          entry.excerpt = $("ed-m-excerpt").value.trim();
-          await putJSON(ED.indexPath, index.data, index.sha, `Update metadata: ${ED.slug} (via admin panel)`);
-        }
-        toast("💾 Saved — live in ~30s", "ok");
-        closeEditor();
-        await refresh();
-      } catch (e) { toast("Save failed: " + e.message, "err"); }
-      finally { btn.disabled = false; btn.textContent = "💾 Save changes"; }
+        await api("/post?slug=" + encodeURIComponent(ED), { method: "PUT", body: JSON.stringify({
+          action: "update", title: $("ed-m-title").value, media: $("ed-m-media").value, date: $("ed-m-date").value,
+          readTime: $("ed-m-readTime").value, excerpt: $("ed-m-excerpt").value, html: $("ed-html").value,
+        }) });
+        toast("Saved ✓", "ok"); closeEditor(); await refresh();
+      } catch (e) { toast(e.message, "err"); }
+      finally { $("ed-save").disabled = false; }
     });
 
-    /* ---------- comments moderation ---------- */
+    /* comments moderation */
     async function loadComments() {
-      const status = $("comments-status");
-      status.classList.remove("hidden");
-      status.textContent = "Loading comments…";
-      $("comments-list").innerHTML = ""; $("engagement").innerHTML = "";
+      const status = $("comments-status"); status.classList.remove("hidden"); status.textContent = "Loading comments…"; $("comments-list").innerHTML = "";
       try {
-        const data = await graphql(`
-          query($owner: String!, $name: String!) {
-            repository(owner: $owner, name: $name) {
-              discussions(first: 50, orderBy: {field: UPDATED_AT, direction: DESC}) {
-                nodes {
-                  id title url
-                  reactions { totalCount }
-                  comments(first: 100) {
-                    totalCount
-                    nodes {
-                      id body createdAt url
-                      author { login avatarUrl }
-                      replyTo { id }
-                      reactions { totalCount }
-                    }
-                  }
-                }
-              }
-            }
-          }`, { owner: OWNER, name: REPO });
-        const discs = data.repository.discussions.nodes.filter((d) => d.title.startsWith("/blog/"));
-        if (!discs.length) {
-          status.textContent = "No comments yet. They'll appear here once giscus is activated (Analytics tab) and readers start commenting.";
-          return;
+        const posts = await api("/posts?all=1");
+        const withComments = [];
+        for (const p of posts) {
+          const list = await api("/comments?slug=" + encodeURIComponent(p.slug)).catch(() => []);
+          if (list.length) withComments.push({ post: p, comments: list });
         }
+        if (!withComments.length) { status.textContent = "No comments yet. They'll appear here as readers engage."; return; }
         status.classList.add("hidden");
-
-        $("engagement").innerHTML = "<h2>🔥 Most engaging posts</h2><table><tr><th>Post</th><th style='text-align:right'>Reactions</th><th style='text-align:right'>Comments</th></tr>" +
-          discs.slice().sort((a, b) => (b.reactions.totalCount + b.comments.totalCount) - (a.reactions.totalCount + a.comments.totalCount))
-            .map((d) => `<tr><td><a href="${SITE}${esc(d.title)}" target="_blank" style="color:var(--accent); text-decoration:none;">${esc(d.title.replace("/blog/", "").replace(".html", ""))}</a></td><td class="num">${d.reactions.totalCount}</td><td class="num">${d.comments.totalCount}</td></tr>`).join("") +
-          "</table><h2>💬 All comments</h2>";
-
-        $("comments-list").innerHTML = discs.map((d) => {
-          const top = d.comments.nodes.filter((c) => !c.replyTo);
-          const replies = (id) => d.comments.nodes.filter((c) => c.replyTo && c.replyTo.id === id);
-          const render = (c, isReply) => `
-            <div class="cmt${isReply ? " reply" : ""}">
-              <span class="who">${esc(c.author ? c.author.login : "ghost")}</span><span class="when">${new Date(c.createdAt).toLocaleString()}</span>
-              <div class="body">${esc(c.body).slice(0, 600)}</div>
-              <div class="actions">
-                ${isReply ? "" : `<button class="btn btn-ghost btn-sm" onclick="showReply('${c.id}')">↩ Reply</button>`}
-                <button class="btn btn-danger btn-sm" onclick="deleteComment('${c.id}', this)">🗑 Delete</button>
-              </div>
-              ${isReply ? "" : `<div class="replybox hidden" id="rb-${c.id}">
-                <textarea id="rt-${c.id}" placeholder="Write a reply as GihanMunasinghe…"></textarea>
-                <div class="actions"><button class="btn btn-primary btn-sm" onclick="sendReply('${d.id}','${c.id}',this)">Send reply</button></div>
-              </div>`}
-              ${replies(c.id).map((r) => render(r, true)).join("")}
-            </div>`;
-          return `<div class="disc">
-            <h3>${esc(d.title.replace("/blog/", "").replace(".html", ""))}</h3>
-            <div class="dmeta">${d.comments.totalCount} comment(s) · ${d.reactions.totalCount} reaction(s) · <a href="${d.url}" target="_blank" style="color:var(--accent)">open thread ↗</a></div>
-            ${top.map((c) => render(c, false)).join("") || '<div class="cmt"><div class="body" style="color:var(--muted)">Reactions only — no comments yet.</div></div>'}
+        $("comments-list").innerHTML = withComments.map(({ post, comments }) => {
+          comments.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+          const tops = comments.filter((c) => !c.parentId);
+          const replies = (id) => comments.filter((c) => c.parentId === id);
+          const one = (c, r) => `<div class="cmt${r ? " reply" : ""}">
+            <span class="who">${esc(c.name)}${c.isOwner ? " ⭐" : ""}<span class="when">${new Date(c.createdAt).toLocaleString()}</span></span>
+            <div class="body">${esc(c.text)}</div>
+            <div class="actions">
+              ${r ? "" : `<button class="btn btn-ghost btn-sm" onclick="toggleReply('${esc(post.slug)}','${c.id}')">↩ Reply</button>`}
+              <button class="btn btn-danger btn-sm" onclick="delComment('${esc(post.slug)}','${c.id}',this)">🗑 Delete</button>
+            </div>
+            ${r ? "" : `<div id="rb-${c.id}" style="display:none;margin-top:0.5rem;"><textarea id="rt-${c.id}" placeholder="Reply as Gihan Munasinghe…" style="min-height:60px;"></textarea><div style="margin-top:0.4rem;"><button class="btn btn-primary btn-sm" onclick="sendReply('${esc(post.slug)}','${c.id}',this)">Send reply</button></div></div>`}
+            ${replies(c.id).map((x) => one(x, true)).join("")}
           </div>`;
+          return `<div class="disc"><h3>${esc(post.title)} <span style="color:var(--muted);font-weight:400;font-size:0.82rem;">· ${comments.length} comment(s)</span></h3>${tops.map((c) => one(c, false)).join("")}</div>`;
         }).join("");
-      } catch (e) {
-        status.textContent = /scope|permission|resource not accessible|FORBIDDEN/i.test(e.message)
-          ? "Your token can't read Discussions. Edit it on GitHub (Settings → Developer settings → Fine-grained tokens) and add: Discussions → Read and write."
-          : "Could not load comments: " + e.message;
-      }
+      } catch (e) { status.textContent = "Could not load comments: " + e.message; }
     }
-    function showReply(id) { $("rb-" + id).classList.toggle("hidden"); }
-    async function sendReply(discussionId, replyToId, btn) {
-      const body = $("rt-" + replyToId).value.trim();
-      if (!body) return toast("Write the reply first.", "err");
+    function toggleReply(slug, id) { const b = $("rb-" + id); b.style.display = b.style.display === "none" ? "block" : "none"; }
+    async function sendReply(slug, id, btn) {
+      const text = $("rt-" + id).value.trim();
+      if (!text) return toast("Write a reply first.", "err");
       btn.disabled = true;
-      try {
-        await graphql(`mutation($d: ID!, $r: ID!, $b: String!) {
-          addDiscussionComment(input: {discussionId: $d, replyToId: $r, body: $b}) { comment { id } }
-        }`, { d: discussionId, r: replyToId, b: body });
-        toast("↩ Reply posted.", "ok");
-        loadComments();
-      } catch (e) { toast("Reply failed: " + e.message, "err"); btn.disabled = false; }
+      try { await api("/comments", { method: "POST", body: JSON.stringify({ slug, text, parentId: id }) }); toast("Reply posted ✓", "ok"); loadComments(); }
+      catch (e) { toast(e.message, "err"); btn.disabled = false; }
     }
-    async function deleteComment(id, btn) {
-      if (!confirm("Delete this comment permanently?")) return;
+    async function delComment(slug, id, btn) {
+      if (!confirm("Delete this comment?")) return;
       btn.disabled = true;
-      try {
-        await graphql(`mutation($id: ID!) { deleteDiscussionComment(input: {id: $id}) { clientMutationId } }`, { id });
-        toast("🗑 Comment deleted.", "ok");
-        loadComments();
-      } catch (e) { toast("Delete failed: " + e.message, "err"); btn.disabled = false; }
+      try { await api("/comment?slug=" + encodeURIComponent(slug) + "&id=" + encodeURIComponent(id), { method: "DELETE" }); toast("Deleted.", "ok"); loadComments(); }
+      catch (e) { toast(e.message, "err"); btn.disabled = false; }
     }
 
-    /* ---------- site config (analytics + giscus activation) ---------- */
-    async function loadSiteConfigForm() {
+    /* analytics */
+    async function loadAnalytics() {
+      const body = $("analytics-body"); body.innerHTML = '<div class="empty">Loading analytics…</div>';
       try {
-        const cfg = await getJSON("site-config.json");
-        $("gc-code").value = cfg.data.goatcounter || "";
-        $("gs-category").value = (cfg.data.giscus && cfg.data.giscus.category) || "";
-        $("gs-catid").value = (cfg.data.giscus && cfg.data.giscus.categoryId) || "";
-        $("gc-token").value = localStorage.getItem("gm_gc_token") || "";
-        if (cfg.data.goatcounter) {
-          const l = $("gc-dash-link");
-          l.href = `https://${cfg.data.goatcounter}.goatcounter.com`;
-          l.style.display = "inline-flex";
-        }
-      } catch (_) {}
-    }
-    async function saveSiteConfig(which) {
-      try {
-        const cfg = await getJSON("site-config.json");
-        if (which === "goatcounter") {
-          cfg.data.goatcounter = $("gc-code").value.trim().replace(/^https?:\/\//, "").replace(/\.goatcounter\.com.*$/, "");
-        } else {
-          cfg.data.giscus = cfg.data.giscus || { repo: OWNER + "/" + REPO, repoId: "R_kgDOSsy7zw" };
-          cfg.data.giscus.category = $("gs-category").value.trim();
-          cfg.data.giscus.categoryId = $("gs-catid").value.trim();
-        }
-        await putJSON("site-config.json", cfg.data, cfg.sha, `Update site config: ${which} (via admin panel)`);
-        toast("✓ Saved — active on the site in ~30s", "ok");
-        loadSiteConfigForm();
-      } catch (e) { toast("Save failed: " + e.message, "err"); }
-    }
-    async function loadStats() {
-      const token = $("gc-token").value.trim();
-      const code = $("gc-code").value.trim();
-      const out = $("gc-stats");
-      if (!code) return toast("Enter your GoatCounter site code first.", "err");
-      localStorage.setItem("gm_gc_token", token);
-      if (!token) return toast("Add an API token to load stats here, or use the full dashboard link.", "err");
-      out.innerHTML = '<p class="sub">Loading…</p>';
-      try {
-        const start = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
-        const res = await fetch(`https://${code}.goatcounter.com/api/v0/stats/hits?start=${start}&limit=15`, {
-          headers: { "Authorization": "Bearer " + token, "Content-Type": "application/json" },
-        });
-        if (!res.ok) throw new Error(res.status + " " + res.statusText);
-        const j = await res.json();
-        const rows = (j.hits || []);
-        const total = rows.reduce((s, h) => s + (h.count || 0), 0);
-        out.innerHTML = `<div class="stats"><div class="stat"><div class="n">${total}</div><div class="l">Pageviews (30 days)</div></div></div>` +
-          "<table><tr><th>Page</th><th style='text-align:right'>Views</th></tr>" +
-          rows.map((h) => `<tr><td>${esc(h.path)}</td><td class="num">${h.count}</td></tr>`).join("") + "</table>";
-      } catch (e) {
-        out.innerHTML = `<p class="sub">Couldn't load stats in-page (${esc(e.message)}). Your data is still being collected — use <a style="color:var(--accent)" href="https://${esc(code)}.goatcounter.com" target="_blank" rel="noopener">the full dashboard ↗</a>.</p>`;
-      }
+        const s = await api("/stats");
+        const days = Object.keys(s.byDay).sort();
+        const max = Math.max(1, ...days.map((d) => s.byDay[d]));
+        body.innerHTML = `
+          <div class="stats">
+            <div class="stat"><div class="n">${s.total}</div><div class="l">Pageviews (30 days)</div></div>
+            <div class="stat"><div class="n">${s.topPages.length}</div><div class="l">Pages visited</div></div>
+            <div class="stat"><div class="n">${s.engagement.reduce((a, p) => a + (p.likes || 0), 0)}</div><div class="l">Total likes</div></div>
+          </div>
+          <div class="card"><h2 style="margin-top:0;">Daily pageviews</h2>
+            <div class="bars">${days.map((d) => `<div class="b" style="height:${Math.round(s.byDay[d] / max * 100)}%" title="${d}: ${s.byDay[d]}"></div>`).join("") || '<span class="sub">No data yet.</span>'}</div>
+            <div class="sub" style="display:flex;justify-content:space-between;">${days.length ? `<span>${days[0]}</span><span>${days[days.length - 1]}</span>` : ""}</div>
+          </div>
+          <div class="card" style="margin-top:1.2rem;"><h2 style="margin-top:0;">🔥 Top pages</h2>
+            <table><tr><th>Path</th><th style="text-align:right">Views</th></tr>
+            ${s.topPages.map((p) => `<tr><td>${esc(p.path)}</td><td class="num">${p.count}</td></tr>`).join("") || '<tr><td class="sub">No data yet.</td><td></td></tr>'}</table>
+          </div>
+          <div class="card" style="margin-top:1.2rem;"><h2 style="margin-top:0;">❤️ Most-liked posts</h2>
+            <table><tr><th>Post</th><th style="text-align:right">Likes</th></tr>
+            ${s.engagement.filter((p) => p.likes).map((p) => `<tr><td>${esc(p.title)}</td><td class="num">${p.likes}</td></tr>`).join("") || '<tr><td class="sub">No likes yet.</td><td></td></tr>'}</table>
+          </div>`;
+      } catch (e) { body.innerHTML = '<div class="empty">Could not load analytics: ' + esc(e.message) + "</div>"; }
     }
 
-    /* auto sign-in if remembered */
-    const saved = localStorage.getItem("gm_admin_token");
-    if (saved) signIn(saved, true, true);
+    boot();
   </script>
 </body>
 </html>

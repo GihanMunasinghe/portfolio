@@ -457,12 +457,13 @@
       overflow: hidden;
       background: var(--bg-soft);
     }
-    .post-thumb img {
+    .post-thumb img, .post-thumb svg {
       width: 100%; height: 100%;
       object-fit: cover;
+      display: block;
       transition: transform 0.5s ease;
     }
-    .post-card:hover .post-thumb img { transform: scale(1.06); }
+    .post-card:hover .post-thumb img, .post-card:hover .post-thumb svg { transform: scale(1.06); }
     .post-thumb .media-badge {
       position: absolute;
       top: 0.8rem; left: 0.8rem;
@@ -1016,42 +1017,45 @@
       })();
     }
 
-    /* blog cards from posts.json */
-    fetch("blog/posts.json")
-      .then((r) => r.json())
-      .then((posts) => {
-        const grid = document.getElementById("blog-grid");
-        grid.innerHTML = posts.map((p) => `
-          <a class="card post-card tilt reveal in" href="blog/${p.slug}.html">
-            <div class="post-thumb">
-              <img src="${p.image}" alt="" loading="lazy" />
-              ${p.media ? `<span class="media-badge">${p.media}</span>` : ""}
-            </div>
-            <div class="post-body">
-              <div class="post-meta"><span>${p.date}</span><span>·</span><span>${p.readTime}</span></div>
-              <h3>${p.title}</h3>
-              <p>${p.excerpt}</p>
-              <span class="post-read">Read post →</span>
-            </div>
-          </a>`).join("");
-      })
-      .catch(() => {
-        document.getElementById("blog-grid").innerHTML =
-          '<p style="color:var(--muted)">Posts are coming soon — watch this space.</p>';
-      });
-
     document.getElementById("year").textContent = new Date().getFullYear();
 
-    /* analytics beacon (GoatCounter) — configured via site-config.json */
+    /* blog cards + pageview tracking from the backend API */
+    const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     fetch("site-config.json?t=" + Date.now())
       .then((r) => r.json())
       .then((cfg) => {
-        if (!cfg.goatcounter) return;
-        const gc = document.createElement("script");
-        gc.async = true;
-        gc.src = "https://gc.zgo.at/count.js";
-        gc.setAttribute("data-goatcounter", `https://${cfg.goatcounter}.goatcounter.com/count`);
-        document.body.appendChild(gc);
+        const API = (cfg.api || "").replace(/\/$/, "");
+        const grid = document.getElementById("blog-grid");
+        if (!API) {
+          grid.innerHTML = '<p style="color:var(--muted)">Posts are coming soon — watch this space.</p>';
+          return;
+        }
+        /* homepage pageview */
+        fetch(API + "/track", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ path: "/", ref: document.referrer }) }).catch(() => {});
+        /* published posts */
+        fetch(API + "/posts")
+          .then((r) => r.json())
+          .then((posts) => {
+            if (!Array.isArray(posts) || !posts.length) {
+              grid.innerHTML = '<p style="color:var(--muted)">Posts are coming soon — watch this space.</p>';
+              return;
+            }
+            grid.innerHTML = posts.map((p) => {
+              const thumb = p.coverSvg
+                ? `<div class="post-thumb">${p.coverSvg}${p.media ? `<span class="media-badge">${esc(p.media)}</span>` : ""}</div>`
+                : `<div class="post-thumb"><img src="${esc((p.image || "").replace(/^blog\//, "blog/"))}" alt="" loading="lazy" />${p.media ? `<span class="media-badge">${esc(p.media)}</span>` : ""}</div>`;
+              return `<a class="card post-card tilt reveal in" href="blog/post.html?slug=${encodeURIComponent(p.slug)}">
+                ${thumb}
+                <div class="post-body">
+                  <div class="post-meta"><span>${esc(p.date)}</span><span>·</span><span>${esc(p.readTime)}</span></div>
+                  <h3>${esc(p.title)}</h3>
+                  <p>${esc(p.excerpt)}</p>
+                  <span class="post-read">Read post →</span>
+                </div>
+              </a>`;
+            }).join("");
+          })
+          .catch(() => { grid.innerHTML = '<p style="color:var(--muted)">Posts are coming soon — watch this space.</p>'; });
       })
       .catch(() => {});
   </script>
