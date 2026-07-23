@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loading… — Gihan Munasinghe</title>
+  <meta name="description" content="A tech blog post by Gihan Munasinghe." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://www.gihanmunasinghe.lk/assets/gihan-formal.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👨🏽‍💻</text></svg>" />
+  <style>
+    :root {
+      --bg: #07090d; --surface: rgba(255,255,255,0.04); --border: rgba(255,255,255,0.09);
+      --text: #eef1f7; --muted: #98a1b3; --accent: #6ea8fe; --accent-2: #8b5cf6; --accent-3: #22d3ee;
+      --danger: #f87171; --grad: linear-gradient(100deg, #6ea8fe, #8b5cf6 55%, #22d3ee);
+      --font-display: "Sora", -apple-system, sans-serif; --font-body: "Inter", -apple-system, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-body);
+      background:
+        radial-gradient(600px 400px at 85% -5%, rgba(139,92,246,0.15), transparent 70%),
+        radial-gradient(700px 500px at -10% 20%, rgba(110,168,254,0.10), transparent 70%),
+        var(--bg);
+      color: var(--text); line-height: 1.75;
+    }
+    ::selection { background: rgba(110,168,254,0.35); }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 0 1.4rem 5rem; }
+    nav { padding: 1.4rem 0 0; }
+    nav a { color: var(--muted); text-decoration: none; font-size: 0.92rem; font-weight: 500; }
+    nav a:hover { color: var(--text); }
+    header { padding: 3rem 0 2rem; }
+    .kicker {
+      font-family: var(--font-display); font-size: 0.8rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.14em;
+      background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent;
+      margin-bottom: 0.8rem;
+    }
+    h1 { font-family: var(--font-display); font-size: clamp(1.7rem, 4.5vw, 2.5rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 1rem; }
+    .meta { color: var(--muted); font-size: 0.9rem; display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center; }
+    .cover { width: 100%; border-radius: 18px; border: 1px solid var(--border); margin: 1.6rem 0 0; display: block; }
+    .cover svg { width: 100%; height: auto; display: block; }
+    article h2 { font-family: var(--font-display); font-size: 1.45rem; font-weight: 700; margin: 2.6rem 0 0.9rem; letter-spacing: -0.01em; }
+    article p { color: #c6ccd8; margin-bottom: 1.15rem; }
+    article strong { color: var(--text); }
+    article a { color: var(--accent); }
+    article ul, article ol { margin: 0 0 1.15rem 1.4rem; color: #c6ccd8; }
+    article li { margin-bottom: 0.4rem; }
+    article figure { margin: 1.8rem 0; }
+    article figure img, article figure svg { width: 100%; border-radius: 14px; border: 1px solid var(--border); }
+    article figcaption { font-size: 0.85rem; color: var(--muted); text-align: center; margin-top: 0.6rem; }
+    article blockquote, .callout {
+      border-left: 3px solid var(--accent-2); background: rgba(139,92,246,0.08);
+      border-radius: 0 12px 12px 0; padding: 1rem 1.3rem; margin: 0 0 1.15rem; color: #c6ccd8;
+    }
+    .video-embed { position: relative; aspect-ratio: 16/9; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); margin: 1.8rem 0; background: var(--surface); }
+    .video-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    pre { background: #0d1118; border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.3rem; overflow-x: auto; margin: 0 0 1.15rem; font-size: 0.85rem; line-height: 1.6; }
+    code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: #a5d6ff; }
+    p code, li code { background: rgba(255,255,255,0.07); border: 1px solid var(--border); border-radius: 6px; padding: 0.1rem 0.4rem; font-size: 0.85em; }
+    .sources { margin-top: 2rem; padding: 1.1rem 1.3rem; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+    .sources h3 { font-family: var(--font-display); font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .sources ul { margin: 0 0 0 1.2rem; }
+    .sources a { color: var(--accent); font-size: 0.9rem; word-break: break-all; }
+    /* engagement bar */
+    .engage { display: flex; align-items: center; gap: 0.8rem; margin-top: 2.4rem; flex-wrap: wrap; }
+    .like-btn {
+      display: inline-flex; align-items: center; gap: 0.55rem; cursor: pointer;
+      font-family: var(--font-body); font-weight: 600; font-size: 0.95rem; color: var(--text);
+      background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 0.6rem 1.2rem;
+      transition: transform 0.15s, background 0.2s, border-color 0.2s;
+    }
+    .like-btn:hover { transform: translateY(-1px); border-color: var(--accent); }
+    .like-btn.liked { background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.4); color: #fca5a5; }
+    .like-btn .heart { font-size: 1.1rem; }
+    /* share */
+    .share-bar { margin-top: 2.4rem; padding: 1.5rem 1.6rem; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); }
+    .share-bar h3 { font-family: var(--font-display); font-size: 1.05rem; margin-bottom: 0.9rem; }
+    .share-btns { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .share-btns a, .share-btns button {
+      font-family: var(--font-body); font-weight: 600; font-size: 0.88rem; color: var(--text);
+      background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 999px;
+      padding: 0.5rem 1rem; text-decoration: none; cursor: pointer; transition: background 0.2s, border-color 0.2s;
+    }
+    .share-btns a:hover, .share-btns button:hover { background: rgba(110,168,254,0.15); border-color: var(--accent); }
+    /* comments */
+    .comments { margin-top: 2.6rem; }
+    .comments h2 { font-family: var(--font-display); font-size: 1.3rem; margin-bottom: 1.2rem; }
+    .cform { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.2rem; margin-bottom: 1.6rem; }
+    .cform input, .cform textarea {
+      width: 100%; padding: 0.7rem 0.9rem; border-radius: 10px; border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05); color: var(--text); font-size: 0.92rem; font-family: var(--font-body); margin-bottom: 0.7rem;
+    }
+    .cform textarea { min-height: 90px; resize: vertical; }
+    .cform input:focus, .cform textarea:focus { outline: none; border-color: var(--accent); }
+    .cform .hp { position: absolute; left: -9999px; }
+    .btn { display: inline-flex; align-items: center; gap: 0.45rem; font-family: var(--font-body); font-weight: 600; font-size: 0.92rem; padding: 0.65rem 1.25rem; border-radius: 11px; text-decoration: none; cursor: pointer; border: none; background: var(--grad); color: #fff; }
+    .btn:disabled { opacity: 0.55; cursor: wait; }
+    .cmt { border-top: 1px solid var(--border); padding: 1rem 0 0.4rem; }
+    .cmt.reply { margin-left: 1.5rem; border-top-style: dashed; }
+    .cmt .who { font-size: 0.9rem; font-weight: 600; }
+    .cmt .who .owner { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; background: var(--grad); border-radius: 999px; padding: 0.12rem 0.5rem; margin-left: 0.5rem; vertical-align: 0.08em; }
+    .cmt .when { font-size: 0.75rem; color: var(--muted); margin-left: 0.5rem; font-weight: 400; }
+    .cmt .body { font-size: 0.92rem; color: #c6ccd8; margin: 0.35rem 0 0.5rem; white-space: pre-wrap; word-break: break-word; }
+    .cmt .reply-link { font-size: 0.82rem; color: var(--accent); cursor: pointer; }
+    .replybox { margin: 0.6rem 0 0.4rem; }
+    .muted-note { color: var(--muted); font-size: 0.92rem; }
+    .post-footer { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .post-footer a.back { color: var(--muted); text-decoration: none; }
+    #toast { position: fixed; bottom: 1.4rem; left: 50%; transform: translateX(-50%); background: #11151d; border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem 1.3rem; font-size: 0.9rem; box-shadow: 0 14px 40px rgba(0,0,0,0.5); display: none; z-index: 10; }
+    .skeleton { color: var(--muted); padding: 4rem 0; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav><a href="../index.html#blog">← Back to gihanmunasinghe.lk</a></nav>
+    <div id="content"><div class="skeleton">Loading post…</div></div>
+  </div>
+  <div id="toast"></div>
+
+  <script>
+  (async function () {
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const params = new URLSearchParams(location.search);
+    const slug = params.get("slug") || "";
+    const toast = (m) => { const t = $("toast"); t.textContent = m; t.style.display = "block"; clearTimeout(t._h); t._h = setTimeout(() => t.style.display = "none", 4000); };
+
+    let API = "";
+    try { API = (await (await fetch("../site-config.json?t=" + Date.now())).json()).api || ""; } catch {}
+    API = API.replace(/\/$/, "");
+    if (!API) { $("content").innerHTML = '<div class="skeleton">Blog backend not configured yet.</div>'; return; }
+
+    const api = (path, opts) => fetch(API + path, opts).then(async (r) => { const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || r.status); return j; });
+
+    let post;
+    try { post = await api("/post?slug=" + encodeURIComponent(slug)); }
+    catch (e) { $("content").innerHTML = '<div class="skeleton">Post not found.</div>'; return; }
+
+    document.title = post.title + " — Gihan Munasinghe";
+    const url = location.href.split("#")[0];
+    const cover = post.coverSvg
+      ? `<div class="cover">${post.coverSvg}</div>`
+      : (post.image ? `<img class="cover" src="${esc(post.image.replace(/^blog\//, ""))}" alt="" />` : "");
+
+    $("content").innerHTML = `
+      <header>
+        <div class="kicker">${esc(post.media || "Article")}</div>
+        <h1>${esc(post.title)}</h1>
+        <div class="meta"><span>Gihan Munasinghe</span><span>·</span><span>${esc(post.date)}</span><span>·</span><span>${esc(post.readTime)}</span></div>
+        ${cover}
+      </header>
+      <article>${post.html || ""}</article>
+      ${Array.isArray(post.sources) && post.sources.length ? `<div class="sources"><h3>Sources</h3><ul>${post.sources.map((s) => `<li><a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a></li>`).join("")}</ul></div>` : ""}
+      <div class="engage">
+        <button class="like-btn" id="likeBtn"><span class="heart">🤍</span> <span id="likeCount">${post.likes || 0}</span></button>
+        <span class="muted-note">Found this useful? Give it a like.</span>
+      </div>
+      <div class="share-bar">
+        <h3>Enjoyed this? Share it</h3>
+        <div class="share-btns">
+          <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}" target="_blank" rel="noopener">in&nbsp;LinkedIn</a>
+          <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(post.title)}" target="_blank" rel="noopener">𝕏&nbsp;Post</a>
+          <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}" target="_blank" rel="noopener">f&nbsp;Facebook</a>
+          <a href="https://wa.me/?text=${encodeURIComponent(post.title + " " + url)}" target="_blank" rel="noopener">🟢&nbsp;WhatsApp</a>
+          <button type="button" id="copyLink">🔗&nbsp;Copy link</button>
+        </div>
+      </div>
+      <div class="comments" id="comments"></div>
+      <div class="post-footer">
+        <a class="back" href="../index.html#blog">← All posts</a>
+        <a class="btn" href="../index.html#contact">Work with me</a>
+      </div>`;
+
+    /* likes (one per browser per post) */
+    const likeKey = "gm_liked_" + slug;
+    const likeBtn = $("likeBtn");
+    if (localStorage.getItem(likeKey)) { likeBtn.classList.add("liked"); likeBtn.querySelector(".heart").textContent = "❤️"; }
+    likeBtn.addEventListener("click", async () => {
+      const liked = localStorage.getItem(likeKey);
+      try {
+        const r = await api("/like", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ slug, undo: Boolean(liked) }) });
+        $("likeCount").textContent = r.likes;
+        if (liked) { localStorage.removeItem(likeKey); likeBtn.classList.remove("liked"); likeBtn.querySelector(".heart").textContent = "🤍"; }
+        else { localStorage.setItem(likeKey, "1"); likeBtn.classList.add("liked"); likeBtn.querySelector(".heart").textContent = "❤️"; }
+      } catch (e) { toast("Could not register like."); }
+    });
+
+    $("copyLink").addEventListener("click", () => {
+      (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(() => toast("Link copied!")).catch(() => prompt("Copy this link:", url));
+    });
+
+    /* comments */
+    const cbox = $("comments");
+    async function renderComments() {
+      let list = [];
+      try { list = await api("/comments?slug=" + encodeURIComponent(slug)); } catch {}
+      list.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      const tops = list.filter((c) => !c.parentId);
+      const replies = (id) => list.filter((c) => c.parentId === id);
+      const one = (c, isReply) => `
+        <div class="cmt${isReply ? " reply" : ""}">
+          <span class="who">${esc(c.name)}${c.isOwner ? '<span class="owner">Author</span>' : ""}<span class="when">${new Date(c.createdAt).toLocaleDateString()}</span></span>
+          <div class="body">${esc(c.text)}</div>
+          ${isReply ? "" : `<span class="reply-link" data-reply="${c.id}">↩ Reply</span>
+            <div class="replybox" id="rb-${c.id}" style="display:none">
+              <input type="text" placeholder="Your name" id="rn-${c.id}" />
+              <textarea placeholder="Write a reply…" id="rt-${c.id}"></textarea>
+              <button class="btn" data-sendreply="${c.id}">Reply</button>
+            </div>`}
+          ${replies(c.id).map((r) => one(r, true)).join("")}
+        </div>`;
+      const enabled = post.commentsEnabled !== false;
+      cbox.innerHTML = `<h2>💬 Comments${list.length ? " (" + list.length + ")" : ""}</h2>` +
+        (enabled ? `<div class="cform">
+          <input type="text" id="cname" placeholder="Your name" maxlength="60" />
+          <textarea id="ctext" placeholder="Share your thoughts…" maxlength="2000"></textarea>
+          <input type="text" class="hp" id="cweb" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <button class="btn" id="csend">Post comment</button>
+        </div>` : '<p class="muted-note">Comments are turned off for this post.</p>') +
+        (tops.length ? tops.map((c) => one(c, false)).join("") : (enabled ? '<p class="muted-note">Be the first to comment.</p>' : ""));
+
+      if (enabled) {
+        $("csend").addEventListener("click", async () => {
+          const name = $("cname").value.trim(), text = $("ctext").value.trim();
+          if (text.length < 2) return toast("Write a comment first.");
+          $("csend").disabled = true;
+          try {
+            await api("/comments", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ slug, name, text, website: $("cweb").value }) });
+            toast("Comment posted!"); await renderComments();
+          } catch (e) { toast(e.message); $("csend").disabled = false; }
+        });
+        cbox.querySelectorAll("[data-reply]").forEach((el) => el.addEventListener("click", () => {
+          const box = $("rb-" + el.dataset.reply); box.style.display = box.style.display === "none" ? "block" : "none";
+        }));
+        cbox.querySelectorAll("[data-sendreply]").forEach((el) => el.addEventListener("click", async () => {
+          const id = el.dataset.sendreply, name = $("rn-" + id).value.trim(), text = $("rt-" + id).value.trim();
+          if (text.length < 2) return toast("Write a reply first.");
+          el.disabled = true;
+          try {
+            await api("/comments", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ slug, name, text, parentId: id }) });
+            toast("Reply posted!"); await renderComments();
+          } catch (e) { toast(e.message); el.disabled = false; }
+        }));
+      }
+    }
+    await renderComments();
+
+    /* pageview beacon */
+    try { api("/track", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ path: "/blog/" + slug, ref: document.referrer }) }); } catch {}
+  })();
+  </script>
+</body>
+</html>
