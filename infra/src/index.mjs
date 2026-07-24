@@ -4,6 +4,7 @@
  *   POST   /login              {password} -> {token}
  *   GET    /posts              public list (published, no html) | ?all=1 with auth includes drafts
  *   GET    /post?slug=x        full post (drafts require auth)
+ *   POST   /translate          {slug,lang} -> machine-translated {title,html} (cached)
  *   POST   /posts              create/replace post (auth, or x-agent-key for the daily agent -> always draft)
  *   PUT    /post?slug=x        {action: publish|unpublish|toggleComments|update, fields?} (auth)
  *   DELETE /post?slug=x        delete post + its comments (auth)
@@ -267,6 +268,84 @@ async function listComments(slug) {
   return (out.Items || []).map(({ pk, sk, ...c }) => c);
 }
 
+/* ---------- live translation (Amazon Bedrock / Nova) ---------- */
+/* Languages readers can translate a post into (English is the original).
+   Amazon Translate isn't enabled on this account, so we translate with the same
+   Bedrock model that drafts posts — it gives context-aware, tag-preserving output. */
+const XLATE_LANGS = { zh: "Chinese", ms: "Malay", ta: "Tamil", si: "Sinhala", hi: "Hindi" };
+const LANG_FULL = { zh: "Simplified Chinese", ms: "Malay (Bahasa Melayu)", ta: "Tamil", si: "Sinhala", hi: "Hindi" };
+const byteLen = (s) => Buffer.byteLength(s, "utf8");
+
+/* Split an HTML fragment into pieces under maxBytes, cutting ONLY at the end of a
+   top-level element so tags are never broken across a chunk. Small chunks keep
+   each translation call comfortably inside the model's output-token budget. */
+function chunkHtml(html, maxBytes = 2500) {
+  if (byteLen(html) <= maxBytes) return [html];
+  const segs = [];
+  const tagRe = /<\/?([a-zA-Z0-9]+)(?:\s[^>]*)?>/g;
+  let depth = 0, last = 0, m;
+  while ((m = tagRe.exec(html))) {
+    const tag = m[1].toLowerCase();
+    if (/\/>$/.test(m[0]) || /^(br|hr|img|input|meta|link|source|col|area)$/.test(tag)) continue; // void
+    if (m[0][1] === "/") { if (--depth === 0) { segs.push(html.slice(last, tagRe.lastIndex)); last = tagRe.lastIndex; } }
+    else depth++;
+  }
+  if (last < html.length) segs.push(html.slice(last));
+  const chunks = [];
+  let cur = "";
+  for (const s of segs) {
+    if (cur && byteLen(cur + s) > maxBytes) { chunks.push(cur); cur = ""; }
+    cur += s;
+  }
+  if (cur) chunks.push(cur);
+  return chunks;
+}
+
+const stripFence = (s) => s.replace(/^\s*```(?:html)?\s*/i, "").replace(/```\s*$/i, "").trim();
+
+async function mtText(text, lang) {
+  if (!text || !text.trim()) return text;
+  const sys = `You are a professional translator. Translate the user's text from English into ${LANG_FULL[lang]}. Reply with ONLY the translation — no quotes, no notes, no alternatives, no English.`;
+  const out = await bedrockText(sys, text.slice(0, 4000), 1200);
+  return stripFence(out) || text;
+}
+
+async function mtHtml(html, lang) {
+  if (!html || !html.trim()) return html;
+  const sys = `You localize a technical blog into ${LANG_FULL[lang]}. You receive an HTML fragment and return the SAME fragment with only the human-readable text translated into ${LANG_FULL[lang]}.
+Rules:
+- Keep every HTML tag, attribute and URL EXACTLY as-is; do not add, remove or reorder tags.
+- Do NOT translate anything inside <code> or <pre> tags — leave all code, commands and identifiers unchanged.
+- Leave well-known technical terms and product names in English where that reads naturally (e.g. Kubernetes, Lambda, API, Kafka).
+- Output ONLY the translated HTML fragment — no markdown code fences, no commentary.`;
+  const parts = [];
+  for (const chunk of chunkHtml(html)) {
+    const out = await bedrockText(sys, chunk, 5000);
+    parts.push(stripFence(out));
+  }
+  return parts.join("");
+}
+
+/* Translate a post's title + body, caching the result per language keyed to the
+   post's updatedAt so an edit auto-invalidates and each post/language pair is
+   only ever machine-translated once. */
+async function translatePost(slug, lang, admin) {
+  const post = await getPost(slug);
+  if (!post || (post.status !== "published" && !admin)) return null;
+  const cacheKey = { pk: `POST#${slug}`, sk: `XLATE#${lang}` };
+  const cached = (await ddb.send(new GetCommand({ TableName: TABLE, Key: cacheKey }))).Item;
+  if (cached && cached.srcUpdatedAt === post.updatedAt)
+    return { slug, lang, title: cached.title, html: cached.html, cached: true };
+  const [title, html] = await Promise.all([
+    mtText(post.title, lang),
+    mtHtml(post.html || "", lang),
+  ]);
+  await ddb.send(new PutCommand({ TableName: TABLE, Item: {
+    ...cacheKey, title, html, lang, srcUpdatedAt: post.updatedAt, createdAt: new Date().toISOString(),
+  } })).catch((e) => console.error("cache translation failed:", e.message));
+  return { slug, lang, title, html, cached: false };
+}
+
 /* ================= SHOP ================= */
 const prodKey = (id) => ({ pk: `PRODUCT#${id}`, sk: "META" });
 const pubProduct = ({ pk, sk, gsi1pk, ...p }) => p;
@@ -388,6 +467,16 @@ export const handler = async (event) => {
       return res(200, publicPost(p, true));
     }
 
+    /* live translation: translate a post's title + body into a reader's language */
+    if (method === "POST" && path === "/translate") {
+      const slug = clean(body.slug, 120);
+      const lang = clean(body.lang, 10).toLowerCase();
+      if (!XLATE_LANGS[lang]) return res(400, { error: "Unsupported language" });
+      const out = await translatePost(slug, lang, admin);
+      if (!out) return res(404, { error: "Post not found" });
+      return res(200, out);
+    }
+
     if (method === "POST" && path === "/posts") {
       if (!admin && !isAgent(event)) return res(401, { error: "Auth required" });
       const item = await savePost(body, { asDraft: !admin });
@@ -416,7 +505,11 @@ export const handler = async (event) => {
     if (method === "DELETE" && path === "/post") {
       if (!admin) return res(401, { error: "Auth required" });
       const comments = await listComments(qs.slug);
-      const keys = [{ ...postKey(qs.slug) }, ...comments.map((c) => ({ pk: `POST#${qs.slug}`, sk: `COMMENT#${c.id}` }))];
+      const keys = [
+        { ...postKey(qs.slug) },
+        ...comments.map((c) => ({ pk: `POST#${qs.slug}`, sk: `COMMENT#${c.id}` })),
+        ...Object.keys(XLATE_LANGS).map((l) => ({ pk: `POST#${qs.slug}`, sk: `XLATE#${l}` })),
+      ];
       for (let i = 0; i < keys.length; i += 25) {
         await ddb.send(new BatchWriteCommand({
           RequestItems: { [TABLE]: keys.slice(i, i + 25).map((Key) => ({ DeleteRequest: { Key } })) },
