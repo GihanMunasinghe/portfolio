@@ -87,6 +87,9 @@
     .modal-body .meta { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
     .modal-body p { color: #c6ccd8; white-space: pre-wrap; margin-bottom: 1.4rem; }
     .modal-actions { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .share-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.9rem; }
+    .share-row a, .share-row button { font-size: 0.82rem; font-weight: 600; color: var(--text); background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 999px; padding: 0.4rem 0.85rem; text-decoration: none; cursor: pointer; }
+    .share-row a:hover, .share-row button:hover { border-color: var(--accent); }
     .close-x { background: var(--surface); border: 1px solid var(--border); color: var(--text); width: 38px; height: 38px; border-radius: 10px; cursor: pointer; font-size: 1.1rem; }
     #toast { position: fixed; bottom: 1.4rem; left: 50%; transform: translateX(-50%); background: var(--surface-solid); border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem 1.3rem; font-size: 0.9rem; box-shadow: 0 14px 40px rgba(0,0,0,0.5); display: none; z-index: 80; }
     .banner { border-radius: 14px; padding: 1rem 1.3rem; margin: 1rem 0 0; font-size: 0.95rem; }
@@ -226,15 +229,34 @@
           <p>${esc(p.description || "No description.")}</p>
           <div class="modal-actions">
             <span class="price">${money(p.price, p.currency || CFG.currency)}</span>
-            ${sold ? '<button class="btn btn-ghost" disabled>Sold</button>'
-                   : (inCart(p.id) ? `<button class="btn btn-ghost" id="mRm">In cart ✓ — remove</button>`
-                                   : `<button class="btn btn-primary" id="mAdd">Add to cart</button>`)}
+            <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+              <button class="btn btn-ghost" id="mShare">🔗 Share</button>
+              ${sold ? '<button class="btn btn-ghost" disabled>Sold</button>'
+                     : (inCart(p.id) ? `<button class="btn btn-ghost" id="mRm">In cart ✓ — remove</button>`
+                                     : `<button class="btn btn-primary" id="mAdd">Add to cart</button>`)}
+            </div>
           </div>
+          <div id="shareRow" class="share-row"></div>
         </div>`;
       $("modal").classList.add("open");
-      $("mClose").onclick = closeModal;
+      history.replaceState({}, "", "shop.html?product=" + encodeURIComponent(p.id));
+      $("mClose").onclick = () => { closeModal(); history.replaceState({}, "", "shop.html"); };
+      $("mShare").onclick = () => shareProduct(p);
       if ($("mAdd")) $("mAdd").onclick = () => { addToCart(p.id); closeModal(); };
       if ($("mRm")) $("mRm").onclick = () => { removeFromCart(p.id); closeModal(); };
+    }
+    function shareProduct(p) {
+      const url = location.origin + "/shop.html?product=" + encodeURIComponent(p.id);
+      const title = p.title;
+      const text = `${p.title} — ${money(p.price, p.currency || CFG.currency)} · from Gihan's shop`;
+      if (navigator.share) { navigator.share({ title, text, url }).catch(() => {}); return; }
+      const eU = encodeURIComponent(url), eT = encodeURIComponent(text);
+      $("shareRow").innerHTML = `
+        <a href="https://wa.me/?text=${eT}%20${eU}" target="_blank" rel="noopener">🟢 WhatsApp</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=${eU}" target="_blank" rel="noopener">f Facebook</a>
+        <a href="https://twitter.com/intent/tweet?url=${eU}&text=${eT}" target="_blank" rel="noopener">𝕏 Post</a>
+        <button type="button" id="mCopy">🔗 Copy link</button>`;
+      $("mCopy").onclick = () => { (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(() => toast("Link copied!")).catch(() => prompt("Copy link:", url)); };
     }
     function closeModal() { $("modal").classList.remove("open"); }
     $("modal").addEventListener("click", (e) => { if (e.target === $("modal")) closeModal(); });
@@ -256,6 +278,10 @@
     });
 
     render(); updateCart();
+
+    // deep link: /shop.html?product=<id> opens that product
+    const deepId = q.get("product");
+    if (deepId && PRODUCTS.find((p) => p.id === deepId)) openModal(deepId);
 
     // homepage pageview beacon
     try { api("/track", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ path: "/shop", ref: document.referrer }) }); } catch {}
