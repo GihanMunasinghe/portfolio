@@ -121,6 +121,18 @@
     .post-footer a.back { color: var(--muted); text-decoration: none; }
     #toast { position: fixed; bottom: 1.4rem; left: 50%; transform: translateX(-50%); background: #11151d; border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem 1.3rem; font-size: 0.9rem; box-shadow: 0 14px 40px rgba(0,0,0,0.5); display: none; z-index: 10; }
     .skeleton { color: var(--muted); padding: 4rem 0; text-align: center; }
+    /* language / translation */
+    .lang-bar { display: flex; align-items: center; gap: 0.55rem; margin-top: 1.4rem; flex-wrap: wrap; }
+    .lang-bar .globe { font-size: 1rem; }
+    .lang-bar select {
+      font-family: var(--font-body); font-size: 0.85rem; font-weight: 500; color: var(--text);
+      background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
+      padding: 0.42rem 0.9rem; cursor: pointer; appearance: none; -webkit-appearance: none;
+    }
+    .lang-bar select:hover { border-color: var(--accent); }
+    .lang-bar select:focus { outline: none; border-color: var(--accent); }
+    .xnote { font-size: 0.82rem; color: var(--muted); }
+    .xnote a { color: var(--accent); cursor: pointer; text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -163,11 +175,23 @@
     $("content").innerHTML = `
       <header>
         <div class="kicker">${esc(post.media || "Article")}</div>
-        <h1>${esc(post.title)}</h1>
+        <h1 id="postTitle">${esc(post.title)}</h1>
         <div class="meta"><span>Gihan Munasinghe</span><span>·</span><span>${esc(post.date)}</span><span>·</span><span>${esc(post.readTime)}</span></div>
         ${cover}
+        <div class="lang-bar">
+          <span class="globe">🌐</span>
+          <select id="langSel" aria-label="Read this post in your language">
+            <option value="en">English (original)</option>
+            <option value="zh">中文 · Chinese</option>
+            <option value="ms">Bahasa Melayu</option>
+            <option value="ta">தமிழ் · Tamil</option>
+            <option value="si">සිංහල · Sinhala</option>
+            <option value="hi">हिन्दी · Hindi</option>
+          </select>
+          <span class="xnote" id="xnote"></span>
+        </div>
       </header>
-      <article>${post.html || ""}</article>
+      <article id="postBody">${post.html || ""}</article>
       ${Array.isArray(post.sources) && post.sources.length ? `<div class="sources"><h3>Sources</h3><ul>${post.sources.map((s) => `<li><a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a></li>`).join("")}</ul></div>` : ""}
       <div class="engage">
         <button class="like-btn" id="likeBtn"><span class="heart">🤍</span> <span id="likeCount">${post.likes || 0}</span></button>
@@ -188,6 +212,34 @@
         <a class="back" href="../index.html#blog">← All posts</a>
         <a class="btn" href="../index.html#contact">Work with me</a>
       </div>`;
+
+    /* live translation — swap title + body into a reader's language, remember the choice */
+    const orig = { title: post.title, html: post.html || "" };
+    const LANG_NAMES = { en: "English", zh: "中文", ms: "Bahasa Melayu", ta: "தமிழ்", si: "සිංහල", hi: "हिन्दी" };
+    const titleEl = $("postTitle"), bodyEl = $("postBody"), langSel = $("langSel"), xnote = $("xnote");
+    const xcache = {};
+    async function applyLang(lang) {
+      if (!lang || lang === "en") {
+        titleEl.textContent = orig.title; bodyEl.innerHTML = orig.html;
+        document.documentElement.lang = "en"; document.title = orig.title + " — Gihan Munasinghe";
+        xnote.innerHTML = ""; localStorage.setItem("gm_lang", "en"); return;
+      }
+      xnote.textContent = "Translating…";
+      try {
+        const t = xcache[lang] || (xcache[lang] = await api("/translate", {
+          method: "POST", headers: { "content-type": "application/json" },
+          body: JSON.stringify({ slug, lang }),
+        }));
+        titleEl.textContent = t.title; bodyEl.innerHTML = t.html;
+        document.documentElement.lang = lang; document.title = t.title + " — Gihan Munasinghe";
+        xnote.innerHTML = "Auto-translated to " + esc(LANG_NAMES[lang] || lang) + ' · <a id="xorig">Show original</a>';
+        $("xorig").addEventListener("click", () => { langSel.value = "en"; applyLang("en"); });
+        localStorage.setItem("gm_lang", lang);
+      } catch (e) { xnote.textContent = "Translation unavailable right now — try again shortly."; delete xcache[lang]; }
+    }
+    langSel.addEventListener("change", () => applyLang(langSel.value));
+    const savedLang = localStorage.getItem("gm_lang");
+    if (savedLang && savedLang !== "en" && LANG_NAMES[savedLang]) { langSel.value = savedLang; applyLang(savedLang); }
 
     /* likes (one per browser per post) */
     const likeKey = "gm_liked_" + slug;
