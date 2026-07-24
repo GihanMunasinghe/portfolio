@@ -3,11 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://gihan-shop-media-303963685758.s3.ap-southeast-1.amazonaws.com; connect-src 'self' https://api.gihanmunasinghe.lk; frame-src https://www.youtube.com https://player.vimeo.com" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta name="theme-color" content="#07090d" />
   <title>Loading… — Gihan Munasinghe</title>
   <meta name="description" content="A tech blog post by Gihan Munasinghe." />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+  <link rel="canonical" id="canonical" href="https://www.gihanmunasinghe.lk/blog/post.html" />
   <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Gihan Munasinghe" />
+  <meta property="og:title" id="og-title" content="Gihan Munasinghe" />
+  <meta property="og:description" id="og-desc" content="A tech blog post by Gihan Munasinghe." />
+  <meta property="og:url" id="og-url" content="https://www.gihanmunasinghe.lk/blog/post.html" />
   <meta property="og:image" content="https://www.gihanmunasinghe.lk/assets/gihan-formal.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" id="tw-title" content="Gihan Munasinghe" />
+  <meta name="twitter:description" id="tw-desc" content="A tech blog post by Gihan Munasinghe." />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -168,6 +181,33 @@
 
     document.title = post.title + " — Gihan Munasinghe";
     const url = location.href.split("#")[0];
+
+    /* SEO: fill canonical, description, Open Graph / Twitter, and BlogPosting JSON-LD */
+    (function seo() {
+      const canon = "https://www.gihanmunasinghe.lk/blog/post.html?slug=" + encodeURIComponent(slug);
+      const desc = (post.excerpt || post.title || "").replace(/\s+/g, " ").slice(0, 200);
+      const abs = (u) => !u ? "" : (/^https?:\/\//.test(u) ? u : "https://www.gihanmunasinghe.lk/" + String(u).replace(/^\//, ""));
+      const img = post.image ? abs(post.image) : "https://www.gihanmunasinghe.lk/assets/gihan-formal.jpg";
+      const set = (sel, attr, val) => { const el = document.querySelector(sel); if (el) el.setAttribute(attr, val); };
+      set('meta[name="description"]', "content", desc);
+      set("#canonical", "href", canon);
+      set("#og-title", "content", post.title); set("#og-desc", "content", desc); set("#og-url", "content", canon);
+      set("#tw-title", "content", post.title); set("#tw-desc", "content", desc);
+      document.querySelectorAll('meta[property="og:image"], meta[name="twitter:image"]').forEach((m) => m.setAttribute("content", img));
+      try {
+        const ld = {
+          "@context": "https://schema.org", "@type": "BlogPosting",
+          headline: post.title, description: desc, url: canon, mainEntityOfPage: canon, image: img, inLanguage: "en",
+          author: { "@type": "Person", name: "Gihan Munasinghe", url: "https://www.gihanmunasinghe.lk/" },
+          publisher: { "@type": "Person", name: "Gihan Munasinghe", url: "https://www.gihanmunasinghe.lk/" },
+        };
+        if (post.createdAt) ld.datePublished = post.createdAt;
+        if (post.updatedAt) ld.dateModified = post.updatedAt;
+        const s = document.createElement("script"); s.type = "application/ld+json"; s.textContent = JSON.stringify(ld);
+        document.head.appendChild(s);
+      } catch {}
+    })();
+
     const cover = post.coverSvg
       ? `<div class="cover">${post.coverSvg}</div>`
       : (post.image ? `<img class="cover" src="${esc(post.image.replace(/^blog\//, ""))}" alt="" />` : "");

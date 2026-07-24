@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta name="robots" content="noindex, follow" />
+  <meta name="theme-color" content="#07090d" />
+  <title>Page not found — Gihan Munasinghe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Inter", -apple-system, sans-serif; color: #eef1f7; line-height: 1.6;
+      min-height: 100vh; display: grid; place-items: center; text-align: center; padding: 2rem;
+      background:
+        radial-gradient(600px 400px at 85% -5%, rgba(139,92,246,0.15), transparent 70%),
+        radial-gradient(700px 500px at -10% 20%, rgba(110,168,254,0.10), transparent 70%),
+        #07090d;
+    }
+    .code { font-family: "Sora", sans-serif; font-size: clamp(4rem, 18vw, 9rem); font-weight: 800; line-height: 1;
+      background: linear-gradient(100deg, #6ea8fe, #8b5cf6 55%, #22d3ee); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    h1 { font-family: "Sora", sans-serif; font-size: clamp(1.3rem, 4vw, 1.8rem); margin: 0.6rem 0 0.8rem; }
+    p { color: #98a1b3; max-width: 30rem; margin: 0 auto 1.6rem; }
+    .btns { display: flex; gap: 0.7rem; justify-content: center; flex-wrap: wrap; }
+    a { display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 600; font-size: 0.95rem;
+      text-decoration: none; padding: 0.7rem 1.4rem; border-radius: 12px; }
+    .primary { background: linear-gradient(100deg, #6ea8fe, #8b5cf6 55%, #22d3ee); color: #fff; }
+    .ghost { color: #eef1f7; border: 1px solid rgba(255,255,255,0.14); }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="code">404</div>
+    <h1>This page wandered off</h1>
+    <p>The page you're looking for doesn't exist or has moved. Let's get you back on track.</p>
+    <div class="btns">
+      <a class="primary" href="/">← Back home</a>
+      <a class="ghost" href="/#blog">Read the blog</a>
+      <a class="ghost" href="/shop.html">Visit the shop</a>
+    </div>
+  </main>
+</body>
+</html>

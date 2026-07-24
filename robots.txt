@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /admin
+
+# Sitemaps
+Sitemap: https://www.gihanmunasinghe.lk/sitemap.xml
+Sitemap: https://api.gihanmunasinghe.lk/sitemap.xml

@@ -73,7 +73,12 @@ const sha256 = (s) => crypto.createHash("sha256").update(s).digest("hex");
 /* ---------- helpers ---------- */
 const res = (status, body) => ({
   statusCode: status,
-  headers: { "Content-Type": "application/json" },
+  headers: {
+    "Content-Type": "application/json",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Cache-Control": "no-store",
+  },
   body: JSON.stringify(body),
 });
 const clean = (s, max) => String(s ?? "").replace(/<[^>]*>/g, "").trim().slice(0, max);
@@ -777,6 +782,22 @@ export const handler = async (event) => {
       return res(200, o);
     }
 
+    /* ---------- SEO: dynamic sitemap (home, shop, published posts, visible products) ---------- */
+    if (method === "GET" && path === "/sitemap.xml") {
+      const [posts, products] = await Promise.all([listPosts(false), listProducts(false)]);
+      const day = (s) => (s || "").slice(0, 10);
+      const urls = [
+        { loc: `${SITE}/`, freq: "weekly", pri: "1.0" },
+        { loc: `${SITE}/shop.html`, freq: "daily", pri: "0.8" },
+        ...posts.map((p) => ({ loc: `${SITE}/blog/post.html?slug=${encodeURIComponent(p.slug)}`, freq: "monthly", pri: "0.7", lastmod: day(p.updatedAt || p.createdAt) })),
+        ...products.map((p) => ({ loc: `${SITE}/shop.html?product=${encodeURIComponent(p.id)}`, freq: "weekly", pri: "0.6", lastmod: day(p.updatedAt || p.createdAt) })),
+      ];
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+        urls.map((u) => `  <url><loc>${escHtml(u.loc)}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ""}<changefreq>${u.freq}</changefreq><priority>${u.pri}</priority></url>`).join("\n") +
+        `\n</urlset>`;
+      return { statusCode: 200, headers: { "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=3600", "X-Content-Type-Options": "nosniff" }, body: xml };
+    }
+
     /* ---------- shop: shareable product page (rich link preview for WhatsApp/social) ---------- */
     if (method === "GET" && path === "/share") {
       const id = clean(qs.id, 120);
@@ -805,7 +826,7 @@ export const handler = async (event) => {
 </head><body style="background:#07090d;color:#98a1b3;font-family:sans-serif;padding:2rem;">
 Taking you to <b>${escHtml(p.title)}</b>… <a style="color:#6ea8fe" href="${escHtml(dest)}">continue →</a>
 </body></html>`;
-      return { statusCode: 200, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=300" }, body: html };
+      return { statusCode: 200, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=300", "X-Content-Type-Options": "nosniff", "Referrer-Policy": "strict-origin-when-cross-origin" }, body: html };
     }
 
     return res(404, { error: "Not found: " + method + " " + path });
