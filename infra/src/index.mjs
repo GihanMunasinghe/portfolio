@@ -76,6 +76,8 @@ const res = (status, body) => ({
   body: JSON.stringify(body),
 });
 const clean = (s, max) => String(s ?? "").replace(/<[^>]*>/g, "").trim().slice(0, max);
+const escHtml = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmtMoney = (m, c) => { try { return new Intl.NumberFormat("en", { style: "currency", currency: (c || "USD") }).format((m || 0) / 100); } catch { return `${c || "USD"} ${((m || 0) / 100).toFixed(2)}`; } };
 const isAdmin = (event) => {
   const auth = event.headers?.authorization || event.headers?.Authorization || "";
   const m = auth.match(/^Bearer (.+)$/);
@@ -680,6 +682,37 @@ export const handler = async (event) => {
       }));
       const { pk, sk, gsi1pk, ...o } = out.Attributes;
       return res(200, o);
+    }
+
+    /* ---------- shop: shareable product page (rich link preview for WhatsApp/social) ---------- */
+    if (method === "GET" && path === "/share") {
+      const id = clean(qs.id, 120);
+      const dest = `${SITE}/shop.html?product=${encodeURIComponent(id)}`;
+      const p = await getProduct(id);
+      if (!p || p.status === "hidden") return { statusCode: 302, headers: { Location: `${SITE}/shop.html` }, body: "" };
+      const img = (p.images || [])[0] || `${SITE}/assets/gihan-formal.jpg`;
+      const title = `${p.title} — ${fmtMoney(p.price, p.currency)}`;
+      const desc = (p.description || "Pre-loved item from Gihan's shop.").replace(/\s+/g, " ").slice(0, 180);
+      const html = `<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${escHtml(title)}</title>
+<meta name="description" content="${escHtml(desc)}">
+<meta property="og:type" content="product">
+<meta property="og:title" content="${escHtml(title)}">
+<meta property="og:description" content="${escHtml(desc)}">
+<meta property="og:image" content="${escHtml(img)}">
+<meta property="og:url" content="${escHtml(dest)}">
+<meta property="product:price:amount" content="${((p.price || 0) / 100).toFixed(2)}">
+<meta property="product:price:currency" content="${escHtml(p.currency || "USD")}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${escHtml(title)}">
+<meta name="twitter:image" content="${escHtml(img)}">
+<meta http-equiv="refresh" content="0; url=${escHtml(dest)}">
+<script>location.replace(${JSON.stringify(dest)});</script>
+</head><body style="background:#07090d;color:#98a1b3;font-family:sans-serif;padding:2rem;">
+Taking you to <b>${escHtml(p.title)}</b>… <a style="color:#6ea8fe" href="${escHtml(dest)}">continue →</a>
+</body></html>`;
+      return { statusCode: 200, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=300" }, body: html };
     }
 
     return res(404, { error: "Not found: " + method + " " + path });

@@ -251,7 +251,7 @@
     }
     function waLink(msg) { const num = (CFG.whatsapp || "6586469798").replace(/[^0-9]/g, ""); return "https://wa.me/" + num + "?text=" + encodeURIComponent(msg); }
     function waOrderProduct(p) {
-      const url = location.origin + "/shop.html?product=" + encodeURIComponent(p.id);
+      const url = API + "/share?id=" + encodeURIComponent(p.id);
       const msg = `Hi Gihan! I'd like to order this from your shop:\n\n${p.title}\n${money(p.price, p.currency || CFG.currency)}\n${url}\n\nIs it still available?`;
       window.open(waLink(msg), "_blank");
     }
@@ -262,7 +262,9 @@
       window.open(waLink(msg), "_blank");
     }
     function shareProduct(p) {
-      const url = location.origin + "/shop.html?product=" + encodeURIComponent(p.id);
+      // share the API /share page: it serves rich OpenGraph tags (product photo + title)
+      // and redirects to the storefront, so WhatsApp/social show a proper preview.
+      const url = API + "/share?id=" + encodeURIComponent(p.id);
       const title = p.title;
       const text = `${p.title} — ${money(p.price, p.currency || CFG.currency)} · from Gihan's shop`;
       if (navigator.share) { navigator.share({ title, text, url }).catch(() => {}); return; }
