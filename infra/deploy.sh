@@ -28,7 +28,7 @@ cp src/index.mjs build/
 cat > build/package.json <<'JSON'
 { "type": "module", "dependencies": {
   "@aws-sdk/client-dynamodb": "^3", "@aws-sdk/lib-dynamodb": "^3",
-  "@aws-sdk/client-sesv2": "^3", "@aws-sdk/client-bedrock-runtime": "^3", "@aws-sdk/client-s3": "^3", "@aws-sdk/s3-request-presigner": "^3" } }
+  "@aws-sdk/client-sesv2": "^3", "@aws-sdk/client-bedrock-runtime": "^3", "@aws-sdk/client-s3": "^3", "@aws-sdk/s3-request-presigner": "^3", "@aws-sdk/client-translate": "^3" } }
 JSON
 (cd build && npm install --omit=dev --no-audit --no-fund --silent)
 (cd build && zip -qr -X ../lambda.zip index.mjs package.json node_modules)

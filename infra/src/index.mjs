@@ -4,6 +4,7 @@
  *   POST   /login              {password} -> {token}
  *   GET    /posts              public list (published, no html) | ?all=1 with auth includes drafts
  *   GET    /post?slug=x        full post (drafts require auth)
+ *   POST   /translate          {slug,lang} -> machine-translated {title,html} (cached)
  *   POST   /posts              create/replace post (auth, or x-agent-key for the daily agent -> always draft)
  *   PUT    /post?slug=x        {action: publish|unpublish|toggleComments|update, fields?} (auth)
  *   DELETE /post?slug=x        delete post + its comments (auth)
@@ -28,6 +29,7 @@ import { BedrockRuntimeClient, ConverseCommand } from "@aws-sdk/client-bedrock-r
 import { S3Client } from "@aws-sdk/client-s3";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { TranslateClient, TranslateTextCommand, TranslateDocumentCommand } from "@aws-sdk/client-translate";
 
 const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}), {
   marshallOptions: { removeUndefinedValues: true },
@@ -35,6 +37,7 @@ const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}), {
 const ses = new SESv2Client({});
 const bedrock = new BedrockRuntimeClient({});
 const s3 = new S3Client({});
+const translate = new TranslateClient({});
 
 const TABLE = process.env.TABLE_NAME;
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -267,6 +270,77 @@ async function listComments(slug) {
   return (out.Items || []).map(({ pk, sk, ...c }) => c);
 }
 
+/* ---------- live translation (Amazon Translate) ---------- */
+/* Languages readers can translate a post into (English is the original). */
+const XLATE_LANGS = { zh: "Chinese", ms: "Malay", ta: "Tamil", si: "Sinhala", hi: "Hindi" };
+const byteLen = (s) => Buffer.byteLength(s, "utf8");
+
+/* Split an HTML fragment into pieces under maxBytes, cutting ONLY at the end of
+   a top-level element so tags are never broken across a chunk (Amazon Translate
+   real-time TranslateDocument caps a document at 100 KB). Most posts are 1 chunk. */
+function chunkHtml(html, maxBytes = 90000) {
+  if (byteLen(html) <= maxBytes) return [html];
+  const segs = [];
+  const tagRe = /<\/?([a-zA-Z0-9]+)(?:\s[^>]*)?>/g;
+  let depth = 0, last = 0, m;
+  while ((m = tagRe.exec(html))) {
+    const tag = m[1].toLowerCase();
+    if (/\/>$/.test(m[0]) || /^(br|hr|img|input|meta|link|source|col|area)$/.test(tag)) continue; // void
+    if (m[0][1] === "/") { if (--depth === 0) { segs.push(html.slice(last, tagRe.lastIndex)); last = tagRe.lastIndex; } }
+    else depth++;
+  }
+  if (last < html.length) segs.push(html.slice(last));
+  const chunks = [];
+  let cur = "";
+  for (const s of segs) {
+    if (cur && byteLen(cur + s) > maxBytes) { chunks.push(cur); cur = ""; }
+    cur += s;
+  }
+  if (cur) chunks.push(cur);
+  return chunks;
+}
+
+async function mtText(text, lang) {
+  if (!text || !text.trim()) return text;
+  const out = await translate.send(new TranslateTextCommand({
+    Text: text.slice(0, 9000), SourceLanguageCode: "en", TargetLanguageCode: lang,
+  }));
+  return out.TranslatedText || text;
+}
+
+async function mtHtml(html, lang) {
+  if (!html || !html.trim()) return html;
+  const parts = [];
+  for (const chunk of chunkHtml(html)) {
+    const out = await translate.send(new TranslateDocumentCommand({
+      Document: { Content: Buffer.from(chunk, "utf8"), ContentType: "text/html" },
+      SourceLanguageCode: "en", TargetLanguageCode: lang,
+    }));
+    parts.push(Buffer.from(out.TranslatedDocument.Content).toString("utf8"));
+  }
+  return parts.join("");
+}
+
+/* Translate a post's title + body, caching the result per language keyed to the
+   post's updatedAt so an edit auto-invalidates and each post/language pair is
+   only ever machine-translated once. */
+async function translatePost(slug, lang, admin) {
+  const post = await getPost(slug);
+  if (!post || (post.status !== "published" && !admin)) return null;
+  const cacheKey = { pk: `POST#${slug}`, sk: `XLATE#${lang}` };
+  const cached = (await ddb.send(new GetCommand({ TableName: TABLE, Key: cacheKey }))).Item;
+  if (cached && cached.srcUpdatedAt === post.updatedAt)
+    return { slug, lang, title: cached.title, html: cached.html, cached: true };
+  const [title, html] = await Promise.all([
+    mtText(post.title, lang),
+    mtHtml(post.html || "", lang),
+  ]);
+  await ddb.send(new PutCommand({ TableName: TABLE, Item: {
+    ...cacheKey, title, html, lang, srcUpdatedAt: post.updatedAt, createdAt: new Date().toISOString(),
+  } })).catch((e) => console.error("cache translation failed:", e.message));
+  return { slug, lang, title, html, cached: false };
+}
+
 /* ================= SHOP ================= */
 const prodKey = (id) => ({ pk: `PRODUCT#${id}`, sk: "META" });
 const pubProduct = ({ pk, sk, gsi1pk, ...p }) => p;
@@ -388,6 +462,16 @@ export const handler = async (event) => {
       return res(200, publicPost(p, true));
     }
 
+    /* live translation: translate a post's title + body into a reader's language */
+    if (method === "POST" && path === "/translate") {
+      const slug = clean(body.slug, 120);
+      const lang = clean(body.lang, 10).toLowerCase();
+      if (!XLATE_LANGS[lang]) return res(400, { error: "Unsupported language" });
+      const out = await translatePost(slug, lang, admin);
+      if (!out) return res(404, { error: "Post not found" });
+      return res(200, out);
+    }
+
     if (method === "POST" && path === "/posts") {
       if (!admin && !isAgent(event)) return res(401, { error: "Auth required" });
       const item = await savePost(body, { asDraft: !admin });
@@ -416,7 +500,11 @@ export const handler = async (event) => {
     if (method === "DELETE" && path === "/post") {
       if (!admin) return res(401, { error: "Auth required" });
       const comments = await listComments(qs.slug);
-      const keys = [{ ...postKey(qs.slug) }, ...comments.map((c) => ({ pk: `POST#${qs.slug}`, sk: `COMMENT#${c.id}` }))];
+      const keys = [
+        { ...postKey(qs.slug) },
+        ...comments.map((c) => ({ pk: `POST#${qs.slug}`, sk: `COMMENT#${c.id}` })),
+        ...Object.keys(XLATE_LANGS).map((l) => ({ pk: `POST#${qs.slug}`, sk: `XLATE#${l}` })),
+      ];
       for (let i = 0; i < keys.length; i += 25) {
         await ddb.send(new BatchWriteCommand({
           RequestItems: { [TABLE]: keys.slice(i, i + 25).map((Key) => ({ DeleteRequest: { Key } })) },

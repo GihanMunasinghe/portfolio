@@ -108,6 +108,9 @@ Resources:
               - Effect: Allow
                 Action: [s3:PutObject]
                 Resource: !Sub "arn:aws:s3:::${MediaBucket}/*"
+              - Effect: Allow
+                Action: [translate:TranslateText, translate:TranslateDocument]
+                Resource: "*"
 
   Fn:
     Type: AWS::Lambda::Function
