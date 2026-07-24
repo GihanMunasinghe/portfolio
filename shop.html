@@ -79,8 +79,8 @@
     #modal { position: fixed; inset: 0; z-index: 60; background: rgba(4,5,8,0.85); backdrop-filter: blur(5px); display: none; overflow-y: auto; padding: 1.2rem; }
     #modal.open { display: block; }
     .modal-card { max-width: 720px; margin: 4vh auto; background: var(--surface-solid); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; }
-    .modal-imgs { display: flex; gap: 0.5rem; overflow-x: auto; background: #0d1118; }
-    .modal-imgs img { height: 300px; width: auto; object-fit: contain; }
+    .modal-imgs { display: flex; gap: 0.5rem; overflow-x: auto; background: #0d1118; justify-content: center; }
+    .modal-imgs img { flex: 0 0 auto; max-width: 100%; height: auto; max-height: 58vh; object-fit: contain; display: block; }
     .modal-imgs .noimg { height: 240px; width: 100%; display: grid; place-items: center; font-size: 3rem; color: var(--muted); }
     .modal-body { padding: 1.6rem; }
     .modal-body h2 { font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 0.5rem; }
@@ -251,7 +251,7 @@
     }
     function waLink(msg) { const num = (CFG.whatsapp || "6586469798").replace(/[^0-9]/g, ""); return "https://wa.me/" + num + "?text=" + encodeURIComponent(msg); }
     function waOrderProduct(p) {
-      const url = location.origin + "/shop.html?product=" + encodeURIComponent(p.id);
+      const url = API + "/share?id=" + encodeURIComponent(p.id);
       const msg = `Hi Gihan! I'd like to order this from your shop:\n\n${p.title}\n${money(p.price, p.currency || CFG.currency)}\n${url}\n\nIs it still available?`;
       window.open(waLink(msg), "_blank");
     }
@@ -262,7 +262,9 @@
       window.open(waLink(msg), "_blank");
     }
     function shareProduct(p) {
-      const url = location.origin + "/shop.html?product=" + encodeURIComponent(p.id);
+      // share the API /share page: it serves rich OpenGraph tags (product photo + title)
+      // and redirects to the storefront, so WhatsApp/social show a proper preview.
+      const url = API + "/share?id=" + encodeURIComponent(p.id);
       const title = p.title;
       const text = `${p.title} — ${money(p.price, p.currency || CFG.currency)} · from Gihan's shop`;
       if (navigator.share) { navigator.share({ title, text, url }).catch(() => {}); return; }
