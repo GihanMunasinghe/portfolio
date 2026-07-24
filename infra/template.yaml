@@ -143,7 +143,9 @@ Resources:
       Name: gihan-blog-public
       ProtocolType: HTTP
       CorsConfiguration:
-        AllowOrigins: ["*"]
+        AllowOrigins:
+          - https://www.gihanmunasinghe.lk
+          - https://gihanmunasinghe.lk
         AllowMethods: ["*"]
         AllowHeaders: ["content-type", "authorization"]
         MaxAge: 86400
@@ -169,6 +171,9 @@ Resources:
       ApiId: !Ref HttpApi
       StageName: "$default"
       AutoDeploy: true
+      DefaultRouteSettings:
+        ThrottlingBurstLimit: 40
+        ThrottlingRateLimit: 20
 
   ApiInvokePermission:
     Type: AWS::Lambda::Permission
