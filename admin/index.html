@@ -66,7 +66,30 @@
     #toast.ok { border-color: rgba(52,211,153,0.4); } #toast.err { border-color: rgba(248,113,113,0.4); }
     #editor { position: fixed; inset: 0; z-index: 30; background: rgba(4,5,8,0.93); backdrop-filter: blur(6px); overflow-y: auto; padding: 1.2rem; }
     #editor .panel { max-width: 860px; margin: 0 auto; background: var(--surface-solid); border: 1px solid var(--border); border-radius: 18px; padding: 1.6rem; }
-    #editor textarea#ed-html { min-height: 44vh; font-size: 0.8rem; line-height: 1.5; }
+    /* rich-text editor */
+    .rte-wrap { border: 1px solid var(--border); border-radius: 11px; background: rgba(255,255,255,0.05); overflow: hidden; }
+    .rte-toolbar { display: flex; flex-wrap: wrap; gap: 0.22rem; padding: 0.4rem; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.03); position: sticky; top: 0; z-index: 2; }
+    .rte-toolbar button { width: auto; font-family: var(--font-body); font-size: 0.8rem; font-weight: 600; color: var(--muted); background: transparent; border: 1px solid transparent; border-radius: 8px; padding: 0.3rem 0.5rem; cursor: pointer; line-height: 1.1; }
+    .rte-toolbar button:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+    .rte-toolbar button.on { color: var(--text); background: rgba(110,168,254,0.18); border-color: rgba(110,168,254,0.4); }
+    .rte-toolbar .sep { width: 1px; background: var(--border); margin: 0.15rem 0.15rem; }
+    .rte { min-height: 34vh; max-height: 60vh; overflow-y: auto; padding: 1rem 1.1rem; color: var(--text); font-size: 0.95rem; line-height: 1.7; outline: none; }
+    .rte:empty:before { content: attr(data-ph); color: var(--muted); }
+    .rte h2 { font-family: var(--font-display); font-size: 1.3rem; margin: 1.3rem 0 0.6rem; }
+    .rte p { margin: 0 0 0.85rem; }
+    .rte ul, .rte ol { margin: 0 0 0.85rem 1.4rem; }
+    .rte li { margin-bottom: 0.3rem; }
+    .rte blockquote { border-left: 3px solid #8b5cf6; background: rgba(139,92,246,0.09); padding: 0.6rem 1rem; margin: 0 0 0.85rem; border-radius: 0 8px 8px 0; }
+    .rte pre { background: #0d1118; border: 1px solid var(--border); border-radius: 8px; padding: 0.8rem 1rem; overflow-x: auto; margin: 0 0 0.85rem; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.85rem; white-space: pre-wrap; }
+    .rte code { font-family: ui-monospace, Menlo, Consolas, monospace; }
+    .rte a { color: var(--accent); }
+    .rte img { max-width: 100%; border-radius: 8px; display: block; }
+    .rte figure { margin: 1rem 0; }
+    .rte figcaption { font-size: 0.85rem; color: var(--muted); text-align: center; margin-top: 0.35rem; }
+    .rte .video-embed { position: relative; aspect-ratio: 16/9; margin: 1rem 0; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); background: #000; }
+    .rte .video-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .rte-source { display: none; width: 100%; min-height: 40vh; border: 0; border-radius: 0; background: #0d1118; color: #c6ccd8; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.8rem; line-height: 1.55; padding: 1rem; resize: vertical; }
+    .rte-source.show { display: block; }
     .ed-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
     @media (max-width: 620px) { .ed-grid { grid-template-columns: 1fr; } }
     .disc { border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.2rem; margin-bottom: 1rem; background: var(--surface); }
@@ -135,8 +158,8 @@
           </div>
           <label>Excerpt (blog-card summary)</label>
           <textarea id="n-excerpt" style="min-height:60px;"></textarea>
-          <label>Post body (HTML: &lt;p&gt; &lt;h2&gt; &lt;ul&gt; &lt;pre&gt;&lt;code&gt; &lt;strong&gt; &lt;a&gt; &lt;blockquote&gt;)</label>
-          <textarea id="n-html" class="mono" style="min-height:34vh;" spellcheck="false"></textarea>
+          <label>Post body</label>
+          <div id="n-editor"></div>
           <div style="margin-top:1rem;"><button class="btn btn-primary" id="n-save">Save draft</button></div>
         </div>
       </div>
@@ -216,8 +239,8 @@
         </div>
         <label>Excerpt</label>
         <textarea id="ed-m-excerpt" style="min-height:60px;"></textarea>
-        <label>Post body HTML</label>
-        <textarea id="ed-html" class="mono" spellcheck="false"></textarea>
+        <label>Post body</label>
+        <div id="ed-editor"></div>
         <div class="actions" style="margin-top:1rem;">
           <button class="btn btn-primary" id="ed-save">💾 Save changes</button>
           <button class="btn btn-ghost" onclick="closeEditor()">Cancel</button>
@@ -243,6 +266,137 @@
       return j;
     }
     const auth = () => ({ headers: { authorization: "Bearer " + TOKEN } });
+
+    /* ============ self-contained WYSIWYG editor ============ */
+    /* Serialize a contenteditable into the clean tag subset the blog renders
+       (<p> <h2> <ul>/<ol>/<li> <strong> <em> <a> <pre><code> <blockquote>
+       <figure>/<img>/<figcaption>, and the .video-embed wrapper). */
+    const RTE_TAGMAP = { B: "STRONG", I: "EM", DIV: "P", H1: "H2", H3: "H2", H4: "H2", H5: "H2", H6: "H2" };
+    const RTE_ALLOWED = new Set(["P", "H2", "UL", "OL", "LI", "STRONG", "EM", "A", "PRE", "CODE", "BLOCKQUOTE", "FIGURE", "FIGCAPTION", "IMG", "BR"]);
+    const RTE_BLOCKISH = new Set(["UL", "OL", "PRE", "BLOCKQUOTE", "FIGURE", "H2"]);
+    function rteNode(n) {
+      if (n.nodeType === 3) return esc(n.nodeValue).replace(/ /g, " ");
+      if (n.nodeType !== 1) return "";
+      const el = n;
+      if (el.classList && el.classList.contains("video-embed")) {
+        const s = el.querySelector("iframe") && el.querySelector("iframe").getAttribute("src");
+        return s ? `<div class="video-embed"><iframe src="${esc(s)}" allowfullscreen loading="lazy"></iframe></div>` : "";
+      }
+      let tag = RTE_TAGMAP[el.tagName] || el.tagName;
+      if (tag === "BR") return "<br>";
+      if (tag === "IMG") { const s = el.getAttribute("src"); return s ? `<img src="${esc(s)}" alt="${esc(el.getAttribute("alt") || "")}">` : ""; }
+      if (tag === "PRE") { const t = el.textContent.replace(/ /g, " "); return t.trim() ? `<pre><code>${esc(t)}</code></pre>` : ""; }
+      const inner = Array.from(el.childNodes).map(rteNode).join("");
+      if (!RTE_ALLOWED.has(tag)) return inner;                       // unwrap span/font/unknown
+      if (tag === "A") { const h = el.getAttribute("href") || ""; return inner.trim() ? `<a href="${esc(h)}" target="_blank" rel="noopener">${inner}</a>` : inner; }
+      if (tag === "P") {
+        const hasBlock = Array.from(el.children).some((c) => RTE_BLOCKISH.has(RTE_TAGMAP[c.tagName] || c.tagName) || (c.classList && c.classList.contains("video-embed")));
+        if (hasBlock) return inner;
+        return inner.replace(/<br>\s*$/, "").trim() ? `<p>${inner}</p>` : "";
+      }
+      if (tag === "LI") return `<li>${inner.replace(/^\s*<p>/, "").replace(/<\/p>\s*$/, "").trim()}</li>`;
+      if ((tag === "H2" || tag === "BLOCKQUOTE" || tag === "FIGCAPTION") && !inner.trim()) return "";
+      const l = tag.toLowerCase();
+      return `<${l}>${inner}</${l}>`;
+    }
+    const cleanHtml = (root) => Array.from(root.childNodes).map(rteNode).join("").replace(/(?:<p><\/p>)+/g, "").trim();
+
+    function toEmbed(url) {
+      url = (url || "").trim();
+      let m;
+      if ((m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/))) return "https://www.youtube.com/embed/" + m[1];
+      if ((m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/))) return "https://player.vimeo.com/video/" + m[1];
+      return null;
+    }
+
+    function makeEditor(mount, placeholder) {
+      mount.innerHTML = "";
+      const wrap = document.createElement("div"); wrap.className = "rte-wrap";
+      const bar = document.createElement("div"); bar.className = "rte-toolbar";
+      const area = document.createElement("div"); area.className = "rte"; area.contentEditable = "true"; area.dataset.ph = placeholder || "Write your post…";
+      const src = document.createElement("textarea"); src.className = "rte-source"; src.spellcheck = false;
+      wrap.append(bar, area, src); mount.appendChild(wrap);
+      let sourceMode = false, srcBtn = null, boldBtn = null, italicBtn = null;
+
+      const exec = (cmd, val) => { area.focus(); document.execCommand(cmd, false, val); };
+      const block = (tag) => { area.focus(); document.execCommand("formatBlock", false, tag); };
+      const insert = (html) => { area.focus(); document.execCommand("insertHTML", false, html); };
+
+      function inlineCode() {
+        area.focus();
+        const sel = window.getSelection();
+        if (!sel.rangeCount || sel.isCollapsed) return;
+        const r = sel.getRangeAt(0), c = document.createElement("code");
+        try { r.surroundContents(c); } catch { c.appendChild(r.extractContents()); r.insertNode(c); }
+        sel.removeAllRanges();
+      }
+      function addLink() {
+        const sel = window.getSelection(), has = sel && !sel.isCollapsed && area.contains(sel.anchorNode);
+        const url = prompt("Link URL:", "https://");
+        if (!url) return;
+        if (has) exec("createLink", url); else insert(`<a href="${esc(url)}" target="_blank" rel="noopener">${esc(url)}</a>`);
+      }
+      function addImage() {
+        const inp = document.createElement("input"); inp.type = "file"; inp.accept = "image/*";
+        inp.onchange = async () => {
+          const f = inp.files[0]; if (!f) return;
+          toast("Uploading image…");
+          try {
+            const { uploadUrl, publicUrl, contentType } = await api("/upload-url", { method: "POST", body: JSON.stringify({ filename: f.name, contentType: f.type }) });
+            await fetch(uploadUrl, { method: "PUT", headers: { "content-type": contentType }, body: f });
+            insert(`<figure><img src="${esc(publicUrl)}" alt=""><figcaption>Caption (optional)</figcaption></figure><p><br></p>`);
+            toast("Image added ✓", "ok");
+          } catch (e) { toast("Upload failed: " + e.message, "err"); }
+        };
+        inp.click();
+      }
+      function addVideo() {
+        const url = prompt("Paste a YouTube or Vimeo link:");
+        if (!url) return;
+        const embed = toEmbed(url);
+        if (!embed) return toast("Only YouTube/Vimeo links are supported.", "err");
+        insert(`<div class="video-embed" contenteditable="false"><iframe src="${esc(embed)}" allowfullscreen loading="lazy"></iframe></div><p><br></p>`);
+      }
+      function toggleSource() {
+        sourceMode = !sourceMode;
+        if (sourceMode) { src.value = cleanHtml(area); src.classList.add("show"); area.style.display = "none"; srcBtn.classList.add("on"); }
+        else { area.innerHTML = src.value; area.querySelectorAll(".video-embed").forEach((v) => v.contentEditable = "false"); src.classList.remove("show"); area.style.display = ""; srcBtn.classList.remove("on"); }
+      }
+
+      const specs = [
+        ["¶", "Paragraph", () => block("P")], ["H2", "Heading", () => block("H2")], ["sep"],
+        ["B", "Bold", () => exec("bold"), "b"], ["I", "Italic", () => exec("italic"), "i"], ["‹›", "Inline code", inlineCode], ["sep"],
+        ["• List", "Bullet list", () => exec("insertUnorderedList")], ["1. List", "Numbered list", () => exec("insertOrderedList")],
+        ["❝ Quote", "Quote", () => block("BLOCKQUOTE")], ["</> Code", "Code block", () => block("PRE")], ["sep"],
+        ["🔗 Link", "Add link", addLink], ["🖼 Image", "Upload image", addImage], ["▶ Video", "Embed video", addVideo], ["sep"],
+        ["↺", "Undo", () => exec("undo")], ["↻", "Redo", () => exec("redo")], ["⟲", "Clear formatting", () => exec("removeFormat")], ["sep"],
+        ["&lt;/&gt; Source", "Edit raw HTML", toggleSource, "src"],
+      ];
+      specs.forEach((s) => {
+        if (s[0] === "sep") { const el = document.createElement("span"); el.className = "sep"; bar.appendChild(el); return; }
+        const b = document.createElement("button"); b.type = "button"; b.innerHTML = s[0]; b.title = s[1];
+        b.addEventListener("mousedown", (e) => e.preventDefault());   // keep the selection when clicking a tool
+        b.addEventListener("click", (e) => { e.preventDefault(); s[2](); });
+        if (s[3] === "b") boldBtn = b; if (s[3] === "i") italicBtn = b; if (s[3] === "src") srcBtn = b;
+        bar.appendChild(b);
+      });
+      document.addEventListener("selectionchange", () => {
+        const a = document.getSelection().anchorNode;
+        if (!a || !area.contains(a)) return;
+        try { boldBtn.classList.toggle("on", document.queryCommandState("bold")); italicBtn.classList.toggle("on", document.queryCommandState("italic")); } catch {}
+      });
+
+      return {
+        getHTML: () => (sourceMode ? src.value.trim() : cleanHtml(area)),
+        setHTML: (html) => {
+          sourceMode = false; src.classList.remove("show"); if (srcBtn) srcBtn.classList.remove("on"); area.style.display = "";
+          area.innerHTML = html || "";
+          area.querySelectorAll(".video-embed").forEach((v) => v.contentEditable = "false");
+        },
+      };
+    }
+    const newEditor = makeEditor($("n-editor"), "Write your post… use the toolbar for headings, lists, quotes, code, images and video.");
+    const edEditor = makeEditor($("ed-editor"), "Edit the post…");
 
     async function boot() {
       try { API = ((await (await fetch("../site-config.json?t=" + Date.now())).json()).api || "").replace(/\/$/, ""); } catch {}
@@ -329,14 +483,14 @@
 
     /* new post */
     $("n-save").addEventListener("click", async () => {
-      const body = { title: $("n-title").value.trim(), media: $("n-media").value.trim(), readTime: $("n-readTime").value.trim(), slug: $("n-slug").value.trim(), excerpt: $("n-excerpt").value.trim(), html: $("n-html").value };
+      const body = { title: $("n-title").value.trim(), media: $("n-media").value.trim(), readTime: $("n-readTime").value.trim(), slug: $("n-slug").value.trim(), excerpt: $("n-excerpt").value.trim(), html: newEditor.getHTML() };
       if (!body.title || !body.html) return toast("Title and body are required.", "err");
       if (!body.slug) body.slug = body.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
       $("n-save").disabled = true;
       try {
         await api("/posts", { method: "POST", body: JSON.stringify(body) });
         toast("Draft saved ✓", "ok");
-        ["n-title", "n-media", "n-readTime", "n-slug", "n-excerpt", "n-html"].forEach((i) => $(i).value = "");
+        ["n-title", "n-media", "n-readTime", "n-slug", "n-excerpt"].forEach((i) => $(i).value = ""); newEditor.setHTML("");
         document.querySelector('.tabs button[data-tab="drafts"]').click();
       } catch (e) { toast(e.message, "err"); }
       finally { $("n-save").disabled = false; }
@@ -352,7 +506,7 @@
         $("ed-title").textContent = "Edit: " + p.title;
         $("ed-m-title").value = p.title || ""; $("ed-m-media").value = p.media || "";
         $("ed-m-date").value = p.date || ""; $("ed-m-readTime").value = p.readTime || "";
-        $("ed-m-excerpt").value = p.excerpt || ""; $("ed-html").value = p.html || "";
+        $("ed-m-excerpt").value = p.excerpt || ""; edEditor.setHTML(p.html || "");
         $("editor").classList.remove("hidden"); window.scrollTo(0, 0);
       } catch (e) { toast(e.message, "err"); }
     }
@@ -363,7 +517,7 @@
       try {
         await api("/post?slug=" + encodeURIComponent(ED), { method: "PUT", body: JSON.stringify({
           action: "update", title: $("ed-m-title").value, media: $("ed-m-media").value, date: $("ed-m-date").value,
-          readTime: $("ed-m-readTime").value, excerpt: $("ed-m-excerpt").value, html: $("ed-html").value,
+          readTime: $("ed-m-readTime").value, excerpt: $("ed-m-excerpt").value, html: edEditor.getHTML(),
         }) });
         toast("Saved ✓", "ok"); closeEditor(); await refresh();
       } catch (e) { toast(e.message, "err"); }
