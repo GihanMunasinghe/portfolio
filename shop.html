@@ -87,6 +87,9 @@
     .modal-body .meta { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
     .modal-body p { color: #c6ccd8; white-space: pre-wrap; margin-bottom: 1.4rem; }
     .modal-actions { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .share-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.9rem; }
+    .share-row a, .share-row button { font-size: 0.82rem; font-weight: 600; color: var(--text); background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 999px; padding: 0.4rem 0.85rem; text-decoration: none; cursor: pointer; }
+    .share-row a:hover, .share-row button:hover { border-color: var(--accent); }
     .close-x { background: var(--surface); border: 1px solid var(--border); color: var(--text); width: 38px; height: 38px; border-radius: 10px; cursor: pointer; font-size: 1.1rem; }
     #toast { position: fixed; bottom: 1.4rem; left: 50%; transform: translateX(-50%); background: var(--surface-solid); border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem 1.3rem; font-size: 0.9rem; box-shadow: 0 14px 40px rgba(0,0,0,0.5); display: none; z-index: 80; }
     .banner { border-radius: 14px; padding: 1rem 1.3rem; margin: 1rem 0 0; font-size: 0.95rem; }
@@ -120,9 +123,10 @@
     <div class="items" id="cartItems"></div>
     <div class="foot">
       <div class="total"><span>Total</span><span id="cartTotal">—</span></div>
-      <div class="note">Shipping (for physical items) is calculated at checkout.</div>
-      <input class="emailin" id="buyerEmail" type="email" placeholder="Email for your receipt (optional)" />
-      <button class="btn btn-primary checkout" id="checkoutBtn">Checkout securely →</button>
+      <div class="note" id="cartNote">Order via WhatsApp — I'll confirm availability, delivery and payment.</div>
+      <input class="emailin" id="buyerEmail" type="email" placeholder="Email for your receipt (optional)" style="display:none;" />
+      <button class="btn checkout" id="waCheckoutBtn" style="background:#25d366;color:#04310f;justify-content:center;">🟢 Order via WhatsApp</button>
+      <button class="btn btn-primary checkout" id="checkoutBtn" style="display:none;margin-top:0.6rem;">Pay securely by card / Apple Pay →</button>
     </div>
   </aside>
 
@@ -210,6 +214,7 @@
       const total = items.reduce((s, p) => s + (p.price || 0), 0);
       $("cartTotal").textContent = items.length ? money(total, CFG.currency) : "—";
       $("checkoutBtn").disabled = !items.length;
+      $("waCheckoutBtn").disabled = !items.length;
     }
 
     function openModal(id) {
@@ -226,15 +231,48 @@
           <p>${esc(p.description || "No description.")}</p>
           <div class="modal-actions">
             <span class="price">${money(p.price, p.currency || CFG.currency)}</span>
-            ${sold ? '<button class="btn btn-ghost" disabled>Sold</button>'
-                   : (inCart(p.id) ? `<button class="btn btn-ghost" id="mRm">In cart ✓ — remove</button>`
-                                   : `<button class="btn btn-primary" id="mAdd">Add to cart</button>`)}
+            <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+              <button class="btn btn-ghost" id="mShare">🔗 Share</button>
+              ${sold ? '<button class="btn btn-ghost" disabled>Sold</button>'
+                     : (inCart(p.id) ? `<button class="btn btn-ghost" id="mRm">In cart ✓ — remove</button>`
+                                     : `<button class="btn btn-ghost" id="mAdd">Add to cart</button>`)}
+            </div>
           </div>
+          ${sold ? "" : `<button class="btn" id="mWa" style="background:#25d366;color:#04310f;width:100%;justify-content:center;margin-top:0.9rem;">🟢 Order this on WhatsApp</button>`}
+          <div id="shareRow" class="share-row"></div>
         </div>`;
       $("modal").classList.add("open");
-      $("mClose").onclick = closeModal;
+      history.replaceState({}, "", "shop.html?product=" + encodeURIComponent(p.id));
+      $("mClose").onclick = () => { closeModal(); history.replaceState({}, "", "shop.html"); };
+      $("mShare").onclick = () => shareProduct(p);
+      if ($("mWa")) $("mWa").onclick = () => waOrderProduct(p);
       if ($("mAdd")) $("mAdd").onclick = () => { addToCart(p.id); closeModal(); };
       if ($("mRm")) $("mRm").onclick = () => { removeFromCart(p.id); closeModal(); };
+    }
+    function waLink(msg) { const num = (CFG.whatsapp || "6586469798").replace(/[^0-9]/g, ""); return "https://wa.me/" + num + "?text=" + encodeURIComponent(msg); }
+    function waOrderProduct(p) {
+      const url = location.origin + "/shop.html?product=" + encodeURIComponent(p.id);
+      const msg = `Hi Gihan! I'd like to order this from your shop:\n\n${p.title}\n${money(p.price, p.currency || CFG.currency)}\n${url}\n\nIs it still available?`;
+      window.open(waLink(msg), "_blank");
+    }
+    function waOrderCart(items) {
+      const lines = items.map((p) => `• ${p.title} — ${money(p.price, p.currency || CFG.currency)}`).join("\n");
+      const total = items.reduce((s, p) => s + (p.price || 0), 0);
+      const msg = `Hi Gihan! I'd like to order these from your shop:\n\n${lines}\n\nTotal: ${money(total, CFG.currency)}\n\nAre they still available?`;
+      window.open(waLink(msg), "_blank");
+    }
+    function shareProduct(p) {
+      const url = location.origin + "/shop.html?product=" + encodeURIComponent(p.id);
+      const title = p.title;
+      const text = `${p.title} — ${money(p.price, p.currency || CFG.currency)} · from Gihan's shop`;
+      if (navigator.share) { navigator.share({ title, text, url }).catch(() => {}); return; }
+      const eU = encodeURIComponent(url), eT = encodeURIComponent(text);
+      $("shareRow").innerHTML = `
+        <a href="https://wa.me/?text=${eT}%20${eU}" target="_blank" rel="noopener">🟢 WhatsApp</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=${eU}" target="_blank" rel="noopener">f Facebook</a>
+        <a href="https://twitter.com/intent/tweet?url=${eU}&text=${eT}" target="_blank" rel="noopener">𝕏 Post</a>
+        <button type="button" id="mCopy">🔗 Copy link</button>`;
+      $("mCopy").onclick = () => { (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(() => toast("Link copied!")).catch(() => prompt("Copy link:", url)); };
     }
     function closeModal() { $("modal").classList.remove("open"); }
     $("modal").addEventListener("click", (e) => { if (e.target === $("modal")) closeModal(); });
@@ -244,18 +282,32 @@
     const closeDrawer = () => { $("drawer").classList.remove("open"); $("overlay").classList.remove("open"); };
     $("cartBtn").onclick = openDrawer; $("cartClose").onclick = closeDrawer; $("overlay").onclick = closeDrawer;
 
-    // checkout
+    // WhatsApp order (always available)
+    $("waCheckoutBtn").addEventListener("click", () => {
+      const items = CART.map((id) => PRODUCTS.find((p) => p.id === id)).filter(Boolean);
+      if (items.length) waOrderCart(items);
+    });
+
+    // Stripe checkout (only when connected) — shown in addition to WhatsApp
+    if (CFG.checkout) {
+      $("checkoutBtn").style.display = "";
+      $("buyerEmail").style.display = "";
+      $("cartNote").textContent = "Pay securely with Apple Pay, Google Pay or card — or order via WhatsApp.";
+    }
     $("checkoutBtn").addEventListener("click", async () => {
-      if (!CART.length) return;
-      if (!CFG.checkout) { toast("Checkout is being set up — please check back soon."); return; }
+      if (!CART.length || !CFG.checkout) return;
       $("checkoutBtn").disabled = true; $("checkoutBtn").textContent = "Redirecting to secure checkout…";
       try {
         const r = await api("/checkout", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ items: CART.map((id) => ({ id })), email: $("buyerEmail").value.trim() || undefined }) });
         location.href = r.url;
-      } catch (e) { toast(e.message); $("checkoutBtn").disabled = false; $("checkoutBtn").textContent = "Checkout securely →"; }
+      } catch (e) { toast(e.message); $("checkoutBtn").disabled = false; $("checkoutBtn").textContent = "Pay securely by card / Apple Pay →"; }
     });
 
     render(); updateCart();
+
+    // deep link: /shop.html?product=<id> opens that product
+    const deepId = q.get("product");
+    if (deepId && PRODUCTS.find((p) => p.id === deepId)) openModal(deepId);
 
     // homepage pageview beacon
     try { api("/track", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ path: "/shop", ref: document.referrer }) }); } catch {}

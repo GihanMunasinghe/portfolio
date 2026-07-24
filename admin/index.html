@@ -159,6 +159,8 @@
           </div>
           <label>Ship-to countries (comma-separated ISO codes, e.g. SG, LK, MY)</label>
           <input id="sh-countries" class="mono" placeholder="SG" />
+          <label>WhatsApp order number (digits only, incl. country code — e.g. 6586469798)</label>
+          <input id="sh-whatsapp" class="mono" placeholder="6586469798" />
           <div style="margin-top:0.9rem;"><button class="btn btn-primary btn-sm" onclick="saveShopSettings()">Save settings</button>
             <span class="sub" id="sh-checkout-note" style="margin-left:0.8rem;"></span></div>
         </div>
@@ -451,6 +453,7 @@
         $("sh-currency").value = SHOPCFG.currency || "USD";
         $("sh-ship").value = SHOPCFG.shipPhysical || 0;
         $("sh-countries").value = (SHOPCFG.countries || ["SG"]).join(", ");
+        $("sh-whatsapp").value = SHOPCFG.whatsapp || "";
         $("sh-checkout-note").textContent = SHOPCFG.checkout ? "✓ Stripe connected — checkout live" : "⚠ Stripe not connected yet — buyers can browse but not pay";
       } catch (e) { toast(e.message, "err"); }
       renderImages();
@@ -477,6 +480,7 @@
           currency: $("sh-currency").value.trim().toUpperCase() || "USD",
           shipPhysical: Number($("sh-ship").value) || 0,
           countries: $("sh-countries").value.split(",").map((s) => s.trim().toUpperCase()).filter(Boolean),
+          whatsapp: $("sh-whatsapp").value.replace(/[^0-9]/g, ""),
         }) });
         toast("Settings saved ✓", "ok"); loadShop();
       } catch (e) { toast(e.message, "err"); }

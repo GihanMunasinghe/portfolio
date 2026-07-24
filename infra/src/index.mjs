@@ -271,7 +271,7 @@ const pubProduct = ({ pk, sk, gsi1pk, ...p }) => p;
 
 async function shopConfig() {
   const out = await ddb.send(new GetCommand({ TableName: TABLE, Key: { pk: "SETTINGS", sk: "SHOP" } }));
-  return out.Item || { currency: "USD", shipPhysical: 0, shipDigital: 0, shopEnabled: true, countries: ["SG"] };
+  return out.Item || { currency: "USD", shipPhysical: 0, shipDigital: 0, shopEnabled: true, countries: ["SG"], whatsapp: "6586469798" };
 }
 
 async function listProducts(all) {
@@ -517,7 +517,7 @@ export const handler = async (event) => {
     /* ---------- shop: config ---------- */
     if (method === "GET" && path === "/shop-config") {
       const c = await shopConfig();
-      return res(200, { currency: c.currency, shipPhysical: c.shipPhysical, shipDigital: c.shipDigital, shopEnabled: c.shopEnabled !== false, countries: c.countries, checkout: Boolean(STRIPE_SECRET) });
+      return res(200, { currency: c.currency, shipPhysical: c.shipPhysical, shipDigital: c.shipDigital, shopEnabled: c.shopEnabled !== false, countries: c.countries, whatsapp: c.whatsapp || "", checkout: Boolean(STRIPE_SECRET) });
     }
     if (method === "PUT" && path === "/shop-config") {
       if (!admin) return res(401, { error: "Auth required" });
@@ -529,6 +529,7 @@ export const handler = async (event) => {
         shipDigital: body.shipDigital === undefined ? (c.shipDigital || 0) : Math.max(0, Math.round(Number(body.shipDigital) || 0)),
         shopEnabled: body.shopEnabled === undefined ? (c.shopEnabled !== false) : Boolean(body.shopEnabled),
         countries: Array.isArray(body.countries) ? body.countries.slice(0, 50).map((x) => clean(x, 2).toUpperCase()) : (c.countries || ["SG"]),
+        whatsapp: body.whatsapp === undefined ? (c.whatsapp || "") : clean(body.whatsapp, 20).replace(/[^0-9]/g, ""),
       };
       await ddb.send(new PutCommand({ TableName: TABLE, Item: next }));
       return res(200, next);
