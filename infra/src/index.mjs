@@ -70,7 +70,17 @@ async function translateModelText(system, userText, maxTokens) {
   let lastErr;
   for (const modelId of order) {
     try {
-      const out = await bedrockText(system, userText, maxTokens, modelId);
+      // Bedrock throttles when several translations run at once; back off and retry.
+      let out, delay = 4000;
+      for (let attempt = 0; ; attempt++) {
+        try { out = await bedrockText(system, userText, maxTokens, modelId); break; }
+        catch (err) {
+          const throttled = err.name === "ThrottlingException" || err.name === "TooManyRequestsException" || err.$metadata?.httpStatusCode === 429;
+          if (!throttled || attempt >= 5) throw err;
+          await new Promise((r) => setTimeout(r, delay + Math.random() * 1000));
+          delay *= 2;
+        }
+      }
       workingTranslateModel = modelId;
       return out;
     } catch (e) {
@@ -497,8 +507,10 @@ async function mtHtml(html, lang) {
    post's updatedAt so an edit auto-invalidates and each post/language pair is
    only ever machine-translated once. */
 const xlateKey = (slug, lang) => ({ pk: `POST#${slug}`, sk: `XLATE#${lang}` });
+/* Content is usable when it was made from this revision of the post by this
+   engine version. A concurrent "pending" marker doesn't hide existing content. */
 const xlateFresh = (row, post) =>
-  row && row.srcUpdatedAt === post.updatedAt && row.v === XLATE_VERSION && row.status !== "pending";
+  Boolean(row && row.title && row.html && row.srcUpdatedAt === post.updatedAt && row.v === XLATE_VERSION);
 
 /* Look up a cached translation (fresh = same source revision and same engine version). */
 async function getTranslation(slug, lang, admin) {
@@ -516,9 +528,14 @@ async function getTranslation(slug, lang, admin) {
 async function runTranslation(slug, lang) {
   const post = await getPost(slug);
   if (!post) return { error: "post not found" };
-  await ddb.send(new PutCommand({ TableName: TABLE, Item: {
-    ...xlateKey(slug, lang), lang, status: "pending", startedAt: new Date().toISOString(), v: XLATE_VERSION,
-  } })).catch(() => {});
+  // Mark in-flight WITHOUT destroying an existing translation: if this run fails
+  // or is retried, readers keep seeing the previous good text.
+  await ddb.send(new UpdateCommand({
+    TableName: TABLE, Key: xlateKey(slug, lang),
+    UpdateExpression: "SET #s = :p, startedAt = :t, lang = :l, v = :v",
+    ExpressionAttributeNames: { "#s": "status" },
+    ExpressionAttributeValues: { ":p": "pending", ":t": new Date().toISOString(), ":l": lang, ":v": XLATE_VERSION },
+  })).catch(() => {});
   let t, h;
   try {
     [t, h] = await Promise.all([mtText(post.title, lang), mtHtml(post.html || "", lang)]);
@@ -713,7 +730,14 @@ export const handler = async (event) => {
       if (t.missing) return res(404, { error: "Post not found" });
       if (t.ready) return res(200, t.ready);
       if (!t.inFlight) await startTranslation(slug, lang);
-      return res(202, { pending: true, slug, lang });
+      // Still include readable content with the "pending" flag: a previous
+      // translation if we have one, otherwise the English original. Clients that
+      // don't poll then show real text instead of nothing.
+      return res(202, {
+        pending: true, slug, lang,
+        title: (t.row && t.row.title) || t.post.title,
+        html: (t.row && t.row.html) || t.post.html || "",
+      });
     }
 
     if (method === "POST" && path === "/posts") {
