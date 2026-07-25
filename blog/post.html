@@ -181,6 +181,9 @@
 
     document.title = post.title + " — Gihan Munasinghe";
     const url = location.href.split("#")[0];
+    // social bots don't run JS, so share links point at the server-rendered
+    // endpoint (real title/description/image); it redirects humans back here.
+    const shareUrl = API + "/share-post?slug=" + encodeURIComponent(slug);
 
     /* SEO: fill canonical, description, Open Graph / Twitter, and BlogPosting JSON-LD */
     (function seo() {
@@ -240,10 +243,10 @@
       <div class="share-bar">
         <h3>Enjoyed this? Share it</h3>
         <div class="share-btns">
-          <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}" target="_blank" rel="noopener">in&nbsp;LinkedIn</a>
-          <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(post.title)}" target="_blank" rel="noopener">𝕏&nbsp;Post</a>
-          <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}" target="_blank" rel="noopener">f&nbsp;Facebook</a>
-          <a href="https://wa.me/?text=${encodeURIComponent(post.title + " " + url)}" target="_blank" rel="noopener">🟢&nbsp;WhatsApp</a>
+          <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}" target="_blank" rel="noopener">in&nbsp;LinkedIn</a>
+          <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(post.title)}" target="_blank" rel="noopener">𝕏&nbsp;Post</a>
+          <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}" target="_blank" rel="noopener">f&nbsp;Facebook</a>
+          <a href="https://wa.me/?text=${encodeURIComponent(post.title + " " + shareUrl)}" target="_blank" rel="noopener">🟢&nbsp;WhatsApp</a>
           <button type="button" id="copyLink">🔗&nbsp;Copy link</button>
         </div>
       </div>
