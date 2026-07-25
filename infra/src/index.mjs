@@ -369,7 +369,7 @@ async function listComments(slug) {
 const XLATE_LANGS = { zh: "Chinese", ms: "Malay", ta: "Tamil", si: "Sinhala", hi: "Hindi" };
 const LANG_FULL = { zh: "Simplified Chinese", ms: "Malay (Bahasa Melayu)", ta: "Tamil", si: "Sinhala", hi: "Hindi" };
 /* bump when translation quality logic changes — old cached translations regenerate */
-const XLATE_VERSION = 2;
+const XLATE_VERSION = 3;
 const byteLen = (s) => Buffer.byteLength(s, "utf8");
 
 /* Unicode blocks per writing system, used to catch a model emitting the wrong
@@ -408,7 +408,7 @@ function foreignScriptChars(text, lang) {
 /* Split an HTML fragment into pieces under maxBytes, cutting ONLY at the end of a
    top-level element so tags are never broken across a chunk. Small chunks keep
    each translation call comfortably inside the model's output-token budget. */
-function chunkHtml(html, maxBytes = 4000) {
+function chunkHtml(html, maxBytes = 12000) {
   if (byteLen(html) <= maxBytes) return [html];
   const segs = [];
   const tagRe = /<\/?([a-zA-Z0-9]+)(?:\s[^>]*)?>/g;
@@ -431,6 +431,45 @@ function chunkHtml(html, maxBytes = 4000) {
 }
 
 const stripFence = (s) => s.replace(/^\s*```(?:html)?\s*/i, "").replace(/```\s*$/i, "").trim();
+
+/* ---------- engine 1: Google Cloud Translation (preferred) ----------
+   A dedicated NMT service. Noticeably better than a general-purpose LLM for
+   low-resource languages such as Sinhala, and it never wanders off-task the way
+   a chat model can. Free for the first 500k characters per month. */
+const GOOGLE_TRANSLATE_KEY = process.env.GOOGLE_TRANSLATE_API_KEY || "";
+const decodeEntities = (s) => String(s || "")
+  .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(+n))
+  .replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'")
+  .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&nbsp;/g, " ")
+  .replace(/&amp;/g, "&");
+
+/* Google honours translate="no", so code stays untouched. */
+const protectCode = (html) => html
+  .replace(/<pre(\s|>)/gi, '<pre translate="no"$1')
+  .replace(/<code(\s|>)/gi, '<code translate="no"$1');
+const unprotectCode = (html) => html.replace(/\s*translate=["']no["']/gi, "");
+
+async function googleTranslate(input, lang, isHtml) {
+  const body = new URLSearchParams();
+  body.append("q", isHtml ? protectCode(input) : input);
+  body.append("source", "en");
+  body.append("target", lang);
+  body.append("format", isHtml ? "html" : "text");
+  const r = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${encodeURIComponent(GOOGLE_TRANSLATE_KEY)}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: body.toString(),
+  });
+  const j = await r.json();
+  if (!r.ok || !j.data?.translations?.length) {
+    const msg = j.error?.message || `HTTP ${r.status}`;
+    const e = new Error(`Google Translate: ${msg}`);
+    e.googleStatus = r.status;
+    throw e;
+  }
+  const out = j.data.translations[0].translatedText || "";
+  return isHtml ? unprotectCode(out) : decodeEntities(out);
+}
 
 /* Shared rules so the translate and proofread passes agree on what "correct" is. */
 const langRules = (lang) => `Language rules for ${LANG_FULL[lang]}:
@@ -462,6 +501,27 @@ Output ONLY the corrected ${isHtml ? "HTML fragment" : "text"} — no commentary
 /* Translate → proofread → validate. If the validator still finds foreign-script
    characters, one more targeted repair pass is attempted before giving up. */
 async function translateAndCheck(source, lang, isHtml) {
+  /* Preferred path: Google NMT, then validate the script. Only if Google is
+     unavailable (no key / quota / error) do we fall back to the LLM engine. */
+  if (GOOGLE_TRANSLATE_KEY) {
+    try {
+      const out = await googleTranslate(source, lang, isHtml);
+      let bad = foreignScriptChars(out, lang);
+      if (bad.length) {
+        console.warn(`google output script issues (${lang}):`, bad.join(" "));
+        const repaired = await proofread(out, source, lang, isHtml, bad).catch(() => out);
+        const stillBad = foreignScriptChars(repaired, lang);
+        return { text: stillBad.length > bad.length ? out : repaired, issues: stillBad, engine: "google+repair" };
+      }
+      return { text: out, issues: [], engine: "google" };
+    } catch (e) {
+      console.error(`Google translate failed (${lang}), falling back to LLM:`, e.message);
+    }
+  }
+  return llmTranslateAndCheck(source, lang, isHtml);
+}
+
+async function llmTranslateAndCheck(source, lang, isHtml) {
   const sys = isHtml
     ? `You localize a technical blog into ${LANG_FULL[lang]}. You receive an HTML fragment and return the SAME fragment with only the human-readable text translated.
 
@@ -506,12 +566,14 @@ async function mtText(text, lang) {
 async function mtHtml(html, lang) {
   if (!html || !html.trim()) return { text: html, issues: [] };
   const parts = [], issues = [];
+  let engine;
   for (const chunk of chunkHtml(html)) {
     const r = await translateAndCheck(chunk, lang, true);
     parts.push(r.text);
     issues.push(...r.issues);
+    engine = r.engine;
   }
-  return { text: parts.join(""), issues };
+  return { text: parts.join(""), issues, engine };
 }
 
 /* Translate a post's title + body, caching the result per language keyed to the
@@ -558,7 +620,7 @@ async function runTranslation(slug, lang) {
   const issues = [...t.issues, ...h.issues];
   await ddb.send(new PutCommand({ TableName: TABLE, Item: {
     ...xlateKey(slug, lang), lang, title: t.text, html: h.text,
-    srcUpdatedAt: post.updatedAt, v: XLATE_VERSION, status: "ready",
+    srcUpdatedAt: post.updatedAt, v: XLATE_VERSION, status: "ready", engine: h.engine || t.engine,
     scriptIssues: issues.length ? issues.join(" ") : undefined,
     createdAt: new Date().toISOString(),
   } }));
@@ -657,6 +719,20 @@ export const handler = async (event) => {
   /* scheduled agent runs (only invokable via authenticated AWS invoke, not the public URL) */
   if (event.job === "daily-draft") return dailyDraft();
   if (event.job === "test-trends") return { trends: await fetchTrends() };
+  if (event.job === "translate-sample") {   // quick side-by-side quality check
+    const text = event.text || "I have spent a large part of the last eight years pulling legacy platforms apart. Different domains, same gravity: the monolith always resists.";
+    const out = {};
+    for (const lang of event.langs || ["si", "ta"]) {
+      out[lang] = {};
+      if (GOOGLE_TRANSLATE_KEY) {
+        try { const g = await googleTranslate(text, lang, false); out[lang].google = { text: g, issues: foreignScriptChars(g, lang) }; }
+        catch (e) { out[lang].google = { error: e.message }; }
+      } else out[lang].google = { error: "no API key set" };
+      try { const l = await llmTranslateAndCheck(text, lang, false); out[lang].llm = { text: l.text, issues: l.issues }; }
+      catch (e) { out[lang].llm = { error: e.message }; }
+    }
+    return out;
+  }
   if (event.job === "translate-one") return runTranslation(event.slug, event.lang);
   if (event.job === "translate-post") {   // warm every language for one post
     for (const l of Object.keys(XLATE_LANGS)) await startTranslation(event.slug, l);
