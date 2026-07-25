@@ -29,6 +29,7 @@ import { BedrockRuntimeClient, ConverseCommand } from "@aws-sdk/client-bedrock-r
 import { S3Client } from "@aws-sdk/client-s3";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { LambdaClient, InvokeCommand } from "@aws-sdk/client-lambda";
 
 const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}), {
   marshallOptions: { removeUndefinedValues: true },
@@ -36,12 +37,62 @@ const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}), {
 const ses = new SESv2Client({});
 const bedrock = new BedrockRuntimeClient({});
 const s3 = new S3Client({});
+const lambda = new LambdaClient({});
+const SELF_FN = process.env.AWS_LAMBDA_FUNCTION_NAME;
 
 const TABLE = process.env.TABLE_NAME;
 const JWT_SECRET = process.env.JWT_SECRET;
 const ADMIN_HASH = process.env.ADMIN_PASSWORD_HASH; // sha256 hex of the admin password
 const AGENT_KEY = process.env.AGENT_KEY;
 const BEDROCK_MODEL_ID = process.env.BEDROCK_MODEL_ID || "anthropic.claude-3-5-sonnet-20240620-v1:0";
+/* Translation needs a stronger model than drafting: Nova mixes writing systems
+   (it emits Devanagari inside Sinhala) and translates too literally. Anthropic
+   model entitlements on this account are intermittent, so this is a preference
+   list — the first model that actually answers is used, and the script
+   validator still guards whatever comes back. */
+const TRANSLATE_MODEL_IDS = (process.env.TRANSLATE_MODEL_IDS ||
+  [
+    "global.anthropic.claude-sonnet-4-5-20250929-v1:0",
+    "apac.anthropic.claude-3-5-sonnet-20241022-v2:0",
+    "apac.anthropic.claude-3-sonnet-20240229-v1:0",
+    "apac.anthropic.claude-3-haiku-20240307-v1:0",
+    "apac.amazon.nova-pro-v1:0",
+  ].join(",")).split(",").map((s) => s.trim()).filter(Boolean);
+
+/* Ask each candidate model in order; skip ones this account can't currently use.
+   The first model that works is remembered for the life of the container, so we
+   don't pay for the blocked-model round trips on every chunk. */
+let workingTranslateModel = null;
+async function translateModelText(system, userText, maxTokens) {
+  const order = workingTranslateModel
+    ? [workingTranslateModel, ...TRANSLATE_MODEL_IDS.filter((m) => m !== workingTranslateModel)]
+    : TRANSLATE_MODEL_IDS;
+  let lastErr;
+  for (const modelId of order) {
+    try {
+      // Bedrock throttles when several translations run at once; back off and retry.
+      let out, delay = 4000;
+      for (let attempt = 0; ; attempt++) {
+        try { out = await bedrockText(system, userText, maxTokens, modelId); break; }
+        catch (err) {
+          const throttled = err.name === "ThrottlingException" || err.name === "TooManyRequestsException" || err.$metadata?.httpStatusCode === 429;
+          if (!throttled || attempt >= 5) throw err;
+          await new Promise((r) => setTimeout(r, delay + Math.random() * 1000));
+          delay *= 2;
+        }
+      }
+      workingTranslateModel = modelId;
+      return out;
+    } catch (e) {
+      lastErr = e;
+      const skip = e.name === "ResourceNotFoundException" || e.name === "AccessDeniedException" || e.name === "ValidationException";
+      if (workingTranslateModel === modelId) workingTranslateModel = null;   // it stopped working
+      console.warn(`translate model ${modelId} unavailable (${e.name}); ${skip ? "trying next" : "aborting"}`);
+      if (!skip) throw e;
+    }
+  }
+  throw lastErr || new Error("No translation model available");
+}
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL;
 const SITE = process.env.SITE_URL || "https://www.gihanmunasinghe.lk";
 const MEDIA_BUCKET = process.env.MEDIA_BUCKET;          // S3 bucket for product photos
@@ -141,9 +192,9 @@ async function savePost(input, { asDraft }) {
 }
 
 /* ---------- daily draft agent (AWS Bedrock) ---------- */
-async function bedrockText(system, userText, maxTokens = 4096) {
+async function bedrockText(system, userText, maxTokens = 4096, modelId) {
   const out = await bedrock.send(new ConverseCommand({
-    modelId: BEDROCK_MODEL_ID,
+    modelId: modelId || BEDROCK_MODEL_ID,
     system: [{ text: system }],
     messages: [{ role: "user", content: [{ text: userText }] }],
     inferenceConfig: { maxTokens, temperature: 0.7 },
@@ -308,18 +359,56 @@ async function listComments(slug) {
   return (out.Items || []).map(({ pk, sk, ...c }) => c);
 }
 
-/* ---------- live translation (Amazon Bedrock / Nova) ---------- */
+/* ---------- live translation (Amazon Bedrock) ---------- */
 /* Languages readers can translate a post into (English is the original).
-   Amazon Translate isn't enabled on this account, so we translate with the same
-   Bedrock model that drafts posts — it gives context-aware, tag-preserving output. */
+   Amazon Translate isn't enabled on this account, so we translate with Bedrock.
+   Translation uses a stronger model than the drafting one: smaller models leak
+   characters from other scripts (e.g. Devanagari into Sinhala) and translate
+   too literally. Every translation is then proofread by a second pass and
+   validated for script purity before it is cached. */
 const XLATE_LANGS = { zh: "Chinese", ms: "Malay", ta: "Tamil", si: "Sinhala", hi: "Hindi" };
 const LANG_FULL = { zh: "Simplified Chinese", ms: "Malay (Bahasa Melayu)", ta: "Tamil", si: "Sinhala", hi: "Hindi" };
+/* bump when translation quality logic changes — old cached translations regenerate */
+const XLATE_VERSION = 2;
 const byteLen = (s) => Buffer.byteLength(s, "utf8");
+
+/* Unicode blocks per writing system, used to catch a model emitting the wrong
+   script (the "සබ → सब" class of bug). Latin/digits/punctuation are always fine
+   because technical terms stay in English. */
+const SCRIPT_RANGES = {
+  sinhala: /[඀-෿]/g,
+  tamil: /[஀-௿]/g,
+  devanagari: /[ऀ-ॿ]/g,
+  bengali: /[ঀ-৿]/g,
+  gujarati: /[઀-૿]/g,
+  telugu: /[ఀ-౿]/g,
+  kannada: /[ಀ-೿]/g,
+  malayalam: /[ഀ-ൿ]/g,
+  thai: /[฀-๿]/g,
+  arabic: /[؀-ۿ]/g,
+  cjk: /[㐀-䶿一-鿿]/g,
+  hangul: /[가-힯]/g,
+  kana: /[぀-ヿ]/g,
+};
+const LANG_SCRIPT = { si: "sinhala", ta: "tamil", hi: "devanagari", zh: "cjk", ms: null };
+
+/* Characters present that belong to a script the target language never uses. */
+function foreignScriptChars(text, lang) {
+  const own = LANG_SCRIPT[lang];
+  const bad = new Set();
+  for (const [name, re] of Object.entries(SCRIPT_RANGES)) {
+    if (name === own) continue;
+    if (own === "cjk" && (name === "kana" || name === "hangul")) continue; // tolerate CJK neighbours
+    const hits = text.match(re);
+    if (hits) hits.forEach((c) => bad.add(c));
+  }
+  return [...bad];
+}
 
 /* Split an HTML fragment into pieces under maxBytes, cutting ONLY at the end of a
    top-level element so tags are never broken across a chunk. Small chunks keep
    each translation call comfortably inside the model's output-token budget. */
-function chunkHtml(html, maxBytes = 2500) {
+function chunkHtml(html, maxBytes = 4000) {
   if (byteLen(html) <= maxBytes) return [html];
   const segs = [];
   const tagRe = /<\/?([a-zA-Z0-9]+)(?:\s[^>]*)?>/g;
@@ -343,47 +432,149 @@ function chunkHtml(html, maxBytes = 2500) {
 
 const stripFence = (s) => s.replace(/^\s*```(?:html)?\s*/i, "").replace(/```\s*$/i, "").trim();
 
+/* Shared rules so the translate and proofread passes agree on what "correct" is. */
+const langRules = (lang) => `Language rules for ${LANG_FULL[lang]}:
+- Write ONLY in the ${LANG_FULL[lang]} script. Never emit characters from any other writing system (for example Devanagari characters must never appear in Sinhala or Tamil text). Latin letters are allowed ONLY for technical terms and product names.
+- Use natural, grammatical, idiomatic ${LANG_FULL[lang]} as a native speaker writes it — correct word order, verb forms, agreement and particles. Do NOT translate word-by-word from English.
+- Keep well-known technical terms and product names in English where a native engineer would (e.g. Kubernetes, Lambda, API, Kafka, microservices).
+- Never transliterate an English word into the local script when a real ${LANG_FULL[lang]} word exists; equally, do not invent words.`;
+
+/* Second pass: a native-speaker proofread of the machine translation, with the
+   English source alongside so meaning can be checked, not just fluency. */
+async function proofread(translated, source, lang, isHtml, problems) {
+  const sys = `You are a meticulous native ${LANG_FULL[lang]} editor proofreading a machine translation of a technical blog for publication.
+
+${langRules(lang)}
+
+Your job:
+- Compare against the English source and fix anything that is wrong, unnatural, ungrammatical, or literally translated.
+- Fix spelling, grammar, agreement and punctuation errors.
+- Remove or correct any character that belongs to a different writing system.
+${isHtml ? "- Keep every HTML tag, attribute and URL EXACTLY as-is, and leave <code>/<pre> contents untouched." : ""}
+- Preserve the author's meaning and tone. Do not add or drop information.
+
+Output ONLY the corrected ${isHtml ? "HTML fragment" : "text"} — no commentary, no markdown fences, no alternatives.${problems && problems.length ? `\n\nA validator flagged these characters as belonging to the wrong script — they MUST NOT appear in your output: ${problems.join(" ")}` : ""}`;
+  const user = `ENGLISH SOURCE:\n${source}\n\n---\n\n${LANG_FULL[lang].toUpperCase()} TRANSLATION TO PROOFREAD:\n${translated}`;
+  const out = await translateModelText(sys, user, isHtml ? 6000 : 1500);
+  return stripFence(out) || translated;
+}
+
+/* Translate → proofread → validate. If the validator still finds foreign-script
+   characters, one more targeted repair pass is attempted before giving up. */
+async function translateAndCheck(source, lang, isHtml) {
+  const sys = isHtml
+    ? `You localize a technical blog into ${LANG_FULL[lang]}. You receive an HTML fragment and return the SAME fragment with only the human-readable text translated.
+
+${langRules(lang)}
+
+- Keep every HTML tag, attribute and URL EXACTLY as-is; do not add, remove or reorder tags.
+- Do NOT translate anything inside <code> or <pre> tags — leave all code, commands and identifiers unchanged.
+- Output ONLY the translated HTML fragment — no markdown code fences, no commentary.`
+    : `You are a professional translator rendering English into ${LANG_FULL[lang]}.
+
+${langRules(lang)}
+
+You are translating a single short headline. Reply with ONLY that translated headline on ONE line — no quotes, no notes, no alternatives, no English gloss, and never any article text after it.`;
+  let out = stripFence(await translateModelText(sys, source, isHtml ? 6000 : 1200)) || source;
+  out = await proofread(out, source, lang, isHtml, foreignScriptChars(out, lang));
+  let bad = foreignScriptChars(out, lang);
+  if (bad.length) {
+    console.warn(`translation script issues (${lang}):`, bad.join(" "));
+    out = await proofread(out, source, lang, isHtml, bad);
+    bad = foreignScriptChars(out, lang);
+    if (bad.length) console.error(`translation still has foreign script (${lang}):`, bad.join(" "));
+  }
+  return { text: out, issues: bad };
+}
+
+/* A title must stay a single line: models sometimes append the article body or
+   a note after it. Keep the first real line and drop any decoration. */
+function cleanTitle(s, fallback) {
+  let t = String(s || "").trim();
+  t = t.split(/\r?\n/).find((l) => l.trim()) || "";
+  t = t.replace(/^\s*(?:#+\s*|["'“”‘’]+)/, "").replace(/["'“”‘’]+\s*$/, "");
+  t = t.replace(/\*\*/g, "").replace(/\s*[-–—]{3,}\s*$/, "").trim();
+  return t.slice(0, 200) || String(fallback || "").slice(0, 200);
+}
+
 async function mtText(text, lang) {
-  if (!text || !text.trim()) return text;
-  const sys = `You are a professional translator. Translate the user's text from English into ${LANG_FULL[lang]}. Reply with ONLY the translation — no quotes, no notes, no alternatives, no English.`;
-  const out = await bedrockText(sys, text.slice(0, 4000), 1200);
-  return stripFence(out) || text;
+  if (!text || !text.trim()) return { text, issues: [] };
+  const r = await translateAndCheck(text.slice(0, 4000), lang, false);
+  return { ...r, text: cleanTitle(r.text, text) };
 }
 
 async function mtHtml(html, lang) {
-  if (!html || !html.trim()) return html;
-  const sys = `You localize a technical blog into ${LANG_FULL[lang]}. You receive an HTML fragment and return the SAME fragment with only the human-readable text translated into ${LANG_FULL[lang]}.
-Rules:
-- Keep every HTML tag, attribute and URL EXACTLY as-is; do not add, remove or reorder tags.
-- Do NOT translate anything inside <code> or <pre> tags — leave all code, commands and identifiers unchanged.
-- Leave well-known technical terms and product names in English where that reads naturally (e.g. Kubernetes, Lambda, API, Kafka).
-- Output ONLY the translated HTML fragment — no markdown code fences, no commentary.`;
-  const parts = [];
+  if (!html || !html.trim()) return { text: html, issues: [] };
+  const parts = [], issues = [];
   for (const chunk of chunkHtml(html)) {
-    const out = await bedrockText(sys, chunk, 5000);
-    parts.push(stripFence(out));
+    const r = await translateAndCheck(chunk, lang, true);
+    parts.push(r.text);
+    issues.push(...r.issues);
   }
-  return parts.join("");
+  return { text: parts.join(""), issues };
 }
 
 /* Translate a post's title + body, caching the result per language keyed to the
    post's updatedAt so an edit auto-invalidates and each post/language pair is
    only ever machine-translated once. */
-async function translatePost(slug, lang, admin) {
+const xlateKey = (slug, lang) => ({ pk: `POST#${slug}`, sk: `XLATE#${lang}` });
+/* Content is usable when it was made from this revision of the post by this
+   engine version. A concurrent "pending" marker doesn't hide existing content. */
+const xlateFresh = (row, post) =>
+  Boolean(row && row.title && row.html && row.srcUpdatedAt === post.updatedAt && row.v === XLATE_VERSION);
+
+/* Look up a cached translation (fresh = same source revision and same engine version). */
+async function getTranslation(slug, lang, admin) {
   const post = await getPost(slug);
-  if (!post || (post.status !== "published" && !admin)) return null;
-  const cacheKey = { pk: `POST#${slug}`, sk: `XLATE#${lang}` };
-  const cached = (await ddb.send(new GetCommand({ TableName: TABLE, Key: cacheKey }))).Item;
-  if (cached && cached.srcUpdatedAt === post.updatedAt)
-    return { slug, lang, title: cached.title, html: cached.html, cached: true };
-  const [title, html] = await Promise.all([
-    mtText(post.title, lang),
-    mtHtml(post.html || "", lang),
-  ]);
+  if (!post || (post.status !== "published" && !admin)) return { missing: true };
+  const row = (await ddb.send(new GetCommand({ TableName: TABLE, Key: xlateKey(slug, lang) }))).Item;
+  if (xlateFresh(row, post)) return { post, ready: { slug, lang, title: cleanTitle(row.title, post.title), html: row.html, cached: true } };
+  const inFlight = row && row.status === "pending" && Date.now() - new Date(row.startedAt || 0).getTime() < 5 * 60e3;
+  return { post, row, inFlight };
+}
+
+/* Do the actual work: translate title + body, proofread, validate, then cache.
+   Runs in a background invocation because it takes longer than the API gateway
+   request timeout. */
+async function runTranslation(slug, lang) {
+  const post = await getPost(slug);
+  if (!post) return { error: "post not found" };
+  // Mark in-flight WITHOUT destroying an existing translation: if this run fails
+  // or is retried, readers keep seeing the previous good text.
+  await ddb.send(new UpdateCommand({
+    TableName: TABLE, Key: xlateKey(slug, lang),
+    UpdateExpression: "SET #s = :p, startedAt = :t, lang = :l, v = :v",
+    ExpressionAttributeNames: { "#s": "status" },
+    ExpressionAttributeValues: { ":p": "pending", ":t": new Date().toISOString(), ":l": lang, ":v": XLATE_VERSION },
+  })).catch(() => {});
+  let t, h;
+  try {
+    [t, h] = await Promise.all([mtText(post.title, lang), mtHtml(post.html || "", lang)]);
+  } catch (e) {
+    console.error(`translation failed (${slug}/${lang}):`, e.message);
+    await ddb.send(new DeleteCommand({ TableName: TABLE, Key: xlateKey(slug, lang) })).catch(() => {});
+    throw e;
+  }
+  const issues = [...t.issues, ...h.issues];
   await ddb.send(new PutCommand({ TableName: TABLE, Item: {
-    ...cacheKey, title, html, lang, srcUpdatedAt: post.updatedAt, createdAt: new Date().toISOString(),
-  } })).catch((e) => console.error("cache translation failed:", e.message));
-  return { slug, lang, title, html, cached: false };
+    ...xlateKey(slug, lang), lang, title: t.text, html: h.text,
+    srcUpdatedAt: post.updatedAt, v: XLATE_VERSION, status: "ready",
+    scriptIssues: issues.length ? issues.join(" ") : undefined,
+    createdAt: new Date().toISOString(),
+  } }));
+  return { slug, lang, chars: h.text.length, issues };
+}
+
+/* Kick off a background translation (fire-and-forget async Lambda invocation). */
+async function startTranslation(slug, lang) {
+  try {
+    await lambda.send(new InvokeCommand({
+      FunctionName: SELF_FN,
+      InvocationType: "Event",
+      Payload: Buffer.from(JSON.stringify({ job: "translate-one", slug, lang })),
+    }));
+    return true;
+  } catch (e) { console.error("startTranslation failed:", e.message); return false; }
 }
 
 /* ================= SHOP ================= */
@@ -466,6 +657,11 @@ export const handler = async (event) => {
   /* scheduled agent runs (only invokable via authenticated AWS invoke, not the public URL) */
   if (event.job === "daily-draft") return dailyDraft();
   if (event.job === "test-trends") return { trends: await fetchTrends() };
+  if (event.job === "translate-one") return runTranslation(event.slug, event.lang);
+  if (event.job === "translate-post") {   // warm every language for one post
+    for (const l of Object.keys(XLATE_LANGS)) await startTranslation(event.slug, l);
+    return { warming: event.slug, langs: Object.keys(XLATE_LANGS) };
+  }
   if (event.job === "indexnow-all") {
     const urls = (await siteUrls()).map((u) => u.loc);
     return { ...(await indexNow(urls)), urls };
@@ -535,14 +731,24 @@ export const handler = async (event) => {
       return res(200, publicPost(p, true));
     }
 
-    /* live translation: translate a post's title + body into a reader's language */
+    /* live translation: cached result, or start one in the background and let
+       the page poll (a full translate+proofread pass outlives the HTTP timeout) */
     if (method === "POST" && path === "/translate") {
       const slug = clean(body.slug, 120);
       const lang = clean(body.lang, 10).toLowerCase();
       if (!XLATE_LANGS[lang]) return res(400, { error: "Unsupported language" });
-      const out = await translatePost(slug, lang, admin);
-      if (!out) return res(404, { error: "Post not found" });
-      return res(200, out);
+      const t = await getTranslation(slug, lang, admin);
+      if (t.missing) return res(404, { error: "Post not found" });
+      if (t.ready) return res(200, t.ready);
+      if (!t.inFlight) await startTranslation(slug, lang);
+      // Still include readable content with the "pending" flag: a previous
+      // translation if we have one, otherwise the English original. Clients that
+      // don't poll then show real text instead of nothing.
+      return res(202, {
+        pending: true, slug, lang,
+        title: cleanTitle((t.row && t.row.title) || t.post.title, t.post.title),
+        html: (t.row && t.row.html) || t.post.html || "",
+      });
     }
 
     if (method === "POST" && path === "/posts") {
@@ -568,7 +774,11 @@ export const handler = async (event) => {
       p.updatedAt = new Date().toISOString();
       await ddb.send(new PutCommand({ TableName: TABLE, Item: p }));
       // tell search engines straight away when a live post appears or changes
-      if (p.status === "published") pingIndexNow([`${SITE}/blog/post.html?slug=${encodeURIComponent(p.slug)}`, `${SITE}/`]);
+      if (p.status === "published") {
+        pingIndexNow([`${SITE}/blog/post.html?slug=${encodeURIComponent(p.slug)}`, `${SITE}/`]);
+        // warm translations in the background so readers get them instantly
+        for (const l of Object.keys(XLATE_LANGS)) startTranslation(p.slug, l).catch(() => {});
+      }
       return res(200, publicPost(p, false));
     }
 

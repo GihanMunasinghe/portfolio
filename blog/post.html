@@ -261,6 +261,22 @@
     const LANG_NAMES = { en: "English", zh: "中文", ms: "Bahasa Melayu", ta: "தமிழ்", si: "සිංහල", hi: "हिन्दी" };
     const titleEl = $("postTitle"), bodyEl = $("postBody"), langSel = $("langSel"), xnote = $("xnote");
     const xcache = {};
+    /* A first-time translation is prepared in the background (translate +
+       native-language proofread), so the API answers 202 until it's ready. */
+    async function fetchTranslation(lang) {
+      const req = () => api("/translate", {
+        method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ slug, lang }),
+      });
+      let r = await req();
+      for (let i = 0; r && r.pending && i < 40; i++) {          // ~2 min ceiling
+        xnote.textContent = "Preparing translation… (first time only)";
+        await new Promise((s) => setTimeout(s, 3000));
+        r = await req();
+      }
+      if (!r || r.pending) throw new Error("Translation is taking longer than usual");
+      return r;
+    }
     async function applyLang(lang) {
       if (!lang || lang === "en") {
         titleEl.textContent = orig.title; bodyEl.innerHTML = orig.html;
@@ -269,10 +285,7 @@
       }
       xnote.textContent = "Translating…";
       try {
-        const t = xcache[lang] || (xcache[lang] = await api("/translate", {
-          method: "POST", headers: { "content-type": "application/json" },
-          body: JSON.stringify({ slug, lang }),
-        }));
+        const t = xcache[lang] || (xcache[lang] = await fetchTranslation(lang));
         titleEl.textContent = t.title; bodyEl.innerHTML = t.html;
         document.documentElement.lang = lang; document.title = t.title + " — Gihan Munasinghe";
         xnote.innerHTML = "Auto-translated to " + esc(LANG_NAMES[lang] || lang) + ' · <a id="xorig">Show original</a>';
