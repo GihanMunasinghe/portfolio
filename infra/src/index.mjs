@@ -858,6 +858,63 @@ export const handler = async (event) => {
       return { statusCode: 200, headers: { "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=3600", "X-Content-Type-Options": "nosniff" }, body: xml };
     }
 
+    /* ---------- SEO: server-rendered blog post (crawlers + rich share previews) ----------
+       The public page renders client-side, so crawlers that don't run JavaScript
+       (and social preview bots) would otherwise see an empty "Loading…" shell.
+       This returns the real article as HTML with full metadata. Same content as
+       the JS page — a Cloudflare Worker routes bots here (see docs/). */
+    if (method === "GET" && (path === "/post-html" || path === "/share-post")) {
+      const slug = clean(qs.slug, 120);
+      const p = await getPost(slug);
+      const dest = `${SITE}/blog/post.html?slug=${encodeURIComponent(slug)}`;
+      if (!p || p.status !== "published")
+        return { statusCode: 302, headers: { Location: `${SITE}/#blog` }, body: "" };
+      const humanRedirect = path === "/share-post";   // share links bounce humans to the real page
+      const img = p.image
+        ? (/^https?:\/\//.test(p.image) ? p.image : `${SITE}/${String(p.image).replace(/^\//, "")}`)
+        : `${SITE}/assets/gihan-formal.jpg`;
+      const desc = (p.excerpt || p.title || "").replace(/\s+/g, " ").slice(0, 200);
+      const ld = {
+        "@context": "https://schema.org", "@type": "BlogPosting",
+        headline: p.title, description: desc, url: dest, mainEntityOfPage: dest, image: img, inLanguage: "en",
+        datePublished: p.createdAt, dateModified: p.updatedAt,
+        author: { "@type": "Person", name: "Gihan Munasinghe", url: `${SITE}/` },
+        publisher: { "@type": "Person", name: "Gihan Munasinghe", url: `${SITE}/` },
+      };
+      const html = `<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${escHtml(p.title)} — Gihan Munasinghe</title>
+<meta name="description" content="${escHtml(desc)}">
+<link rel="canonical" href="${escHtml(dest)}">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Gihan Munasinghe">
+<meta property="og:title" content="${escHtml(p.title)}">
+<meta property="og:description" content="${escHtml(desc)}">
+<meta property="og:image" content="${escHtml(img)}">
+<meta property="og:url" content="${escHtml(dest)}">
+<meta property="article:published_time" content="${escHtml(p.createdAt || "")}">
+<meta property="article:author" content="Gihan Munasinghe">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${escHtml(p.title)}">
+<meta name="twitter:description" content="${escHtml(desc)}">
+<meta name="twitter:image" content="${escHtml(img)}">
+<script type="application/ld+json">${JSON.stringify(ld)}</script>
+${humanRedirect ? `<script>location.replace(${JSON.stringify(dest)});</script>` : ""}
+<style>body{background:#07090d;color:#c6ccd8;font-family:-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.75;margin:0;padding:2rem 1.4rem 4rem}main{max-width:720px;margin:0 auto}h1{color:#eef1f7;font-size:2rem;line-height:1.2;margin:0 0 .6rem}h2{color:#eef1f7;margin:2rem 0 .8rem}a{color:#6ea8fe}.meta{color:#98a1b3;font-size:.9rem;margin-bottom:1.6rem}pre{background:#0d1118;border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:1rem;overflow-x:auto}img{max-width:100%;height:auto;border-radius:12px}blockquote{border-left:3px solid #8b5cf6;background:rgba(139,92,246,.08);margin:0 0 1rem;padding:.8rem 1.2rem;border-radius:0 12px 12px 0}</style>
+</head><body><main>
+<article>
+<h1>${escHtml(p.title)}</h1>
+<div class="meta">By <a href="${SITE}/">Gihan Munasinghe</a> · ${escHtml(p.date || "")} · ${escHtml(p.readTime || "")}</div>
+${p.html || ""}
+</article>
+${Array.isArray(p.sources) && p.sources.length ? `<h2>Sources</h2><ul>${p.sources.map((s) => `<li><a href="${escHtml(s)}" rel="noopener">${escHtml(s)}</a></li>`).join("")}</ul>` : ""}
+<p><a href="${escHtml(dest)}">Read this post on gihanmunasinghe.lk →</a></p>
+<p><a href="${SITE}/">← More from Gihan Munasinghe</a></p>
+</main></body></html>`;
+      return { statusCode: 200, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=300", "X-Content-Type-Options": "nosniff", "Referrer-Policy": "strict-origin-when-cross-origin" }, body: html };
+    }
+
     /* ---------- shop: shareable product page (rich link preview for WhatsApp/social) ---------- */
     if (method === "GET" && path === "/share") {
       const id = clean(qs.id, 120);
