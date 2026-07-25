@@ -474,7 +474,7 @@ ${langRules(lang)}
 
 ${langRules(lang)}
 
-Reply with ONLY the translation — no quotes, no notes, no alternatives, no English gloss.`;
+You are translating a single short headline. Reply with ONLY that translated headline on ONE line — no quotes, no notes, no alternatives, no English gloss, and never any article text after it.`;
   let out = stripFence(await translateModelText(sys, source, isHtml ? 6000 : 1200)) || source;
   out = await proofread(out, source, lang, isHtml, foreignScriptChars(out, lang));
   let bad = foreignScriptChars(out, lang);
@@ -487,9 +487,20 @@ Reply with ONLY the translation — no quotes, no notes, no alternatives, no Eng
   return { text: out, issues: bad };
 }
 
+/* A title must stay a single line: models sometimes append the article body or
+   a note after it. Keep the first real line and drop any decoration. */
+function cleanTitle(s, fallback) {
+  let t = String(s || "").trim();
+  t = t.split(/\r?\n/).find((l) => l.trim()) || "";
+  t = t.replace(/^\s*(?:#+\s*|["'“”‘’]+)/, "").replace(/["'“”‘’]+\s*$/, "");
+  t = t.replace(/\*\*/g, "").replace(/\s*[-–—]{3,}\s*$/, "").trim();
+  return t.slice(0, 200) || String(fallback || "").slice(0, 200);
+}
+
 async function mtText(text, lang) {
   if (!text || !text.trim()) return { text, issues: [] };
-  return translateAndCheck(text.slice(0, 4000), lang, false);
+  const r = await translateAndCheck(text.slice(0, 4000), lang, false);
+  return { ...r, text: cleanTitle(r.text, text) };
 }
 
 async function mtHtml(html, lang) {
@@ -517,7 +528,7 @@ async function getTranslation(slug, lang, admin) {
   const post = await getPost(slug);
   if (!post || (post.status !== "published" && !admin)) return { missing: true };
   const row = (await ddb.send(new GetCommand({ TableName: TABLE, Key: xlateKey(slug, lang) }))).Item;
-  if (xlateFresh(row, post)) return { post, ready: { slug, lang, title: row.title, html: row.html, cached: true } };
+  if (xlateFresh(row, post)) return { post, ready: { slug, lang, title: cleanTitle(row.title, post.title), html: row.html, cached: true } };
   const inFlight = row && row.status === "pending" && Date.now() - new Date(row.startedAt || 0).getTime() < 5 * 60e3;
   return { post, row, inFlight };
 }
@@ -735,7 +746,7 @@ export const handler = async (event) => {
       // don't poll then show real text instead of nothing.
       return res(202, {
         pending: true, slug, lang,
-        title: (t.row && t.row.title) || t.post.title,
+        title: cleanTitle((t.row && t.row.title) || t.post.title, t.post.title),
         html: (t.row && t.row.html) || t.post.html || "",
       });
     }
