@@ -252,6 +252,41 @@ Respond with ONLY a JSON object (no markdown fences, no prose before/after):
   return { created: item.slug };
 }
 
+/* ---------- SEO: URL inventory + IndexNow ---------- */
+/* Every public URL on the site, used for both /sitemap.xml and IndexNow pings. */
+async function siteUrls() {
+  const [posts, products] = await Promise.all([listPosts(false), listProducts(false)]);
+  const day = (s) => (s || "").slice(0, 10);
+  return [
+    { loc: `${SITE}/`, freq: "weekly", pri: "1.0" },
+    { loc: `${SITE}/shop.html`, freq: "daily", pri: "0.8" },
+    ...posts.map((p) => ({ loc: `${SITE}/blog/post.html?slug=${encodeURIComponent(p.slug)}`, freq: "monthly", pri: "0.7", lastmod: day(p.updatedAt || p.createdAt) })),
+    ...products.map((p) => ({ loc: `${SITE}/shop.html?product=${encodeURIComponent(p.id)}`, freq: "weekly", pri: "0.6", lastmod: day(p.updatedAt || p.createdAt) })),
+  ];
+}
+
+/* IndexNow: instantly tell Bing / DuckDuckGo / Yandex that URLs are new or changed.
+   The key is served as a static file at SITE/<key>.txt, which is how they verify us. */
+const INDEXNOW_KEY = process.env.INDEXNOW_KEY || "f9d45a96a87d03dae7ad4ef3bb3677f1";
+async function indexNow(urlList) {
+  const urls = (Array.isArray(urlList) ? urlList : [urlList]).filter(Boolean).slice(0, 10000);
+  if (!urls.length) return { skipped: true };
+  const host = new URL(SITE).host;
+  try {
+    const r = await fetch("https://api.indexnow.org/IndexNow", {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({ host, key: INDEXNOW_KEY, keyLocation: `${SITE}/${INDEXNOW_KEY}.txt`, urlList: urls }),
+    });
+    return { status: r.status, submitted: urls.length };
+  } catch (e) {
+    console.error("IndexNow failed:", e.message);
+    return { error: e.message };
+  }
+}
+/* fire-and-forget ping so admin actions stay fast */
+const pingIndexNow = (urls) => { try { indexNow(urls).catch(() => {}); } catch {} };
+
 async function notify(subject, body) {
   if (!NOTIFY_EMAIL) return;
   try {
@@ -431,6 +466,34 @@ export const handler = async (event) => {
   /* scheduled agent runs (only invokable via authenticated AWS invoke, not the public URL) */
   if (event.job === "daily-draft") return dailyDraft();
   if (event.job === "test-trends") return { trends: await fetchTrends() };
+  if (event.job === "indexnow-all") {
+    const urls = (await siteUrls()).map((u) => u.loc);
+    return { ...(await indexNow(urls)), urls };
+  }
+  if (event.job === "seo-check") {
+    const out = {};
+    for (const p of event.paths || ["/", "/shop.html", "/robots.txt", "/sitemap.xml", `/${INDEXNOW_KEY}.txt`]) {
+      try {
+        const r = await fetch(SITE + p, { headers: { "user-agent": "Mozilla/5.0 (compatible; SEOCheck/1.0)" } });
+        const body = await r.text();
+        const pick = (re) => { const m = body.match(re); return m ? m[1].trim() : null; };
+        out[p] = {
+          status: r.status,
+          hsts: r.headers.get("strict-transport-security"),
+          xfo: r.headers.get("x-frame-options"),
+          csp_header: Boolean(r.headers.get("content-security-policy")),
+          title: pick(/<title>([^<]*)<\/title>/i),
+          description: pick(/<meta name="description" content="([^"]*)"/i),
+          canonical: pick(/<link rel="canonical"[^>]*href="([^"]*)"/i),
+          og_title: pick(/<meta property="og:title" content="([^"]*)"/i),
+          jsonld: (body.match(/application\/ld\+json/g) || []).length,
+          csp_meta: /http-equiv="Content-Security-Policy"/i.test(body),
+          bytes: body.length,
+        };
+      } catch (e) { out[p] = { error: e.message }; }
+    }
+    return out;
+  }
   if (event.job === "cors-check") {
     const base = process.env.SELF_URL || SITE;
     const O = "https://www.gihanmunasinghe.lk";
@@ -504,6 +567,8 @@ export const handler = async (event) => {
       } else return res(400, { error: "Unknown action" });
       p.updatedAt = new Date().toISOString();
       await ddb.send(new PutCommand({ TableName: TABLE, Item: p }));
+      // tell search engines straight away when a live post appears or changes
+      if (p.status === "published") pingIndexNow([`${SITE}/blog/post.html?slug=${encodeURIComponent(p.slug)}`, `${SITE}/`]);
       return res(200, publicPost(p, false));
     }
 
@@ -646,7 +711,9 @@ export const handler = async (event) => {
     }
     if (method === "POST" && path === "/products") {
       if (!admin) return res(401, { error: "Auth required" });
-      return res(200, pubProduct(await saveProduct(body)));
+      const saved = await saveProduct(body);
+      pingIndexNow([`${SITE}/shop.html`, `${SITE}/shop.html?product=${encodeURIComponent(saved.id)}`]);
+      return res(200, pubProduct(saved));
     }
     if (method === "PUT" && path === "/product") {
       if (!admin) return res(401, { error: "Auth required" });
@@ -784,14 +851,7 @@ export const handler = async (event) => {
 
     /* ---------- SEO: dynamic sitemap (home, shop, published posts, visible products) ---------- */
     if (method === "GET" && path === "/sitemap.xml") {
-      const [posts, products] = await Promise.all([listPosts(false), listProducts(false)]);
-      const day = (s) => (s || "").slice(0, 10);
-      const urls = [
-        { loc: `${SITE}/`, freq: "weekly", pri: "1.0" },
-        { loc: `${SITE}/shop.html`, freq: "daily", pri: "0.8" },
-        ...posts.map((p) => ({ loc: `${SITE}/blog/post.html?slug=${encodeURIComponent(p.slug)}`, freq: "monthly", pri: "0.7", lastmod: day(p.updatedAt || p.createdAt) })),
-        ...products.map((p) => ({ loc: `${SITE}/shop.html?product=${encodeURIComponent(p.id)}`, freq: "weekly", pri: "0.6", lastmod: day(p.updatedAt || p.createdAt) })),
-      ];
+      const urls = await siteUrls();
       const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
         urls.map((u) => `  <url><loc>${escHtml(u.loc)}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ""}<changefreq>${u.freq}</changefreq><priority>${u.pri}</priority></url>`).join("\n") +
         `\n</urlset>`;
