@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://gihan-shop-media-303963685758.s3.ap-southeast-1.amazonaws.com; connect-src 'self' https://api.gihanmunasinghe.lk; frame-src https://www.youtube.com https://player.vimeo.com" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta name="theme-color" content="#07090d" />
+  <title>Ventures — MVPs &amp; Products | Gihan Munasinghe</title>
+  <meta name="description" content="Products and MVPs built by Gihan Munasinghe — what's shipped, what's next, and where partners and investors can get involved." />
+  <link rel="canonical" href="https://www.gihanmunasinghe.lk/ventures.html" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Gihan Munasinghe" />
+  <meta property="og:title" content="Ventures — MVPs &amp; Products | Gihan Munasinghe" />
+  <meta property="og:description" content="Products and MVPs built by Gihan Munasinghe — what's shipped, what's next, and where partners and investors can get involved." />
+  <meta property="og:url" content="https://www.gihanmunasinghe.lk/ventures.html" />
+  <meta property="og:image" content="https://www.gihanmunasinghe.lk/assets/gihan-formal.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #07090d; --surface: rgba(255,255,255,0.04); --surface-solid:#11151d; --border: rgba(255,255,255,0.09);
+      --text: #eef1f7; --muted: #98a1b3; --accent: #6ea8fe; --accent-2:#8b5cf6; --accent-3:#22d3ee;
+      --ok:#34d399; --warn:#fbbf24; --danger:#f87171;
+      --grad: linear-gradient(100deg, #6ea8fe, #8b5cf6 55%, #22d3ee);
+      --font-display: "Sora", -apple-system, sans-serif; --font-body: "Inter", -apple-system, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-body); color: var(--text); line-height: 1.65; min-height: 100vh;
+      background:
+        radial-gradient(700px 460px at 88% -6%, rgba(139,92,246,0.16), transparent 70%),
+        radial-gradient(760px 520px at -12% 18%, rgba(110,168,254,0.11), transparent 70%),
+        var(--bg);
+    }
+    a { color: inherit; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 1.4rem; }
+
+    /* nav */
+    nav { position: sticky; top: 0; z-index: 20; backdrop-filter: blur(12px); background: rgba(7,9,13,0.72); border-bottom: 1px solid var(--border); }
+    .nav-in { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 0; }
+    .logo { font-family: var(--font-display); font-weight: 800; text-decoration: none; font-size: 1.05rem; }
+    .logo span { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .nav-links { display: flex; gap: 1.4rem; align-items: center; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.92rem; font-weight: 500; }
+    .nav-links a:hover, .nav-links a.on { color: var(--text); }
+    .burger { display: none; background: none; border: 0; color: var(--text); font-size: 1.4rem; cursor: pointer; }
+    @media (max-width: 860px) {
+      .nav-links { position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: flex-start;
+        gap: 0.2rem; padding: 0.6rem 1.4rem 1.1rem; background: #0b0e14; border-bottom: 1px solid var(--border); display: none; }
+      .nav-links.open { display: flex; }
+      .nav-links a { padding: 0.55rem 0; width: 100%; }
+      .burger { display: block; }
+    }
+
+    /* hero */
+    header.hero { padding: 4rem 0 2.4rem; }
+    .kicker { font-family: var(--font-display); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em;
+      background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 0.9rem; }
+    h1 { font-family: var(--font-display); font-size: clamp(1.9rem, 5vw, 3rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.12; margin-bottom: 0.9rem; }
+    .lede { color: var(--muted); font-size: 1.03rem; max-width: 62ch; }
+    .hero-cta { display: flex; gap: 0.7rem; flex-wrap: wrap; margin-top: 1.6rem; }
+
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; font-family: var(--font-body);
+      font-weight: 600; font-size: 0.92rem; padding: 0.7rem 1.3rem; border-radius: 12px; text-decoration: none; cursor: pointer;
+      border: 1px solid transparent; transition: transform 0.15s, background 0.2s, border-color 0.2s; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: var(--grad); color: #fff; }
+    .btn-ghost { background: var(--surface); border-color: var(--border); color: var(--text); }
+    .btn-sm { font-size: 0.85rem; padding: 0.5rem 1rem; border-radius: 10px; }
+
+    /* filters */
+    .filters { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 2rem 0 1.4rem; }
+    .chip { font-size: 0.85rem; font-weight: 600; padding: 0.45rem 1rem; border-radius: 999px; cursor: pointer;
+      background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+    .chip.on { color: var(--text); border-color: var(--accent); background: rgba(110,168,254,0.14); }
+
+    /* cards */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.3rem; padding-bottom: 4rem; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; overflow: hidden;
+      display: flex; flex-direction: column; transition: transform 0.18s, border-color 0.18s; cursor: pointer; }
+    .card:hover { transform: translateY(-3px); border-color: rgba(110,168,254,0.45); }
+    .card .shot { aspect-ratio: 16/9; background: #0d1118; display: grid; place-items: center; overflow: hidden; }
+    .card .shot img { width: 100%; height: 100%; object-fit: cover; }
+    .card .shot .ph { font-family: var(--font-display); font-weight: 800; font-size: 1.6rem; background: var(--grad);
+      -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .card .body { padding: 1.1rem 1.2rem 1.3rem; display: flex; flex-direction: column; gap: 0.55rem; flex: 1; }
+    .card h3 { font-family: var(--font-display); font-size: 1.15rem; }
+    .card p { color: var(--muted); font-size: 0.9rem; }
+    .row { display: flex; gap: 0.45rem; flex-wrap: wrap; align-items: center; }
+    .tag { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+      padding: 0.22rem 0.6rem; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); }
+    .stage { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.22rem 0.6rem; border-radius: 999px; }
+    .stage.idea      { background: rgba(152,161,179,0.16); color: #c6ccd8; }
+    .stage.prototype { background: rgba(251,191,36,0.16);  color: #fcd34d; }
+    .stage.mvp       { background: rgba(110,168,254,0.18); color: #9ec5ff; }
+    .stage.beta      { background: rgba(139,92,246,0.2);   color: #c4b5fd; }
+    .stage.live      { background: rgba(52,211,153,0.16);  color: #6ee7b7; }
+    .looking { font-size: 0.8rem; color: var(--accent); font-weight: 600; }
+
+    /* detail modal */
+    .modal { position: fixed; inset: 0; z-index: 40; background: rgba(4,5,8,0.92); backdrop-filter: blur(7px);
+      overflow-y: auto; padding: 1.2rem; display: none; }
+    .modal.open { display: block; }
+    .sheet { max-width: 880px; margin: 0 auto 3rem; background: var(--surface-solid); border: 1px solid var(--border);
+      border-radius: 20px; padding: 1.7rem; }
+    .sheet h2 { font-family: var(--font-display); font-size: clamp(1.4rem, 4vw, 2rem); margin-bottom: 0.4rem; }
+    .close { float: right; background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 10px;
+      width: 34px; height: 34px; cursor: pointer; font-size: 1.1rem; line-height: 1; }
+    .sec { margin-top: 1.8rem; }
+    .sec h4 { font-family: var(--font-display); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.13em;
+      color: var(--muted); margin-bottom: 0.8rem; }
+    .prose { color: #c6ccd8; font-size: 0.95rem; }
+    .prose p { margin-bottom: 0.9rem; }
+    .prose h2, .prose h3 { font-family: var(--font-display); color: var(--text); font-size: 1.1rem; margin: 1.3rem 0 0.6rem; }
+    .prose ul, .prose ol { margin: 0 0 0.9rem 1.3rem; }
+    .prose code { font-family: ui-monospace, Menlo, monospace; background: rgba(255,255,255,0.07); border-radius: 6px; padding: 0.1rem 0.35rem; font-size: 0.85em; }
+    .prose pre { background: #0d1118; border: 1px solid var(--border); border-radius: 12px; padding: 1rem; overflow-x: auto; margin-bottom: 0.9rem; }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    @media (max-width: 700px) { .two { grid-template-columns: 1fr; } }
+    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.15rem; }
+    .panel h5 { font-family: var(--font-display); font-size: 0.95rem; margin-bottom: 0.5rem; }
+    .panel p { color: var(--muted); font-size: 0.9rem; }
+    .video { position: relative; aspect-ratio: 16/9; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); background: #000; }
+    .video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.7rem; }
+    .shots img { width: 100%; border-radius: 12px; border: 1px solid var(--border); display: block; }
+
+    /* checklist */
+    .steps { display: flex; flex-direction: column; gap: 0.55rem; }
+    .step { display: flex; gap: 0.7rem; align-items: flex-start; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 0.75rem 0.95rem; }
+    .step .dot { flex: none; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center;
+      font-size: 0.72rem; font-weight: 800; margin-top: 0.15rem; }
+    .step.done .dot     { background: rgba(52,211,153,0.18); color: #6ee7b7; }
+    .step.building .dot { background: rgba(251,191,36,0.18); color: #fcd34d; }
+    .step.planned .dot  { background: rgba(152,161,179,0.16); color: #98a1b3; }
+    .step .t { font-size: 0.93rem; font-weight: 600; }
+    .step .d { font-size: 0.85rem; color: var(--muted); margin-top: 0.15rem; }
+    .legend { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.7rem; }
+
+    /* form */
+    .form { display: grid; gap: 0.65rem; }
+    .form .two-in { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+    @media (max-width: 620px) { .form .two-in { grid-template-columns: 1fr; } }
+    input, textarea, select {
+      width: 100%; padding: 0.72rem 0.95rem; border-radius: 11px; border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05); color: var(--text); font-size: 0.93rem; font-family: var(--font-body);
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); }
+    .hp { position: absolute; left: -9999px; }
+    .note { font-size: 0.83rem; color: var(--muted); }
+    .empty { color: var(--muted); text-align: center; padding: 3.5rem 1rem; border: 1px dashed var(--border); border-radius: 16px; }
+    #toast { position: fixed; bottom: 1.4rem; left: 50%; transform: translateX(-50%); background: var(--surface-solid);
+      border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem 1.3rem; font-size: 0.9rem; display: none; z-index: 60; max-width: 92vw; }
+    #toast.ok { border-color: rgba(52,211,153,0.45); } #toast.err { border-color: rgba(248,113,113,0.45); }
+    footer { border-top: 1px solid var(--border); padding: 2rem 0 3rem; color: var(--muted); font-size: 0.88rem; }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="wrap nav-in">
+      <a class="logo" href="/">Gihan<span>.</span></a>
+      <button class="burger" id="burger" aria-label="Menu">☰</button>
+      <div class="nav-links" id="navLinks">
+        <a href="/">Home</a>
+        <a href="/ventures.html" class="on">Ventures</a>
+        <a href="/#blog">Blog</a>
+        <a href="/shop.html">Shop</a>
+        <a href="/#contact">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero wrap">
+    <div class="kicker">Ventures &amp; MVPs</div>
+    <h1>Products I'm building — and where you can come in</h1>
+    <p class="lede">Each project below is a working product or MVP. You'll find what it does, a demo, exactly what's shipped today, and the stages ahead where partners, investors and pilot customers can get involved.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#projects">Browse projects</a>
+      <button class="btn btn-ghost" id="talkBtn">Request a meeting</button>
+    </div>
+  </header>
+
+  <main class="wrap" id="projects">
+    <div class="filters" id="filters"></div>
+    <div class="grid" id="grid"><div class="empty">Loading projects…</div></div>
+  </main>
+
+  <footer>
+    <div class="wrap">© <span id="yr"></span> Gihan Munasinghe · <a href="/">gihanmunasinghe.lk</a></div>
+  </footer>
+
+  <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+  <div id="toast"></div>
+
+  <script>
+  (function () {
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const toast = (m, cls) => { const t = $("toast"); t.textContent = m; t.className = cls || ""; t.style.display = "block"; clearTimeout(t._h); t._h = setTimeout(() => t.style.display = "none", 5000); };
+    $("yr").textContent = new Date().getFullYear();
+    $("burger").addEventListener("click", () => $("navLinks").classList.toggle("open"));
+
+    const STAGES = { idea: "Idea", prototype: "Prototype", mvp: "MVP", beta: "Beta", live: "Live" };
+    const STATE_ICON = { done: "✓", building: "◐", planned: "○" };
+    const STATE_LABEL = { done: "Shipped", building: "In progress", planned: "Planned" };
+    let API = "", VENTURES = [], filter = "all";
+
+    function embed(url) {
+      const u = String(url || "").trim();
+      let m;
+      if ((m = u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/))) return "https://www.youtube.com/embed/" + m[1];
+      if ((m = u.match(/vimeo\.com\/(?:video\/)?(\d+)/))) return "https://player.vimeo.com/video/" + m[1];
+      return null;
+    }
+
+    function card(v) {
+      const shot = v.images && v.images[0]
+        ? `<img src="${esc(v.images[0])}" alt="${esc(v.name)}" loading="lazy" />`
+        : `<div class="ph">${esc((v.name || "?").slice(0, 2).toUpperCase())}</div>`;
+      return `<article class="card" data-id="${esc(v.id)}">
+        <div class="shot">${shot}</div>
+        <div class="body">
+          <div class="row">
+            <span class="stage ${esc(v.stage)}">${esc(STAGES[v.stage] || v.stage)}</span>
+            <span class="tag">${esc(v.category)}</span>
+          </div>
+          <h3>${esc(v.name)}</h3>
+          <p>${esc(v.tagline)}</p>
+          ${(v.lookingFor || []).length ? `<div class="looking">Looking for: ${v.lookingFor.map(esc).join(" · ")}</div>` : ""}
+        </div>
+      </article>`;
+    }
+
+    function steps(list) {
+      if (!list || !list.length) return "";
+      return `<div class="steps">${list.map((s) => `
+        <div class="step ${esc(s.state)}">
+          <span class="dot">${STATE_ICON[s.state] || "○"}</span>
+          <div><div class="t">${esc(s.label)}</div>${s.detail ? `<div class="d">${esc(s.detail)}</div>` : ""}</div>
+        </div>`).join("")}</div>`;
+    }
+
+    function openVenture(id) {
+      const v = VENTURES.find((x) => x.id === id);
+      if (!v) return;
+      const em = embed(v.demoUrl);
+      $("sheet").innerHTML = `
+        <button class="close" id="closeBtn" aria-label="Close">✕</button>
+        <div class="row" style="margin-bottom:0.5rem;">
+          <span class="stage ${esc(v.stage)}">${esc(STAGES[v.stage] || v.stage)}</span>
+          <span class="tag">${esc(v.category)}</span>
+        </div>
+        <h2>${esc(v.name)}</h2>
+        <p class="lede">${esc(v.tagline)}</p>
+        <div class="hero-cta">
+          ${v.liveUrl ? `<a class="btn btn-primary btn-sm" href="${esc(v.liveUrl)}" target="_blank" rel="noopener">Try it live ↗</a>` : ""}
+          ${v.repoUrl ? `<a class="btn btn-ghost btn-sm" href="${esc(v.repoUrl)}" target="_blank" rel="noopener">Source ↗</a>` : ""}
+          <button class="btn btn-ghost btn-sm" data-meet="${esc(v.id)}">Request a meeting</button>
+          <button class="btn btn-ghost btn-sm" id="shareBtn">Share</button>
+        </div>
+
+        ${em ? `<div class="sec"><h4>Demo</h4><div class="video"><iframe src="${esc(em)}" allowfullscreen loading="lazy" title="${esc(v.name)} demo"></iframe></div></div>`
+             : (v.demoUrl ? `<div class="sec"><h4>Demo</h4><a class="btn btn-ghost btn-sm" href="${esc(v.demoUrl)}" target="_blank" rel="noopener">Watch the demo ↗</a></div>` : "")}
+
+        ${(v.problem || v.solution) ? `<div class="sec"><div class="two">
+          ${v.problem ? `<div class="panel"><h5>The problem</h5><p>${esc(v.problem)}</p></div>` : ""}
+          ${v.solution ? `<div class="panel"><h5>The approach</h5><p>${esc(v.solution)}</p></div>` : ""}
+        </div></div>` : ""}
+
+        ${v.overview ? `<div class="sec"><h4>Overview</h4><div class="prose">${v.overview}</div></div>` : ""}
+
+        ${(v.images || []).length > 1 ? `<div class="sec"><h4>Screens</h4><div class="shots">${v.images.slice(1).map((i) => `<img src="${esc(i)}" alt="" loading="lazy" />`).join("")}</div></div>` : ""}
+
+        ${(v.mvp || []).length ? `<div class="sec"><h4>What's in the MVP today</h4>
+          <div class="legend"><span>✓ Shipped</span><span>◐ In progress</span><span>○ Planned</span></div>
+          ${steps(v.mvp)}</div>` : ""}
+
+        ${(v.roadmap || []).length ? `<div class="sec"><h4>Stages ahead — where you can contribute</h4>${steps(v.roadmap)}</div>` : ""}
+
+        ${(v.tech || []).length ? `<div class="sec"><h4>Built with</h4><div class="row">${v.tech.map((t) => `<span class="tag">${esc(t)}</span>`).join("")}</div></div>` : ""}
+
+        ${(v.lookingFor || []).length || v.ask ? `<div class="sec"><h4>Get involved</h4><div class="panel">
+          ${(v.lookingFor || []).length ? `<p style="margin-bottom:0.5rem;"><strong style="color:var(--text)">Looking for:</strong> ${v.lookingFor.map(esc).join(" · ")}</p>` : ""}
+          ${v.ask ? `<p>${esc(v.ask)}</p>` : ""}
+          <div style="margin-top:0.9rem;"><button class="btn btn-primary btn-sm" data-meet="${esc(v.id)}">Request a meeting</button></div>
+        </div></div>` : ""}`;
+      $("modal").classList.add("open");
+      document.body.style.overflow = "hidden";
+      history.replaceState(null, "", "?app=" + encodeURIComponent(v.id));
+      $("closeBtn").addEventListener("click", closeModal);
+      const sb = $("shareBtn");
+      if (sb) sb.addEventListener("click", async () => {
+        const url = location.origin + "/ventures.html?app=" + encodeURIComponent(v.id);
+        const data = { title: v.name + " — Gihan Munasinghe", text: v.tagline, url };
+        if (navigator.share) { try { await navigator.share(data); return; } catch {} }
+        try { await navigator.clipboard.writeText(url); toast("Link copied!", "ok"); } catch { prompt("Copy this link:", url); }
+      });
+      $("sheet").querySelectorAll("[data-meet]").forEach((b) => b.addEventListener("click", () => openMeeting(v)));
+      $("sheet").scrollIntoView({ block: "start" });
+    }
+
+    function closeModal() {
+      $("modal").classList.remove("open");
+      document.body.style.overflow = "";
+      history.replaceState(null, "", location.pathname);
+    }
+    $("modal").addEventListener("click", (e) => { if (e.target === $("modal")) closeModal(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("modal").classList.contains("open")) closeModal(); });
+
+    function openMeeting(v) {
+      $("sheet").innerHTML = `
+        <button class="close" id="closeBtn" aria-label="Close">✕</button>
+        <h2>Request a meeting</h2>
+        <p class="lede">${v ? `About <strong>${esc(v.name)}</strong>. ` : ""}Tell me a little about you and what you'd like to explore — I'll reply personally to arrange a time.</p>
+        <div class="sec">
+          <div class="form">
+            <div class="two-in">
+              <input id="m-name" placeholder="Your name *" maxlength="100" autocomplete="name" />
+              <input id="m-email" type="email" placeholder="Email *" maxlength="200" autocomplete="email" />
+            </div>
+            <div class="two-in">
+              <input id="m-company" placeholder="Company / fund (optional)" maxlength="160" autocomplete="organization" />
+              <select id="m-interest">
+                <option>Investment</option>
+                <option>Partnership</option>
+                <option>Pilot customer</option>
+                <option>Technical collaboration</option>
+                <option>Just curious</option>
+              </select>
+            </div>
+            <textarea id="m-msg" placeholder="What would you like to discuss?" maxlength="3000"></textarea>
+            <input type="text" class="hp" id="m-web" tabindex="-1" autocomplete="off" aria-hidden="true" />
+            <div class="row" style="justify-content:space-between;">
+              <span class="note">Your details are only used to reply to you.</span>
+              <button class="btn btn-primary" id="m-send">Send request</button>
+            </div>
+          </div>
+        </div>`;
+      $("modal").classList.add("open");
+      document.body.style.overflow = "hidden";
+      $("closeBtn").addEventListener("click", closeModal);
+      $("m-send").addEventListener("click", async () => {
+        const payload = {
+          ventureId: v ? v.id : "",
+          name: $("m-name").value.trim(), email: $("m-email").value.trim(),
+          company: $("m-company").value.trim(), interest: $("m-interest").value,
+          message: $("m-msg").value.trim(), website: $("m-web").value,
+        };
+        if (!payload.name || !payload.email) return toast("Please add your name and email.", "err");
+        $("m-send").disabled = true;
+        try {
+          const r = await fetch(API + "/meeting-request", {
+            method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload),
+          });
+          const j = await r.json().catch(() => ({}));
+          if (!r.ok) throw new Error(j.error || "Could not send");
+          $("sheet").innerHTML = `<h2>Thank you — request sent ✅</h2>
+            <p class="lede">I've got your details and will get back to you by email shortly.</p>
+            <div class="hero-cta"><button class="btn btn-ghost" id="closeBtn2">Close</button></div>`;
+          $("closeBtn2").addEventListener("click", closeModal);
+        } catch (e) { toast(e.message, "err"); $("m-send").disabled = false; }
+      });
+    }
+    $("talkBtn").addEventListener("click", () => openMeeting(null));
+
+    function render() {
+      const list = filter === "all" ? VENTURES : VENTURES.filter((v) => v.stage === filter);
+      $("grid").innerHTML = list.length ? list.map(card).join("")
+        : '<div class="empty">Nothing here yet — check back soon.</div>';
+      $("grid").querySelectorAll(".card").forEach((c) => c.addEventListener("click", () => openVenture(c.dataset.id)));
+    }
+
+    function renderFilters() {
+      const present = [...new Set(VENTURES.map((v) => v.stage))];
+      const opts = [["all", "All"], ...present.map((s) => [s, STAGES[s] || s])];
+      $("filters").innerHTML = opts.map(([k, l]) => `<button class="chip ${k === filter ? "on" : ""}" data-f="${k}">${esc(l)}</button>`).join("");
+      $("filters").querySelectorAll(".chip").forEach((b) => b.addEventListener("click", () => {
+        filter = b.dataset.f; renderFilters(); render();
+      }));
+    }
+
+    (async function init() {
+      try { API = ((await (await fetch("/site-config.json?t=" + Date.now())).json()).api || "").replace(/\/$/, ""); } catch {}
+      if (!API) { $("grid").innerHTML = '<div class="empty">Not configured yet.</div>'; return; }
+      try {
+        VENTURES = await (await fetch(API + "/ventures")).json();
+        if (!Array.isArray(VENTURES)) VENTURES = [];
+      } catch { $("grid").innerHTML = '<div class="empty">Could not load projects. Please refresh.</div>'; return; }
+      renderFilters(); render();
+      const want = new URLSearchParams(location.search).get("app");
+      if (want) openVenture(want);
+      try {
+        fetch(API + "/track", { method: "POST", headers: { "content-type": "application/json" },
+          body: JSON.stringify({ path: "/ventures.html", ref: document.referrer }) });
+      } catch {}
+    })();
+  })();
+  </script>
+</body>
+</html>

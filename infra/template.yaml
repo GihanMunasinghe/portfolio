@@ -27,6 +27,11 @@ Parameters:
     Type: String
     Default: "global.anthropic.claude-sonnet-4-5-20250929-v1:0,apac.anthropic.claude-3-5-sonnet-20241022-v2:0,apac.anthropic.claude-3-sonnet-20240229-v1:0,apac.anthropic.claude-3-haiku-20240307-v1:0,apac.amazon.nova-pro-v1:0"
     Description: Comma-separated preference list of Bedrock models for translation; the first one the account can actually invoke is used
+  GoogleTranslateApiKey:
+    Type: String
+    NoEcho: true
+    Default: ""
+    Description: Google Cloud Translation API key; when set it is the primary translation engine (Bedrock is the fallback)
   MediaBucket:
     Type: String
     Default: ""
@@ -137,6 +142,7 @@ Resources:
           AGENT_KEY: !Ref AgentKey
           BEDROCK_MODEL_ID: !Ref BedrockModelId
           TRANSLATE_MODEL_IDS: !Ref TranslateModelIds
+          GOOGLE_TRANSLATE_API_KEY: !Ref GoogleTranslateApiKey
           MEDIA_BUCKET: !Ref MediaBucket
           MEDIA_BASE: !Ref MediaBase
           STRIPE_SECRET_KEY: !Ref StripeSecretKey

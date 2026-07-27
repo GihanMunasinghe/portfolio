@@ -140,6 +140,8 @@
         <button data-tab="drafts" class="active">📥 Drafts <span id="tab-n-drafts"></span></button>
         <button data-tab="published">🌍 Published</button>
         <button data-tab="new">✍️ New post</button>
+        <button data-tab="ventures">🚀 Ventures</button>
+        <button data-tab="meetings">🤝 Meetings <span id="tab-n-meetings"></span></button>
         <button data-tab="shop">🛒 Shop</button>
         <button data-tab="orders">📦 Orders</button>
         <button data-tab="comments">💬 Comments</button>
@@ -227,6 +229,63 @@
 
       <div id="tab-orders" class="hidden">
         <div id="orders-list"><div class="empty">Loading orders…</div></div>
+      </div>
+
+      <div id="tab-ventures" class="hidden">
+        <div class="card">
+          <h2 style="margin-top:0;" id="v-formTitle">Add a venture / MVP</h2>
+          <p class="sub">Shown on the public Ventures page for investors, partners and pilot customers.</p>
+          <div class="ed-grid">
+            <div><label>Name</label><input id="v-name" /></div>
+            <div><label>Category</label><input id="v-category" placeholder="Music Tech, Fintech…" /></div>
+            <div><label>Stage</label>
+              <select id="v-stage">
+                <option value="idea">Idea</option><option value="prototype">Prototype</option>
+                <option value="mvp" selected>MVP</option><option value="beta">Beta</option><option value="live">Live</option>
+              </select>
+            </div>
+            <div><label>Sort order (lower first)</label><input id="v-order" type="number" value="0" /></div>
+          </div>
+          <label>Tagline (one line)</label><input id="v-tagline" />
+          <div class="ed-grid">
+            <div><label>Demo video URL (YouTube/Vimeo)</label><input id="v-demoUrl" /></div>
+            <div><label>Live URL</label><input id="v-liveUrl" /></div>
+            <div><label>Repository URL</label><input id="v-repoUrl" /></div>
+            <div><label>Tech (comma separated)</label><input id="v-tech" placeholder="Java, Spring, React" /></div>
+          </div>
+          <div class="ed-grid">
+            <div><label>The problem</label><textarea id="v-problem" style="min-height:80px;"></textarea></div>
+            <div><label>The approach</label><textarea id="v-solution" style="min-height:80px;"></textarea></div>
+          </div>
+          <label>Overview</label>
+          <div id="v-editor"></div>
+          <label style="margin-top:1rem;">Screenshots</label>
+          <input type="file" id="v-images" accept="image/*" multiple />
+          <div id="v-imgPreview" class="row" style="gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap;"></div>
+          <div class="ed-grid" style="margin-top:1rem;">
+            <div>
+              <label>What's in the MVP <span class="sub">(one per line — prefix <code>+</code> shipped, <code>~</code> in progress, <code>-</code> planned)</span></label>
+              <textarea id="v-mvp" class="mono" style="min-height:120px;" placeholder="+ Chord detection engine&#10;~ Multi-track arranger&#10;- Mobile app"></textarea>
+            </div>
+            <div>
+              <label>Stages ahead <span class="sub">(same format; add detail after a <code>|</code>)</span></label>
+              <textarea id="v-roadmap" class="mono" style="min-height:120px;" placeholder="- Beta launch | 500 pilot users, needs hosting + support&#10;- iOS build | Looking for a mobile engineer"></textarea>
+            </div>
+          </div>
+          <div class="ed-grid">
+            <div><label>Looking for (comma separated)</label><input id="v-lookingFor" placeholder="Seed investment, Pilot users" /></div>
+            <div><label>Ask / terms (optional, shown publicly)</label><input id="v-ask" placeholder="Seed round — details on request" /></div>
+          </div>
+          <div class="actions" style="margin-top:1rem;">
+            <button class="btn btn-primary" id="v-save">Save venture</button>
+            <button class="btn btn-ghost" id="v-reset">Clear form</button>
+          </div>
+        </div>
+        <div id="ventures-list"><div class="empty">Loading ventures…</div></div>
+      </div>
+
+      <div id="tab-meetings" class="hidden">
+        <div id="meetings-list"><div class="empty">Loading requests…</div></div>
       </div>
     </div>
 
@@ -427,11 +486,13 @@
     document.querySelectorAll(".tabs button").forEach((b) => b.addEventListener("click", () => {
       document.querySelectorAll(".tabs button").forEach((x) => x.classList.remove("active"));
       b.classList.add("active");
-      ["drafts", "published", "new", "comments", "analytics", "shop", "orders"].forEach((t) => $("tab-" + t).classList.toggle("hidden", t !== b.dataset.tab));
+      ["drafts", "published", "new", "comments", "analytics", "shop", "orders", "ventures", "meetings"].forEach((t) => $("tab-" + t).classList.toggle("hidden", t !== b.dataset.tab));
       if (b.dataset.tab === "comments") loadComments();
       if (b.dataset.tab === "analytics") loadAnalytics();
       if (b.dataset.tab === "shop") loadShop();
       if (b.dataset.tab === "orders") loadOrders();
+      if (b.dataset.tab === "ventures") loadVentures();
+      if (b.dataset.tab === "meetings") loadMeetings();
     }));
 
     const thumb = (p) => p.coverSvg ? `<div class="thumb">${p.coverSvg}</div>` : (p.image ? `<div class="thumb"><img src="../${esc(p.image)}" onerror="this.parentNode.style.display='none'"></div>` : '<div class="thumb"></div>');
@@ -526,6 +587,149 @@
       } catch (e) { toast(e.message, "err"); }
       finally { $("ed-save").disabled = false; }
     });
+
+    /* ---------- ventures (MVP showcase) ---------- */
+    const ventEditor = makeEditor($("v-editor"), "Full overview for investors — what it does, who it's for, why now…");
+    let V_EDIT = null, V_IMAGES = [];
+    const STAGE_LABEL = { idea: "Idea", prototype: "Prototype", mvp: "MVP", beta: "Beta", live: "Live" };
+
+    /* "+ done | detail" / "~ building" / "- planned" <-> [{label,detail,state}] */
+    const parseSteps = (txt) => String(txt || "").split("\n").map((l) => l.trim()).filter(Boolean).map((l) => {
+      const m = l.match(/^([+~-])\s*(.*)$/);
+      const state = m ? ({ "+": "done", "~": "building", "-": "planned" })[m[1]] : "planned";
+      const rest = m ? m[2] : l;
+      const [label, ...d] = rest.split("|");
+      return { label: label.trim(), detail: d.join("|").trim(), state };
+    }).filter((s) => s.label);
+    const stepsToText = (arr) => (arr || []).map((s) =>
+      `${({ done: "+", building: "~", planned: "-" })[s.state] || "-"} ${s.label}${s.detail ? " | " + s.detail : ""}`).join("\n");
+
+    function renderVentImgs() {
+      $("v-imgPreview").innerHTML = V_IMAGES.map((u, i) =>
+        `<span style="position:relative;display:inline-block;">
+           <img src="${esc(u)}" style="height:64px;border-radius:8px;border:1px solid var(--border);display:block;" />
+           <button class="btn btn-danger btn-sm" data-rmimg="${i}" style="position:absolute;top:-6px;right:-6px;padding:0.1rem 0.4rem;">✕</button>
+         </span>`).join("");
+      $("v-imgPreview").querySelectorAll("[data-rmimg]").forEach((b) =>
+        b.addEventListener("click", () => { V_IMAGES.splice(+b.dataset.rmimg, 1); renderVentImgs(); }));
+    }
+    $("v-images").addEventListener("change", async (e) => {
+      for (const f of [...e.target.files]) {
+        toast("Uploading " + f.name + "…");
+        try {
+          const { uploadUrl, publicUrl, contentType } = await api("/upload-url", { method: "POST", body: JSON.stringify({ filename: f.name, contentType: f.type }) });
+          await fetch(uploadUrl, { method: "PUT", headers: { "content-type": contentType }, body: f });
+          V_IMAGES.push(publicUrl); renderVentImgs();
+        } catch (err) { toast("Upload failed: " + err.message, "err"); }
+      }
+      e.target.value = "";
+      toast("Images ready ✓", "ok");
+    });
+
+    function ventReset() {
+      V_EDIT = null; V_IMAGES = [];
+      ["v-name", "v-category", "v-tagline", "v-demoUrl", "v-liveUrl", "v-repoUrl", "v-tech", "v-problem", "v-solution", "v-mvp", "v-roadmap", "v-lookingFor", "v-ask"].forEach((i) => $(i).value = "");
+      $("v-order").value = 0; $("v-stage").value = "mvp";
+      ventEditor.setHTML(""); renderVentImgs();
+      $("v-formTitle").textContent = "Add a venture / MVP";
+    }
+    $("v-reset").addEventListener("click", ventReset);
+
+    $("v-save").addEventListener("click", async () => {
+      const body = {
+        id: V_EDIT || undefined,
+        name: $("v-name").value.trim(), category: $("v-category").value.trim(),
+        stage: $("v-stage").value, order: Number($("v-order").value) || 0,
+        tagline: $("v-tagline").value.trim(), overview: ventEditor.getHTML(),
+        problem: $("v-problem").value.trim(), solution: $("v-solution").value.trim(),
+        demoUrl: $("v-demoUrl").value.trim(), liveUrl: $("v-liveUrl").value.trim(), repoUrl: $("v-repoUrl").value.trim(),
+        tech: $("v-tech").value.split(",").map((s) => s.trim()).filter(Boolean),
+        lookingFor: $("v-lookingFor").value.split(",").map((s) => s.trim()).filter(Boolean),
+        ask: $("v-ask").value.trim(),
+        mvp: parseSteps($("v-mvp").value), roadmap: parseSteps($("v-roadmap").value),
+        images: V_IMAGES,
+      };
+      if (!body.name) return toast("Name is required.", "err");
+      $("v-save").disabled = true;
+      try {
+        if (V_EDIT) await api("/venture?id=" + encodeURIComponent(V_EDIT), { method: "PUT", body: JSON.stringify({ action: "update", ...body }) });
+        else await api("/ventures", { method: "POST", body: JSON.stringify(body) });
+        toast("Saved ✓", "ok"); ventReset(); loadVentures();
+      } catch (e) { toast(e.message, "err"); }
+      finally { $("v-save").disabled = false; }
+    });
+
+    async function loadVentures() {
+      let list = [];
+      try { list = await api("/ventures?all=1"); } catch (e) { return toast(e.message, "err"); }
+      $("ventures-list").innerHTML = list.length ? list.map((v) => `
+        <div class="row">
+          ${v.images && v.images[0] ? `<div class="thumb"><img src="${esc(v.images[0])}"></div>` : '<div class="thumb"></div>'}
+          <div><h3>${esc(v.name)} ${v.status === "hidden" ? "🙈" : ""}</h3>
+            <div class="meta">${esc(STAGE_LABEL[v.stage] || v.stage)} · ${esc(v.category)} · order ${v.order || 0}
+              · MVP ${(v.mvp || []).length} items · roadmap ${(v.roadmap || []).length}</div>
+            <p>${esc(v.tagline)}</p>
+            <div class="actions">
+              <a class="btn btn-ghost btn-sm" href="../ventures.html?app=${encodeURIComponent(v.id)}" target="_blank" rel="noopener">👁 View</a>
+              <button class="btn btn-ghost btn-sm" onclick="editVenture('${esc(v.id)}')">✏️ Edit</button>
+              <button class="btn btn-ghost btn-sm" onclick="ventAction('${esc(v.id)}','${v.status === "hidden" ? "show" : "hide"}',this)">${v.status === "hidden" ? "👁 Show" : "🙈 Hide"}</button>
+              <button class="btn btn-danger btn-sm" onclick="ventDelete('${esc(v.id)}',this)">🗑 Delete</button>
+            </div>
+          </div>
+        </div>`).join("") : '<div class="empty">No ventures yet. Add your first one above.</div>';
+    }
+
+    async function editVenture(id) {
+      try {
+        const v = await api("/venture?id=" + encodeURIComponent(id));
+        V_EDIT = v.id; V_IMAGES = (v.images || []).slice();
+        $("v-name").value = v.name || ""; $("v-category").value = v.category || "";
+        $("v-stage").value = v.stage || "mvp"; $("v-order").value = v.order || 0;
+        $("v-tagline").value = v.tagline || ""; $("v-problem").value = v.problem || "";
+        $("v-solution").value = v.solution || ""; $("v-demoUrl").value = v.demoUrl || "";
+        $("v-liveUrl").value = v.liveUrl || ""; $("v-repoUrl").value = v.repoUrl || "";
+        $("v-tech").value = (v.tech || []).join(", ");
+        $("v-lookingFor").value = (v.lookingFor || []).join(", "); $("v-ask").value = v.ask || "";
+        $("v-mvp").value = stepsToText(v.mvp); $("v-roadmap").value = stepsToText(v.roadmap);
+        ventEditor.setHTML(v.overview || ""); renderVentImgs();
+        $("v-formTitle").textContent = "Edit: " + v.name;
+        window.scrollTo(0, 0);
+      } catch (e) { toast(e.message, "err"); }
+    }
+    async function ventAction(id, action, btn) {
+      btn.disabled = true;
+      try { await api("/venture?id=" + encodeURIComponent(id), { method: "PUT", body: JSON.stringify({ action }) }); toast("Done ✓", "ok"); loadVentures(); }
+      catch (e) { toast(e.message, "err"); btn.disabled = false; }
+    }
+    async function ventDelete(id, btn) {
+      if (!confirm("Delete this venture permanently?")) return;
+      btn.disabled = true;
+      try { await api("/venture?id=" + encodeURIComponent(id), { method: "DELETE" }); toast("Deleted.", "ok"); loadVentures(); }
+      catch (e) { toast(e.message, "err"); btn.disabled = false; }
+    }
+
+    /* ---------- meeting requests ---------- */
+    async function loadMeetings() {
+      let list = [];
+      try { list = await api("/meeting-requests"); } catch (e) { return toast(e.message, "err"); }
+      const nNew = list.filter((m) => m.status === "new").length;
+      $("tab-n-meetings").textContent = nNew ? `(${nNew})` : "";
+      $("meetings-list").innerHTML = list.length ? list.map((m) => `
+        <div class="row"><div style="width:100%">
+          <h3>${esc(m.name)} ${m.status === "new" ? "🔵" : "✅"}</h3>
+          <div class="meta">${new Date(m.createdAt).toLocaleString()} · ${esc(m.interest)}${m.ventureName ? " · " + esc(m.ventureName) : ""}${m.company ? " · " + esc(m.company) : ""}</div>
+          <div class="cmt"><div class="body">${esc(m.message || "(no message)")}</div></div>
+          <div class="actions">
+            <a class="btn btn-primary btn-sm" href="mailto:${esc(m.email)}?subject=${encodeURIComponent("Re: " + (m.ventureName || "your enquiry"))}">✉️ Reply to ${esc(m.email)}</a>
+            ${m.status === "new" ? `<button class="btn btn-ghost btn-sm" onclick="meetDone('${esc(m.id)}',this)">✓ Mark handled</button>` : ""}
+          </div>
+        </div></div>`).join("") : '<div class="empty">No meeting requests yet.</div>';
+    }
+    async function meetDone(id, btn) {
+      btn.disabled = true;
+      try { await api("/meeting-request?id=" + encodeURIComponent(id), { method: "PUT", body: JSON.stringify({ status: "handled" }) }); toast("Marked ✓", "ok"); loadMeetings(); }
+      catch (e) { toast(e.message, "err"); btn.disabled = false; }
+    }
 
     /* comments moderation */
     async function loadComments() {
