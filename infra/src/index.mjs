@@ -14,6 +14,9 @@
  *   POST   /like               {slug} -> {likes}
  *   POST   /track              {path,ref} pageview beacon
  *   GET    /stats              (auth) 30-day totals, per-path counts
+ *   GET    /ventures           MVP/investor showcase list | ?all=1 with auth
+ *   GET    /venture?id=x       one venture
+ *   POST   /meeting-request    {ventureId,name,email,company,interest,message} public enquiry
  *
  * Scheduled EventBridge invocations ({job:"daily-draft"}) research + write a
  * draft post via the Anthropic API and email a morning summary via SES.
@@ -306,10 +309,12 @@ Respond with ONLY a JSON object (no markdown fences, no prose before/after):
 /* ---------- SEO: URL inventory + IndexNow ---------- */
 /* Every public URL on the site, used for both /sitemap.xml and IndexNow pings. */
 async function siteUrls() {
-  const [posts, products] = await Promise.all([listPosts(false), listProducts(false)]);
+  const [posts, products, ventures] = await Promise.all([listPosts(false), listProducts(false), listVentures(false)]);
   const day = (s) => (s || "").slice(0, 10);
   return [
     { loc: `${SITE}/`, freq: "weekly", pri: "1.0" },
+    { loc: `${SITE}/ventures.html`, freq: "weekly", pri: "0.9" },
+    ...ventures.map((v) => ({ loc: `${SITE}/ventures.html?app=${encodeURIComponent(v.id)}`, freq: "weekly", pri: "0.7", lastmod: day(v.updatedAt || v.createdAt) })),
     { loc: `${SITE}/shop.html`, freq: "daily", pri: "0.8" },
     ...posts.map((p) => ({ loc: `${SITE}/blog/post.html?slug=${encodeURIComponent(p.slug)}`, freq: "monthly", pri: "0.7", lastmod: day(p.updatedAt || p.createdAt) })),
     ...products.map((p) => ({ loc: `${SITE}/shop.html?product=${encodeURIComponent(p.id)}`, freq: "weekly", pri: "0.6", lastmod: day(p.updatedAt || p.createdAt) })),
@@ -639,6 +644,74 @@ async function startTranslation(slug, lang) {
   } catch (e) { console.error("startTranslation failed:", e.message); return false; }
 }
 
+/* ================= VENTURES (MVP / investor showcase) ================= */
+const ventKey = (id) => ({ pk: `VENTURE#${id}`, sk: "META" });
+const pubVenture = ({ pk, sk, gsi1pk, ...v }) => v;
+
+async function listVentures(all) {
+  const out = await ddb.send(new QueryCommand({
+    TableName: TABLE, IndexName: "gsi1",
+    KeyConditionExpression: "gsi1pk = :p",
+    ExpressionAttributeValues: { ":p": "VENTURES" },
+    ScanIndexForward: false,
+  }));
+  const items = (out.Items || []).map(pubVenture).sort((a, b) => (a.order || 0) - (b.order || 0));
+  return all ? items : items.filter((v) => v.status !== "hidden");
+}
+const getVenture = async (id) =>
+  (await ddb.send(new GetCommand({ TableName: TABLE, Key: ventKey(id) }))).Item || null;
+
+/* A list of {label, state} items — used for both MVP scope and roadmap stages. */
+const cleanSteps = (arr, max = 24) =>
+  (Array.isArray(arr) ? arr : []).slice(0, max).map((s) => ({
+    label: clean(s && s.label, 160),
+    detail: clean(s && s.detail, 600),
+    state: ["done", "building", "planned"].includes(s && s.state) ? s.state : "planned",
+  })).filter((s) => s.label);
+
+async function saveVenture(input) {
+  const existing = input.id ? await getVenture(input.id) : null;
+  const id = existing?.id || (input.id && /^[a-z0-9-]+$/.test(input.id) ? input.id
+    : clean(input.name, 80).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || crypto.randomBytes(3).toString("hex"));
+  const now = new Date().toISOString();
+  const item = {
+    ...ventKey(id), gsi1pk: "VENTURES", id,
+    name: clean(input.name, 120),
+    tagline: clean(input.tagline, 220),
+    category: clean(input.category, 60) || "Product",
+    stage: ["idea", "prototype", "mvp", "beta", "live"].includes(input.stage) ? input.stage : "mvp",
+    overview: String(input.overview ?? existing?.overview ?? "").slice(0, 20000),   // HTML
+    problem: clean(input.problem, 1200),
+    solution: clean(input.solution, 1200),
+    demoUrl: clean(input.demoUrl, 400),          // YouTube/Vimeo/loom link
+    liveUrl: clean(input.liveUrl, 400),
+    repoUrl: clean(input.repoUrl, 400),
+    images: Array.isArray(input.images) ? input.images.slice(0, 10).map((u) => clean(u, 400)) : (existing?.images || []),
+    tech: Array.isArray(input.tech) ? input.tech.slice(0, 30).map((t) => clean(t, 40)).filter(Boolean) : (existing?.tech || []),
+    mvp: input.mvp === undefined ? (existing?.mvp || []) : cleanSteps(input.mvp),
+    roadmap: input.roadmap === undefined ? (existing?.roadmap || []) : cleanSteps(input.roadmap),
+    lookingFor: Array.isArray(input.lookingFor) ? input.lookingFor.slice(0, 10).map((t) => clean(t, 80)).filter(Boolean) : (existing?.lookingFor || []),
+    ask: clean(input.ask, 400),                  // optional, e.g. "Seed round — details on request"
+    status: ["visible", "hidden"].includes(input.status) ? input.status : (existing?.status || "visible"),
+    order: input.order === undefined ? (existing?.order ?? 0) : Math.round(Number(input.order) || 0),
+    createdAt: existing?.createdAt || now,
+    updatedAt: now,
+  };
+  if (!item.name) throw new Error("name is required");
+  await ddb.send(new PutCommand({ TableName: TABLE, Item: item }));
+  return item;
+}
+
+/* ---------- meeting / investment enquiries ---------- */
+async function listMeetings() {
+  const out = await ddb.send(new QueryCommand({
+    TableName: TABLE, IndexName: "gsi1",
+    KeyConditionExpression: "gsi1pk = :p",
+    ExpressionAttributeValues: { ":p": "MEETINGS" }, ScanIndexForward: false,
+  }));
+  return (out.Items || []).map(({ pk, sk, gsi1pk, ...m }) => m);
+}
+
 /* ================= SHOP ================= */
 const prodKey = (id) => ({ pk: `PRODUCT#${id}`, sk: "META" });
 const pubProduct = ({ pk, sk, gsi1pk, ...p }) => p;
@@ -963,6 +1036,81 @@ export const handler = async (event) => {
           .map(([path, count]) => ({ path, count })),
         engagement: posts.map((p) => ({ slug: p.slug, title: p.title, likes: p.likes || 0 })).sort((a, b) => b.likes - a.likes),
       });
+    }
+
+    /* ---------- ventures (MVP showcase) ---------- */
+    if (method === "GET" && path === "/ventures") {
+      return res(200, await listVentures(Boolean(qs.all && admin)));
+    }
+    if (method === "GET" && path === "/venture") {
+      const v = await getVenture(qs.id);
+      if (!v || (v.status === "hidden" && !admin)) return res(404, { error: "Not found" });
+      return res(200, pubVenture(v));
+    }
+    if (method === "POST" && path === "/ventures") {
+      if (!admin) return res(401, { error: "Auth required" });
+      const saved = await saveVenture(body);
+      pingIndexNow([`${SITE}/ventures.html`, `${SITE}/ventures.html?app=${encodeURIComponent(saved.id)}`]);
+      return res(200, pubVenture(saved));
+    }
+    if (method === "PUT" && path === "/venture") {
+      if (!admin) return res(401, { error: "Auth required" });
+      const v = await getVenture(qs.id);
+      if (!v) return res(404, { error: "Not found" });
+      if (body.action === "hide") v.status = "hidden";
+      else if (body.action === "show") v.status = "visible";
+      else if (body.action === "update") return res(200, pubVenture(await saveVenture({ ...v, ...body, id: v.id })));
+      else return res(400, { error: "Unknown action" });
+      v.updatedAt = new Date().toISOString();
+      await ddb.send(new PutCommand({ TableName: TABLE, Item: v }));
+      return res(200, pubVenture(v));
+    }
+    if (method === "DELETE" && path === "/venture") {
+      if (!admin) return res(401, { error: "Auth required" });
+      await ddb.send(new DeleteCommand({ TableName: TABLE, Key: ventKey(qs.id) }));
+      return res(200, { deleted: qs.id });
+    }
+
+    /* ---------- meeting / investment enquiries ---------- */
+    if (method === "POST" && path === "/meeting-request") {
+      if (body.website) return res(200, { ok: true });               // honeypot
+      const name = clean(body.name, 100);
+      const email = clean(body.email, 200);
+      const message = clean(body.message, 3000);
+      if (!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return res(400, { error: "Name and a valid email are required" });
+      const id = `${Date.now()}-${crypto.randomBytes(4).toString("hex")}`;
+      const ventureId = clean(body.ventureId, 120);
+      const venture = ventureId ? await getVenture(ventureId) : null;
+      const item = {
+        pk: `MEETING#${id}`, sk: "META", gsi1pk: "MEETINGS", id,
+        ventureId, ventureName: venture?.name || "",
+        name, email,
+        company: clean(body.company, 160),
+        interest: clean(body.interest, 60) || "General",
+        message,
+        status: "new",
+        createdAt: new Date().toISOString(),
+      };
+      await ddb.send(new PutCommand({ TableName: TABLE, Item: item }));
+      await notify(`🤝 Meeting request: ${item.ventureName || "General"} — ${name}`,
+        `New enquiry from the ventures page.\n\nName: ${name}\nEmail: ${email}\nCompany: ${item.company || "-"}\nInterest: ${item.interest}\nProject: ${item.ventureName || "-"}\n\nMessage:\n${message || "(none)"}\n\nManage: ${SITE}/admin/`);
+      return res(200, { ok: true, id });
+    }
+    if (method === "GET" && path === "/meeting-requests") {
+      if (!admin) return res(401, { error: "Auth required" });
+      return res(200, await listMeetings());
+    }
+    if (method === "PUT" && path === "/meeting-request") {
+      if (!admin) return res(401, { error: "Auth required" });
+      const out = await ddb.send(new UpdateCommand({
+        TableName: TABLE, Key: { pk: `MEETING#${qs.id}`, sk: "META" },
+        UpdateExpression: "SET #s = :s, updatedAt = :n",
+        ExpressionAttributeNames: { "#s": "status" },
+        ExpressionAttributeValues: { ":s": clean(body.status, 30) || "done", ":n": new Date().toISOString() },
+        ReturnValues: "ALL_NEW",
+      }));
+      const { pk, sk, gsi1pk, ...m } = out.Attributes;
+      return res(200, m);
     }
 
     /* ---------- shop: config ---------- */
