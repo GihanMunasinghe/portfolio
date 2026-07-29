@@ -687,6 +687,8 @@ async function saveVenture(input) {
     liveUrl: clean(input.liveUrl, 400),
     repoUrl: clean(input.repoUrl, 400),
     images: Array.isArray(input.images) ? input.images.slice(0, 10).map((u) => clean(u, 400)) : (existing?.images || []),
+    // inline SVG cover, used when no screenshot has been uploaded yet
+    coverSvg: typeof input.coverSvg === "string" ? input.coverSvg.slice(0, 20000) : existing?.coverSvg,
     tech: Array.isArray(input.tech) ? input.tech.slice(0, 30).map((t) => clean(t, 40)).filter(Boolean) : (existing?.tech || []),
     mvp: input.mvp === undefined ? (existing?.mvp || []) : cleanSteps(input.mvp),
     roadmap: input.roadmap === undefined ? (existing?.roadmap || []) : cleanSteps(input.roadmap),

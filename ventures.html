@@ -89,6 +89,9 @@
     .card .shot img { width: 100%; height: 100%; object-fit: cover; }
     .card .shot .ph { font-family: var(--font-display); font-weight: 800; font-size: 1.6rem; background: var(--grad);
       -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .card .shot .cover-svg, .card .shot .cover-svg svg { width: 100%; height: 100%; display: block; }
+    .sheet .cover-svg { border-radius: 14px; overflow: hidden; border: 1px solid var(--border); }
+    .sheet .cover-svg svg { width: 100%; height: auto; display: block; }
     .card .body { padding: 1.1rem 1.2rem 1.3rem; display: flex; flex-direction: column; gap: 0.55rem; flex: 1; }
     .card h3 { font-family: var(--font-display); font-size: 1.15rem; }
     .card p { color: var(--muted); font-size: 0.9rem; }
@@ -224,7 +227,8 @@
     function card(v) {
       const shot = v.images && v.images[0]
         ? `<img src="${esc(v.images[0])}" alt="${esc(v.name)}" loading="lazy" />`
-        : `<div class="ph">${esc((v.name || "?").slice(0, 2).toUpperCase())}</div>`;
+        : (v.coverSvg ? `<div class="cover-svg">${v.coverSvg}</div>`
+                      : `<div class="ph">${esc((v.name || "?").slice(0, 2).toUpperCase())}</div>`);
       return `<article class="card" data-id="${esc(v.id)}">
         <div class="shot">${shot}</div>
         <div class="body">
@@ -266,6 +270,8 @@
           <button class="btn btn-ghost btn-sm" data-meet="${esc(v.id)}">Request a meeting</button>
           <button class="btn btn-ghost btn-sm" id="shareBtn">Share</button>
         </div>
+
+        ${!em && !(v.images || []).length && v.coverSvg ? `<div class="sec"><div class="cover-svg">${v.coverSvg}</div></div>` : ""}
 
         ${em ? `<div class="sec"><h4>Demo</h4><div class="video"><iframe src="${esc(em)}" allowfullscreen loading="lazy" title="${esc(v.name)} demo"></iframe></div></div>`
              : (v.demoUrl ? `<div class="sec"><h4>Demo</h4><a class="btn btn-ghost btn-sm" href="${esc(v.demoUrl)}" target="_blank" rel="noopener">Watch the demo ↗</a></div>` : "")}
