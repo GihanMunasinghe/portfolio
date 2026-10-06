@@ -94,26 +94,33 @@
     .tab[aria-pressed="true"] .tab-n { color: var(--series-text); }
 
     .jackets {
+      --gap-x: clamp(1.25rem, 2.6vw, 2.5rem); --plank: var(--ink);
       list-style: none; display: grid;
       grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr));
-      gap: clamp(2.25rem, 4vw, 3.25rem) clamp(1.25rem, 2.6vw, 2.5rem);
-      margin-top: clamp(1.75rem, 3vw, 2.5rem);
+      gap: clamp(3.5rem, 5vw, 4.5rem) var(--gap-x);
+      margin-top: clamp(1.75rem, 3vw, 2.5rem); padding-bottom: 12px;
     }
+    :root[data-theme="dark"] .jackets { --plank: #2c313a; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .jackets { --plank: #2c313a; } }
     /* a face-out paperback: band / artwork / title / foot band */
     .jacket {
       position: relative; display: grid; grid-template-rows: auto auto 1fr auto;
       background: var(--paper); color: var(--ink);
-      box-shadow: 0 0 0 1px var(--rule), 0 28px 34px -28px rgba(var(--shade), 0.6);
-      transition: transform 0.45s var(--ease-out), box-shadow 0.45s var(--ease-out);
+      box-shadow: 0 0 0 1px var(--rule);
+    }
+    /* covers stand face-out on a shelf: each jacket carries its stretch of plank,
+       meeting its neighbours mid-gap, so a row's shelf ends at its last cover */
+    .jacket::after {
+      content: ""; position: absolute; z-index: 0; pointer-events: none;
+      left: calc(var(--gap-x) / -2); right: calc(var(--gap-x) / -2); bottom: -12px; height: 12px;
+      background: var(--plank); box-shadow: 0 18px 18px -16px rgba(var(--shade), 0.45);
     }
     .jacket::before { /* the hinge score of a paperback cover */
       content: ""; position: absolute; top: 0; bottom: 0; left: 10px; width: 1px; z-index: 2; pointer-events: none;
       background: rgba(0, 0, 0, 0.16); box-shadow: 1px 0 0 rgba(255, 255, 255, 0.12);
     }
-    .jacket:hover, .jacket:has(.j-link:focus-visible) {
-      transform: translateY(-6px);
-      box-shadow: 0 0 0 1px var(--rule), 0 38px 44px -30px rgba(var(--shade), 0.62);
-    }
+    .j-foot { transition: background-color 0.25s var(--ease-out); }
+    .jacket:hover .j-foot, .jacket:has(.j-link:focus-visible) .j-foot { background: var(--series-hover); }
     .j-band, .j-foot {
       display: flex; align-items: center; justify-content: space-between; gap: 1rem;
       padding: 0 1.15rem 0 1.5rem; background: var(--series); color: var(--on-series);
@@ -157,6 +164,7 @@
 
     /* loading: jacket-shaped placeholders, still (nothing loops) */
     .jacket.is-skel { box-shadow: 0 0 0 1px var(--rule); }
+    .jacket.is-skel::after { background: var(--paper-3); box-shadow: none; }
     .jacket.is-skel::before { display: none; }
     .is-skel .j-band, .is-skel .j-foot { background: var(--paper-3); }
     .is-skel .j-art { background: var(--paper-2); }
@@ -167,7 +175,7 @@
     .skel-line.u { width: 54%; }
 
     @media (prefers-reduced-motion: no-preference) {
-      .jackets.just-filled .jacket { animation: slot-in 0.7s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 70ms); }
+      .jackets.just-filled .jacket > * { animation: slot-in 0.7s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 70ms); }
     }
     @keyframes slot-in { from { transform: translateY(26px); opacity: 0; } to { transform: none; opacity: 1; } }
 

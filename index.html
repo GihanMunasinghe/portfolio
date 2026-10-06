@@ -162,8 +162,8 @@
       }
       .cover::before { grid-row: 1; grid-column: 1 / -1; }
       .cover::after { grid-row: 4; grid-column: 1 / -1; }
-      .cover-plate { grid-column: 2; grid-row: 1 / 3; width: 100%; justify-self: stretch; aspect-ratio: 16 / 10; margin: 10px 0 0; }
-      .cover-plate img { object-position: 50% 18%; }
+      .cover-plate { grid-column: 2; grid-row: 1 / 3; width: min(72%, 320px); justify-self: end; aspect-ratio: 1; margin: 10px 0 0; }
+      .cover-plate img { object-position: 50% 10%; }
       .cover-text { grid-column: 2; grid-row: 3; padding: 1.6rem 0 2.2rem; }
       .cover-title { font-size: clamp(2.6rem, 12vw, 4.6rem); }
       .cover-mark { display: none; }
@@ -176,6 +176,7 @@
     .shelf {
       --shelf-h: 480px; --spine-w: 58px; --open-w: min(460px, 78vw);
       display: flex; align-items: flex-end; gap: 7px;
+      width: fit-content; max-width: 100%;
       height: calc(var(--shelf-h) + 12px); padding: 12px 4px 0;
       overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
       border-bottom: 14px solid var(--plank);
@@ -207,9 +208,9 @@
       padding: 16px 0;
     }
     .spine-title span {
-      writing-mode: vertical-rl; max-height: 100%;
-      font-size: 0.98rem; font-weight: 720; font-stretch: 76%; line-height: 1.1; letter-spacing: 0.005em;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      writing-mode: vertical-rl; max-height: 100%; max-width: calc(var(--spine-w) - 14px); overflow: hidden;
+      font-size: 0.9rem; font-weight: 720; font-stretch: 64%; line-height: 1.06; letter-spacing: 0.005em;
+      white-space: normal; text-wrap: balance;
     }
     .spine-foot { display: grid; place-items: center; }
     .spine-foot .roundel { font-size: 0.55rem; min-width: 0; height: 1.9em; padding: 0 0.5em; }
@@ -254,32 +255,25 @@
     .shelf-hint { margin-top: 1rem; }
     @media (max-width: 720px) {
       .shelf { flex-direction: column; align-items: stretch; gap: 6px; height: auto; padding: 0; overflow: visible; border-bottom-width: 10px; }
-      .book { width: auto; height: auto; flex-direction: column; margin-inline: var(--jit, 0px); transform: none !important; }
+      .shelf { width: auto; }
+      .book { width: auto; height: auto; flex-direction: column; transform: none !important; }
       .book.is-open { width: auto; height: auto; }
-      .spine { width: 100%; height: 56px; grid-template-rows: none; grid-template-columns: 52px minmax(0, 1fr) 52px; }
-      .spine-title { justify-content: flex-start; padding: 0 14px; }
-      .spine-title span { writing-mode: horizontal-tb; font-stretch: 86%; font-size: 1rem; }
+      .spine { width: 100%; height: auto; min-height: 56px; grid-template-rows: none; grid-template-columns: 52px minmax(0, 1fr) 52px; }
+      .spine-title { justify-content: flex-start; padding: 0.55rem 14px; }
+      .spine-title span { writing-mode: horizontal-tb; max-width: none; font-stretch: 86%; font-size: 1rem; line-height: 1.2;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
       .face { display: none; width: 100%; height: auto; border-left: 0; grid-template-rows: 52px auto; }
       .face-art { display: none; }
       .book.is-open .spine { display: none; }
       .book.is-open .face { display: grid; }
       .book.is-open.has-art .face { grid-template-rows: 52px auto 190px; }
-      .book.is-open.has-art .face-art { display: flex; }
+      .book.is-open:not(.has-art) .face { grid-template-rows: 52px auto 44px; }
+      .book.is-open .face-art { display: flex; }
     }
 
-    /* ================= consulting spread ================= */
-    .desk { background: var(--paper-2); }
-    .spread {
-      position: relative; display: grid; grid-template-columns: 1fr 1fr;
-      background: var(--paper);
-      box-shadow: 0 40px 70px -46px rgba(var(--shade), 0.55), 0 0 0 1px var(--rule);
-    }
-    .spread::before {
-      content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 80px; transform: translateX(-50%); pointer-events: none;
-      background: linear-gradient(90deg, transparent, rgba(var(--shade), 0.06) 40%, rgba(var(--shade), 0.16) 50%, rgba(var(--shade), 0.06) 60%, transparent);
-    }
-    .page { padding: clamp(2rem, 5vw, 4.75rem); }
-    .page-left { display: flex; flex-direction: column; justify-content: space-between; gap: 2.5rem; }
+    /* ================= consulting contents ================= */
+    .spread { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2.5rem, 7vw, 7rem); align-items: start; }
+    .page-left { display: flex; flex-direction: column; gap: 2rem; }
     .page-left .lede { margin-top: 1.25rem; }
     .offers { list-style: none; }
     .offer { padding-block: 1.35rem 1.5rem; border-top: 1px solid var(--rule); }
@@ -288,17 +282,14 @@
     .points { list-style: none; display: grid; gap: 0.4rem; margin-top: 0.85rem; font-size: 0.95rem; font-weight: 560; }
     .points li { display: flex; align-items: baseline; gap: 0.7rem; }
     .points li::before { content: ""; flex: none; width: 7px; height: 7px; background: var(--series); transform: translateY(-1px); }
-    @media (max-width: 900px) {
-      .spread { grid-template-columns: 1fr; }
-      .spread::before { display: none; }
-      .page-right { border-top: 1px solid var(--rule); }
-    }
+    @media (max-width: 900px) { .spread { grid-template-columns: 1fr; } }
 
     /* ================= teaching frontispiece ================= */
+    .volume-band { height: clamp(18px, 2.4vw, 30px); background: var(--series); }
     .frontis { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2.5rem, 7vw, 7rem); align-items: center; }
     .print {
       justify-self: center; width: min(100%, 420px);
-      background: #f4f4f0; padding: clamp(10px, 1.4vw, 18px);
+      background: #f3f5f7; padding: clamp(10px, 1.4vw, 18px);
       box-shadow: 0 30px 60px -36px rgba(var(--shade), 0.55), 0 0 0 1px rgba(20, 22, 27, 0.1);
     }
     .print img { width: 100%; aspect-ratio: 2 / 3; object-fit: cover; }
@@ -432,7 +423,7 @@
       </div>
     </section>
 
-    <section id="services" class="section desk" aria-labelledby="services-title">
+    <section id="services" class="section" aria-labelledby="services-title">
       <div class="wrap">
         <div class="spread">
           <div class="page page-left">
@@ -477,6 +468,7 @@
       </div>
     </section>
 
+    <div class="volume-band" aria-hidden="true"></div>
     <section id="teaching" class="section" aria-labelledby="teaching-title">
       <div class="wrap frontis">
         <figure class="print">
@@ -659,11 +651,10 @@
     /* Each book gets a stable height from its id, so the shelf reads as a shelf. */
     const hash = (s) => { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) | 0; return Math.abs(h); };
     const heightFor = (id) => 88 + (hash(id) % 12);
-    const jitterFor = (id) => ((hash(id + "x") % 5) - 2) * 3;
     const yearOf = (s) => ((String(s || "").match(/\b(19|20)\d{2}\b/) || [""])[0]);
 
     function book({ id, href, cap, title, label, aside, excerpt, read, art, i }) {
-      return `<a class="book${art ? " has-art" : ""}" href="${href}" style="--hgt:${heightFor(id)}%;--jit:${jitterFor(id)}px;--i:${i}">
+      return `<a class="book${art ? " has-art" : ""}" href="${href}" style="--hgt:${heightFor(id)}%;--i:${i}">
         <span class="spine" aria-hidden="true">
           <span class="spine-cap">${esc(cap)}</span>
           <span class="spine-title"><span>${esc(title)}</span></span>
@@ -730,7 +721,7 @@
           id: v.id, i,
           href: "ventures.html?app=" + encodeURIComponent(v.id),
           cap: STAGES[v.stage] || v.stage || "", title: v.name,
-          label: STAGES[v.stage] || v.stage || "Venture", aside: v.category || "",
+          label: v.category || "Venture", aside: "",
           excerpt: v.tagline, read: "Open venture", art,
         });
       }).join("");
