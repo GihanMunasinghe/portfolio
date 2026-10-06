@@ -92,9 +92,13 @@
     @keyframes band-draw { from { transform: scaleX(0.04); } to { transform: none; } }
     @keyframes stamp-press { from { scale: 1.45; opacity: 0; } 40% { opacity: 1; } to { scale: 1; opacity: 1; } }
 
+    /* below ~1100px the right column is too narrow for the three actions in one row, so the spread stacks */
+    @media (max-width: 1100px) {
+      .cover-grid { grid-template-columns: minmax(0, 1fr); }
+    }
     @media (max-width: 900px) {
       .cover { --bt: 28px; --bb: 64px; }
-      .cover-grid { grid-template-columns: minmax(0, 1fr); }
+      .folio-wrap { --folio: clamp(6rem, min(28vw, 30vh), 19rem); }
       .cover-mark { font-size: 0.95rem; }
     }
     @media (max-width: 600px) {

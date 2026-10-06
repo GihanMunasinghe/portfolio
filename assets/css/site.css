@@ -152,6 +152,9 @@
 .series-orange { --series: var(--orange); --series-text: var(--orange-text); --on-series: var(--on-light-band); }
 .series-green  { --series: var(--green);  --series-text: var(--green-text);  --on-series: var(--on-dark-band); }
 .series-red    { --series: var(--red);    --series-text: var(--red-text);    --on-series: var(--on-dark-band); }
+/* hover moves away from the type colour: darker under paper type, lighter under ink type (orange) */
+:root, .series-blue, .series-green, .series-red { --series-hover: color-mix(in oklab, var(--series) 84%, #000); }
+.series-orange { --series-hover: color-mix(in oklab, var(--series) 82%, #fff); }
 
 /* ---------- base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
@@ -296,7 +299,7 @@ h4 { font-size: 1.05rem; font-weight: 680; line-height: 1.3; }
 .btn:disabled, .btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; }
 .btn .icon { width: 1.15em; height: 1.15em; }
 .btn-primary { background: var(--series); color: var(--on-series); border-color: var(--series); }
-.btn-primary:hover:not(:disabled) { background: color-mix(in oklab, var(--series) 84%, #000); border-color: color-mix(in oklab, var(--series) 84%, #000); }
+.btn-primary:hover:not(:disabled) { background: var(--series-hover); border-color: var(--series-hover); }
 .btn-ink { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 .btn-ink:hover:not(:disabled) { background: color-mix(in oklab, var(--ink) 82%, var(--paper)); }
 .btn-ghost { background: transparent; color: var(--ink); border-color: var(--rule-strong); }

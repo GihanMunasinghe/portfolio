@@ -1,3 +1,6 @@
 infra/lambda.zip
 infra/src/node_modules
 infra/build/
+
+# design review captures (local only)
+.impeccable/review/

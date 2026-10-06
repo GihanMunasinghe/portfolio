@@ -26,8 +26,6 @@
   <link rel="preload" href="/assets/fonts/literata-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="/assets/css/site.css" />
   <style>
-    /* page-local: on narrow screens the actions sit at the right edge of the masthead */
-
     /* one reading column for the title page, the text and the end matter */
     .read-col { --col: 43rem; width: 100%; max-width: calc(var(--col) + 2 * var(--gutter)); margin-inline: auto; padding-inline: var(--gutter); }
 
@@ -228,11 +226,12 @@
       border: 1.5px solid var(--rule-strong); border-radius: var(--r);
       transition: background-color 0.2s, border-color 0.2s, color 0.2s;
     }
-    .like:hover:not(:disabled) { border-color: var(--ink); background: var(--paper-2); }
-    .like:disabled { cursor: progress; }
+    .like:hover:not([aria-busy="true"]) { border-color: var(--ink); background: var(--paper-2); }
+    .like[aria-busy="true"] { cursor: progress; }
     .like .icon { width: 1.3em; height: 1.3em; }
-    .like.liked { border-color: var(--series-text); color: var(--series-text); background: color-mix(in srgb, var(--series) 12%, var(--paper)); }
-    .like.liked:hover:not(:disabled) { background: color-mix(in srgb, var(--series) 18%, var(--paper)); border-color: var(--series-text); }
+    /* liked: a flat print of the series colour, ink type on orange */
+    .like.liked { border-color: var(--series); color: var(--on-series); background: var(--series); }
+    .like.liked:hover:not([aria-busy="true"]) { background: var(--series); border-color: var(--ink); }
     #likeCount { font-variant-numeric: tabular-nums lining-nums; min-width: 1.5ch; }
     @media (prefers-reduced-motion: no-preference) {
       .like.just-liked .icon { animation: stamp 0.5s var(--ease-out); }
@@ -450,7 +449,7 @@
     let post;
     try { post = await api("/post?slug=" + encodeURIComponent(slug)); }
     catch (e) {
-      if (e instanceof TypeError) quiet("This post couldn't load", "The blog didn't answer just now. Refresh the page to try again.", true);
+      if (e instanceof TypeError) quiet("This post couldn't load", "The blog didn't answer just now. Check your connection, then try again.", true);
       else quiet("Post not found", "The link may be out of date. Every published post is on the blog shelf.");
       return;
     }
@@ -634,16 +633,19 @@
     };
     if (localStorage.getItem(likeKey)) setLiked(true);
     likeBtn.addEventListener("animationend", () => likeBtn.classList.remove("just-liked"));
+    /* busy is marked with aria-busy, not disabled, so keyboard focus stays on the button */
+    let likePending = false;
     likeBtn.addEventListener("click", async () => {
+      if (likePending) return;
       const liked = localStorage.getItem(likeKey);
-      likeBtn.disabled = true;
+      likePending = true; likeBtn.setAttribute("aria-busy", "true");
       try {
         const r = await api("/like", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ slug, undo: Boolean(liked) }) });
         $("likeCount").textContent = r.likes;
         if (liked) { localStorage.removeItem(likeKey); setLiked(false); }
         else { localStorage.setItem(likeKey, "1"); setLiked(true); likeBtn.classList.add("just-liked"); }
       } catch (e) { toast("Could not register like.", true); }
-      finally { likeBtn.disabled = false; }
+      finally { likePending = false; likeBtn.removeAttribute("aria-busy"); }
     });
 
     $("copyLink").addEventListener("click", () => {
@@ -732,7 +734,7 @@
           try {
             await api("/comments", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ slug, name, text, website: $("cweb").value }) });
             toast("Comment posted!"); await renderComments(true);
-          } catch (e) { toast(e.message, true); send.disabled = false; send.textContent = "Post comment"; }
+          } catch (e) { toast(e.message, true); send.disabled = false; send.textContent = "Post comment"; send.focus(); }
         });
         const setBox = (id, open, focus) => {
           const box = $("rb-" + id), tog = cbox.querySelector(`[data-reply="${CSS.escape(id)}"]`);
@@ -752,7 +754,7 @@
           try {
             await api("/comments", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ slug, name, text, parentId: id }) });
             toast("Reply posted!"); await renderComments(true);
-          } catch (e) { toast(e.message, true); el.disabled = false; el.textContent = "Post reply"; }
+          } catch (e) { toast(e.message, true); el.disabled = false; el.textContent = "Post reply"; el.focus(); }
         }));
       }
     }
