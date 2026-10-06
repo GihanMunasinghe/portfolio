@@ -42,6 +42,7 @@ One practising engineer across three roles: he **builds** (his own products and 
 
 ## Brand Commitments
 
+- Visual standing preference (confirmed Oct 2026): modern minimal, at the craft level of Vercel and Lee Robinson's site. Dark theme by default with a light-theme toggle, near-monochrome with a single accent colour, a crisp modern grotesk (no serif body text), generous spacing and subtle motion. Retro, bookish or concept-heavy worlds are out: a "paperback series" redesign was built and rejected for being too retro, too colourful, light by default and typographically wrong.
 - Name and domain: Gihan Munasinghe, gihanmunasinghe.lk. Wordmark "Gihan." and the "G" favicon.
 - Voice: first person, warm, plain and practical ("If you're building something, or want to learn how, I'd love to hear from you").
 - Contact routes: email `gihanmunasinghe266@gmail.com`, WhatsApp `+65 8646 9798`, LinkedIn, GitHub, Instagram, YouTube, Facebook.
