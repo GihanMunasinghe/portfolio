@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://gihan-shop-media-303963685758.s3.ap-southeast-1.amazonaws.com; connect-src 'self' https://api.gihanmunasinghe.lk; frame-src https://www.youtube.com https://player.vimeo.com" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
-  <meta name="theme-color" content="#07090d" />
-  <title>Loading… — Gihan Munasinghe</title>
+  <meta name="theme-color" content="#ee6a1f" />
+  <title>Loading… | Gihan Munasinghe</title>
   <meta name="description" content="A tech blog post by Gihan Munasinghe." />
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
   <link rel="canonical" id="canonical" href="https://www.gihanmunasinghe.lk/blog/post.html" />
@@ -21,152 +21,423 @@
   <meta name="twitter:description" id="tw-desc" content="A tech blog post by Gihan Munasinghe." />
   <link rel="manifest" href="/site.webmanifest" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👨🏽‍💻</text></svg>" />
+  <script>try{var t=localStorage.getItem("gm_theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="preload" href="/assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/assets/fonts/literata-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/assets/css/site.css" />
   <style>
-    :root {
-      --bg: #07090d; --surface: rgba(255,255,255,0.04); --border: rgba(255,255,255,0.09);
-      --text: #eef1f7; --muted: #98a1b3; --accent: #6ea8fe; --accent-2: #8b5cf6; --accent-3: #22d3ee;
-      --danger: #f87171; --grad: linear-gradient(100deg, #6ea8fe, #8b5cf6 55%, #22d3ee);
-      --font-display: "Sora", -apple-system, sans-serif; --font-body: "Inter", -apple-system, sans-serif;
+    /* one reading column for the title page, the text and the end matter */
+    .read-col { --col: 43rem; width: 100%; max-width: calc(var(--col) + 2 * var(--gutter)); margin-inline: auto; padding-inline: var(--gutter); }
+
+    /* ================= title page (tri-band) ================= */
+    .titlepage { background: var(--paper); }
+    .titlepage::before { content: ""; display: block; height: clamp(18px, 3vh, 30px); background: var(--series); transform-origin: left center; }
+    .tp-zone { padding-block: clamp(2.25rem, 6.5vh, 4.25rem) clamp(1.75rem, 4.5vh, 2.75rem); }
+    .post-title {
+      font-size: clamp(2.1rem, 1.35rem + 3.1vw, 3.4rem);
+      font-weight: 790; font-stretch: 104%; line-height: 1.03; letter-spacing: -0.024em;
+      overflow-wrap: break-word;
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: var(--font-body);
-      background:
-        radial-gradient(600px 400px at 85% -5%, rgba(139,92,246,0.15), transparent 70%),
-        radial-gradient(700px 500px at -10% 20%, rgba(110,168,254,0.10), transparent 70%),
-        var(--bg);
-      color: var(--text); line-height: 1.75;
+    .tp-foot {
+      display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 13.5rem);
+      gap: 1.25rem 2rem; align-items: start;
+      margin-top: clamp(1.4rem, 3.2vh, 2rem); padding-top: 1rem; border-top: 2px solid var(--ink);
     }
-    ::selection { background: rgba(110,168,254,0.35); }
-    .wrap { max-width: 720px; margin: 0 auto; padding: 0 1.4rem 5rem; }
-    nav { padding: 1.4rem 0 0; }
-    nav a { color: var(--muted); text-decoration: none; font-size: 0.92rem; font-weight: 500; }
-    nav a:hover { color: var(--text); }
-    header { padding: 3rem 0 2rem; }
-    .kicker {
-      font-family: var(--font-display); font-size: 0.8rem; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.14em;
-      background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent;
-      margin-bottom: 0.8rem;
+    /* byline: separators that sit at the start of a wrapped line are clipped away */
+    .byline { overflow: hidden; font-size: 0.95rem; line-height: 1.45; color: var(--ink-2); font-variant-numeric: tabular-nums lining-nums; }
+    .byline-in { display: flex; flex-wrap: wrap; row-gap: 0.25rem; margin-left: -1.4rem; }
+    .byline-in > * { position: relative; padding-left: 1.4rem; }
+    .byline-in > *::before {
+      content: ""; position: absolute; left: 0.55rem; top: 50%; width: 5px; height: 5px; margin-top: -2.5px;
+      background: var(--series);
     }
-    h1 { font-family: var(--font-display); font-size: clamp(1.7rem, 4.5vw, 2.5rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 1rem; }
-    .meta { color: var(--muted); font-size: 0.9rem; display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center; }
-    .cover { width: 100%; border-radius: 18px; border: 1px solid var(--border); margin: 1.6rem 0 0; display: block; }
-    .cover svg { width: 100%; height: auto; display: block; }
-    article h2 { font-family: var(--font-display); font-size: 1.45rem; font-weight: 700; margin: 2.6rem 0 0.9rem; letter-spacing: -0.01em; }
-    article p { color: #c6ccd8; margin-bottom: 1.15rem; }
-    article strong { color: var(--text); }
-    article a { color: var(--accent); }
-    article ul, article ol { margin: 0 0 1.15rem 1.4rem; color: #c6ccd8; }
-    article li { margin-bottom: 0.4rem; }
-    article figure { margin: 1.8rem 0; }
-    article figure img, article figure svg { width: 100%; border-radius: 14px; border: 1px solid var(--border); }
-    article figcaption { font-size: 0.85rem; color: var(--muted); text-align: center; margin-top: 0.6rem; }
-    article blockquote, .callout {
-      border-left: 3px solid var(--accent-2); background: rgba(139,92,246,0.08);
-      border-radius: 0 12px 12px 0; padding: 1rem 1.3rem; margin: 0 0 1.15rem; color: #c6ccd8;
+    .by-media { font-weight: 700; color: var(--series-text); }
+    .by-author { font-weight: 650; color: var(--ink); }
+    .lang-field { gap: 0.35rem; }
+    .lang-field label { display: inline-flex; align-items: center; gap: 0.4rem; }
+    .lang-field label .icon { color: var(--series-text); }
+    .field .lang-select { min-height: 44px; padding-block: 0.5rem; font-size: 0.95rem; cursor: pointer; }
+    .xnote { min-height: 1.25rem; font-size: 0.8125rem; line-height: 1.45; color: var(--ink-3); }
+    .xnote.is-err { color: var(--danger); font-weight: 600; }
+    .xorig {
+      color: var(--series-text); font-weight: 650; text-decoration: underline;
+      text-decoration-thickness: 1px; text-underline-offset: 0.18em;
     }
-    .video-embed { position: relative; aspect-ratio: 16/9; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); margin: 1.8rem 0; background: var(--surface); }
-    .video-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-    pre { background: #0d1118; border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.3rem; overflow-x: auto; margin: 0 0 1.15rem; font-size: 0.85rem; line-height: 1.6; }
-    code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: #a5d6ff; }
-    p code, li code { background: rgba(255,255,255,0.07); border: 1px solid var(--border); border-radius: 6px; padding: 0.1rem 0.4rem; font-size: 0.85em; }
-    .sources { margin-top: 2rem; padding: 1.1rem 1.3rem; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
-    .sources h3 { font-family: var(--font-display); font-size: 0.95rem; margin-bottom: 0.6rem; }
-    .sources ul { margin: 0 0 0 1.2rem; }
-    .sources a { color: var(--accent); font-size: 0.9rem; word-break: break-all; }
-    /* engagement bar */
-    .engage { display: flex; align-items: center; gap: 0.8rem; margin-top: 2.4rem; flex-wrap: wrap; }
-    .like-btn {
-      display: inline-flex; align-items: center; gap: 0.55rem; cursor: pointer;
-      font-family: var(--font-body); font-weight: 600; font-size: 0.95rem; color: var(--text);
-      background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 0.6rem 1.2rem;
-      transition: transform 0.15s, background 0.2s, border-color 0.2s;
+    .xorig:hover { text-decoration-thickness: 2px; }
+    /* no cover: a slim band closes the title page */
+    .tp-close { height: clamp(16px, 2.4vh, 26px); background: var(--series); transform-origin: right center; }
+    /* cover: a mounted print that crosses from paper into the closing band */
+    .tp-plate { position: relative; padding-bottom: clamp(1.75rem, 4vw, 3rem); }
+    .tp-plate::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 56%; background: var(--series); transform-origin: right center; }
+    .plate { position: relative; z-index: 1; }
+    .plate img {
+      width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: var(--paper-3);
+      box-shadow: 0 34px 50px -30px rgba(var(--shade), 0.62), 0 0 0 1px rgba(20, 22, 27, 0.12);
     }
-    .like-btn:hover { transform: translateY(-1px); border-color: var(--accent); }
-    .like-btn.liked { background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.4); color: #fca5a5; }
-    .like-btn .heart { font-size: 1.1rem; }
-    /* share */
-    .share-bar { margin-top: 2.4rem; padding: 1.5rem 1.6rem; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); }
-    .share-bar h3 { font-family: var(--font-display); font-size: 1.05rem; margin-bottom: 0.9rem; }
-    .share-btns { display: flex; gap: 0.6rem; flex-wrap: wrap; }
-    .share-btns a, .share-btns button {
-      font-family: var(--font-body); font-weight: 600; font-size: 0.88rem; color: var(--text);
-      background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 999px;
-      padding: 0.5rem 1rem; text-decoration: none; cursor: pointer; transition: background 0.2s, border-color 0.2s;
+    @media (max-width: 680px) {
+      .tp-foot { grid-template-columns: minmax(0, 1fr); gap: 1.1rem; }
     }
-    .share-btns a:hover, .share-btns button:hover { background: rgba(110,168,254,0.15); border-color: var(--accent); }
-    /* comments */
-    .comments { margin-top: 2.6rem; }
-    .comments h2 { font-family: var(--font-display); font-size: 1.3rem; margin-bottom: 1.2rem; }
-    .cform { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.2rem; margin-bottom: 1.6rem; }
-    .cform input, .cform textarea {
-      width: 100%; padding: 0.7rem 0.9rem; border-radius: 10px; border: 1px solid var(--border);
-      background: rgba(255,255,255,0.05); color: var(--text); font-size: 0.92rem; font-family: var(--font-body); margin-bottom: 0.7rem;
+
+    /* motion: the bands are drawn while the page loads; the title is placed when the post arrives */
+    @media (prefers-reduced-motion: no-preference) {
+      .is-loading .titlepage::before { animation: band-draw 0.9s var(--ease-out) both; }
+      .is-loading .tp-close { animation: band-draw 0.9s 0.08s var(--ease-out) both; }
+      .is-ready .tp-zone .read-col > * { animation: place 0.6s var(--ease-out) both; }
+      .is-ready .tp-zone .read-col > * + * { animation-delay: 0.06s; }
+      .is-ready .plate { animation: plate-settle 1s 0.1s var(--ease-out) both; }
     }
-    .cform textarea { min-height: 90px; resize: vertical; }
-    .cform input:focus, .cform textarea:focus { outline: none; border-color: var(--accent); }
-    .cform .hp { position: absolute; left: -9999px; }
-    .btn { display: inline-flex; align-items: center; gap: 0.45rem; font-family: var(--font-body); font-weight: 600; font-size: 0.92rem; padding: 0.65rem 1.25rem; border-radius: 11px; text-decoration: none; cursor: pointer; border: none; background: var(--grad); color: #fff; }
-    .btn:disabled { opacity: 0.55; cursor: wait; }
-    .cmt { border-top: 1px solid var(--border); padding: 1rem 0 0.4rem; }
-    .cmt.reply { margin-left: 1.5rem; border-top-style: dashed; }
-    .cmt .who { font-size: 0.9rem; font-weight: 600; }
-    .cmt .who .owner { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; background: var(--grad); border-radius: 999px; padding: 0.12rem 0.5rem; margin-left: 0.5rem; vertical-align: 0.08em; }
-    .cmt .when { font-size: 0.75rem; color: var(--muted); margin-left: 0.5rem; font-weight: 400; }
-    .cmt .body { font-size: 0.92rem; color: #c6ccd8; margin: 0.35rem 0 0.5rem; white-space: pre-wrap; word-break: break-word; }
-    .cmt .reply-link { font-size: 0.82rem; color: var(--accent); cursor: pointer; }
-    .replybox { margin: 0.6rem 0 0.8rem; }
-    .replybox input, .replybox textarea {
-      display: block; width: 100%; padding: 0.6rem 0.85rem; border-radius: 10px;
-      border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: var(--text);
-      font-size: 0.9rem; font-family: var(--font-body); margin-bottom: 0.5rem;
+    @keyframes band-draw { from { transform: scaleX(0.04); } to { transform: none; } }
+    @keyframes place { from { transform: translateY(10px); opacity: 0; } to { transform: none; opacity: 1; } }
+    @keyframes plate-settle {
+      from { transform: translateY(-18px) rotate(-0.8deg); opacity: 0.4; }
+      to { transform: none; opacity: 1; }
     }
-    .replybox textarea { min-height: 70px; resize: vertical; }
-    .replybox input:focus, .replybox textarea:focus { outline: none; border-color: var(--accent); }
-    .replybox .btn { font-size: 0.85rem; padding: 0.5rem 1.1rem; }
-    .muted-note { color: var(--muted); font-size: 0.92rem; }
-    .post-footer { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
-    .post-footer a.back { color: var(--muted); text-decoration: none; }
-    #toast { position: fixed; bottom: 1.4rem; left: 50%; transform: translateX(-50%); background: #11151d; border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem 1.3rem; font-size: 0.9rem; box-shadow: 0 14px 40px rgba(0,0,0,0.5); display: none; z-index: 10; }
-    .skeleton { color: var(--muted); padding: 4rem 0; text-align: center; }
-    /* language / translation */
-    .lang-bar { display: flex; align-items: center; gap: 0.55rem; margin-top: 1.4rem; flex-wrap: wrap; }
-    .lang-bar .globe { font-size: 1rem; }
-    .lang-bar select {
-      font-family: var(--font-body); font-size: 0.85rem; font-weight: 500; color: var(--text);
-      background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
-      padding: 0.42rem 0.9rem; cursor: pointer; appearance: none; -webkit-appearance: none;
+
+    /* ================= loading skeleton (static, no shimmer) ================= */
+    .sk { display: block; background: var(--paper-3); border-radius: var(--r); }
+    .sk-title .sk { height: 0.78em; }
+    .sk-title .sk + .sk { margin-top: 0.25em; }
+    .sk-meta { height: 1.1rem; width: min(100%, 22rem); margin-top: 0.15rem; }
+    .sk-select { height: 44px; margin-top: 1.6rem; }
+    .sk-body { padding-top: clamp(2.5rem, 6vw, 4rem); padding-bottom: var(--section); }
+    .sk-body .sk { height: 0.8rem; }
+    .sk-body .sk + .sk { margin-top: 1.15rem; }
+    .sk-body .sk.gap { margin-top: 2.4rem; }
+
+    /* ================= the text ================= */
+    .post-wrap { padding-top: clamp(2.5rem, 6vw, 4rem); }
+    .post-body {
+      font-family: var(--font-serif); font-optical-sizing: auto;
+      font-size: 1.125rem; line-height: 1.75; color: var(--ink);
+      text-wrap: pretty; hanging-punctuation: first;
+      transition: opacity 0.35s var(--ease-out);
     }
-    .lang-bar select:hover { border-color: var(--accent); }
-    .lang-bar select:focus { outline: none; border-color: var(--accent); }
-    .xnote { font-size: 0.82rem; color: var(--muted); }
-    .xnote a { color: var(--accent); cursor: pointer; text-decoration: underline; }
+    .post-body > * + * { margin-top: 1.15em; }
+    .post-body > :first-child { margin-top: 0; }
+    .post-body > p:first-child { font-size: 1.2rem; line-height: 1.7; }
+    .post-body strong, .post-body b { font-weight: 650; }
+    .post-body h2, .post-body h3, .post-body h4 { font-family: var(--font-sans); color: var(--ink); text-wrap: balance; }
+    .post-body h2 {
+      margin-top: 2.1em; font-size: clamp(1.45rem, 1.1rem + 1.2vw, 1.85rem);
+      font-weight: 760; font-stretch: 102%; line-height: 1.15; letter-spacing: -0.016em;
+    }
+    .post-body h3 { margin-top: 2em; font-size: 1.25rem; font-weight: 700; line-height: 1.25; letter-spacing: -0.01em; }
+    .post-body h4 { margin-top: 1.8em; font-size: 1.05rem; font-weight: 700; line-height: 1.3; }
+    .post-body :is(h2, h3, h4) + * { margin-top: 0.6rem; }
+    .post-body a {
+      color: var(--series-text); text-decoration-line: underline;
+      text-decoration-thickness: 1px; text-underline-offset: 0.2em;
+      overflow-wrap: anywhere;
+    }
+    .post-body a:hover { text-decoration-thickness: 2px; }
+    .post-body :is(ul, ol) { padding-left: 1.35em; }
+    .post-body li { padding-left: 0.2em; }
+    .post-body li + li { margin-top: 0.45em; }
+    .post-body li > :is(ul, ol, p) { margin-top: 0.45em; }
+    .post-body ul > li::marker { color: var(--series-text); }
+    .post-body ol > li::marker { font-family: var(--font-sans); font-weight: 700; font-size: 0.92em; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+    /* pull quote, set like a book: larger italic between two hairlines */
+    .post-body blockquote {
+      margin-block: 2em; padding-block: 1.1em 1.2em;
+      border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong);
+      font-size: clamp(1.3rem, 1.1rem + 0.8vw, 1.55rem); font-style: italic; font-weight: 400;
+      line-height: 1.45; letter-spacing: -0.005em; color: var(--ink);
+    }
+    .post-body blockquote + * { margin-top: 2em; }
+    .post-body blockquote > * + * { margin-top: 0.6em; }
+    .post-body blockquote :is(cite, footer) { display: block; margin-top: 0.7em; font-family: var(--font-sans); font-size: 0.9rem; font-style: normal; font-weight: 600; color: var(--ink-2); }
+    /* code */
+    .post-body code, .post-body kbd, .post-body samp { font-family: var(--font-mono); font-size: 0.86em; }
+    .post-body :not(pre) > code {
+      padding: 0.06em 0.34em; background: var(--paper-2); color: var(--ink);
+      border: 1px solid var(--rule); border-radius: var(--r); overflow-wrap: anywhere;
+    }
+    .post-body pre {
+      margin-block: 1.6em; padding: 1rem 1.15rem; overflow-x: auto;
+      background: var(--paper-2); color: var(--ink);
+      border: 1px solid var(--rule); border-radius: var(--r);
+      font-family: var(--font-mono); font-size: 0.875rem; line-height: 1.65; tab-size: 2;
+      scrollbar-width: thin; scrollbar-color: var(--rule-strong) transparent;
+    }
+    .post-body pre code { font-size: inherit; padding: 0; background: none; border: 0; }
+    .post-body pre + * { margin-top: 1.6em; }
+    /* figures, images, video */
+    .post-body figure { margin-block: 2em; }
+    .post-body figure + * { margin-top: 2em; }
+    .post-body img, .post-body figure > svg { width: auto; max-width: 100%; height: auto; border-radius: var(--r); box-shadow: 0 0 0 1px var(--rule); }
+    .post-body figure > img, .post-body figure > svg { width: 100%; }
+    .post-body figcaption { margin-top: 0.7rem; font-family: var(--font-sans); font-size: 0.875rem; line-height: 1.45; color: var(--ink-3); }
+    .post-body .video-embed { position: relative; aspect-ratio: 16 / 9; margin-block: 2em; overflow: hidden; background: var(--paper-3); border-radius: var(--r); box-shadow: 0 0 0 1px var(--rule); }
+    .post-body .video-embed + * { margin-top: 2em; }
+    .post-body .video-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    /* tables */
+    .post-body table {
+      display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse;
+      font-family: var(--font-sans); font-size: 0.95rem; line-height: 1.45; font-variant-numeric: tabular-nums;
+    }
+    .post-body th, .post-body td { padding: 0.6rem 1rem 0.6rem 0; text-align: left; vertical-align: top; border-bottom: 1px solid var(--rule); }
+    .post-body th { font-weight: 700; border-bottom: 2px solid var(--ink); }
+    /* section break */
+    .post-body hr { width: 3.5rem; height: 0; margin: 2.6em auto; border: 0; border-top: 2px solid var(--series); }
+    .post-body hr + * { margin-top: 2.6em; }
+    /* a note set off from the text by rules, not a coloured side bar */
+    .post-body .callout {
+      margin-block: 1.8em; padding: 1rem 1.15rem; background: var(--paper-2);
+      border-top: 2px solid var(--ink); font-size: 1.02rem; line-height: 1.65;
+    }
+    .post-body .callout + * { margin-top: 1.8em; }
+    .post-body.is-translating, .post-title.is-translating { opacity: 0.4; }
+
+    /* end of text: the publisher's mark */
+    .endmark { display: flex; justify-content: center; margin-top: clamp(2.5rem, 5vw, 3.25rem); color: var(--ink); }
+    .endmark .roundel { font-size: 0.8rem; min-width: 0; padding: 0 0.7em; }
+
+    /* ================= script-aware typography (translations) ================= */
+    :lang(ta) :is(.post-title, .post-body) { font-family: "Noto Serif Tamil", "Tamil MN", "Latha", var(--font-serif); }
+    :lang(si) :is(.post-title, .post-body) { font-family: "Noto Serif Sinhala", "Sinhala MN", "Iskoola Pota", var(--font-serif); }
+    :lang(hi) :is(.post-title, .post-body) { font-family: "Noto Serif Devanagari", "Devanagari MT", "Kokila", "Mangal", var(--font-serif); }
+    :lang(zh) :is(.post-title, .post-body) { font-family: "Noto Serif SC", "Songti SC", "STSong", "SimSun", var(--font-serif); }
+    :is(:lang(ta), :lang(si), :lang(hi), :lang(zh)) .post-title { font-weight: 700; font-stretch: 100%; letter-spacing: 0; line-height: 1.3; overflow-wrap: normal; }
+    :is(:lang(ta), :lang(si), :lang(hi)) .post-title { font-size: clamp(1.6rem, 1.1rem + 2vw, 2.5rem); }
+    :lang(zh) .post-title { font-size: clamp(1.8rem, 1.2rem + 2.4vw, 2.9rem); line-height: 1.25; }
+    :is(:lang(ta), :lang(si), :lang(hi), :lang(zh)) .post-body :is(h2, h3, h4) { font-family: inherit; font-weight: 700; letter-spacing: 0; line-height: 1.4; }
+    :is(:lang(ta), :lang(si), :lang(hi)) .post-body { line-height: 1.95; }
+    :lang(zh) .post-body { line-height: 1.9; }
+    :lang(zh) .post-body :is(blockquote, em, i) { font-style: normal; }
+    :lang(zh) .post-body em { font-weight: 650; }
+
+    /* ================= end matter ================= */
+    .end { margin-top: clamp(2.5rem, 5vw, 3.5rem); }
+    .end-block { padding-block: 1.35rem 1.6rem; border-top: 1px solid var(--rule); }
+    .end-block:first-child { border-top: 2px solid var(--ink); }
+    .end-h { font-size: 1.05rem; font-weight: 720; font-stretch: 100%; letter-spacing: -0.005em; line-height: 1.3; }
+    .sources ol { list-style: none; display: grid; gap: 0.55rem; margin-top: 0.75rem; }
+    .sources a {
+      display: inline-flex; align-items: baseline; gap: 0.45rem; max-width: 100%;
+      font-size: 0.95rem; font-weight: 560; color: var(--series-text);
+      text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; overflow-wrap: anywhere;
+    }
+    .sources a .icon { transform: translateY(0.15em); }
+    .sources a:hover { text-decoration-thickness: 2px; }
+    .like-row { display: flex; align-items: center; flex-wrap: wrap; gap: 0.8rem 1.2rem; }
+    .like {
+      display: inline-flex; align-items: center; gap: 0.55rem; min-height: 48px; padding: 0 1.15rem;
+      font-size: 1rem; font-weight: 680; color: var(--ink);
+      border: 1.5px solid var(--rule-strong); border-radius: var(--r);
+      transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .like:hover:not([aria-busy="true"]) { border-color: var(--ink); background: var(--paper-2); }
+    .like[aria-busy="true"] { cursor: progress; }
+    .like .icon { width: 1.3em; height: 1.3em; }
+    /* liked: a flat print of the series colour, ink type on orange */
+    .like.liked { border-color: var(--series); color: var(--on-series); background: var(--series); }
+    .like.liked:hover:not([aria-busy="true"]) { background: var(--series); border-color: var(--ink); }
+    #likeCount { font-variant-numeric: tabular-nums lining-nums; min-width: 1.5ch; }
+    @media (prefers-reduced-motion: no-preference) {
+      .like.just-liked .icon { animation: stamp 0.5s var(--ease-out); }
+    }
+    @keyframes stamp { from { transform: scale(0.6); } to { transform: none; } }
+    .like-note { font-family: var(--font-serif); color: var(--ink-2); }
+    .share-btns { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.85rem; }
+    @media (max-width: 520px) {
+      .share-btns { display: grid; grid-template-columns: 1fr 1fr; }
+      .share-btns > :last-child { grid-column: 1 / -1; }
+    }
+
+    /* ================= comments ================= */
+    .comments { margin-top: clamp(3rem, 6vw, 4.5rem); }
+    .comments-h {
+      display: flex; align-items: center; gap: 0.55rem;
+      font-size: clamp(1.6rem, 1.3rem + 1vw, 2rem); font-weight: 760; font-stretch: 102%; letter-spacing: -0.018em; line-height: 1.1;
+    }
+    .comments-h:focus { outline: none; }
+    .comments-h .icon { width: 0.95em; height: 0.95em; color: var(--series-text); }
+    .c-count { font-weight: 560; color: var(--ink-3); font-variant-numeric: tabular-nums lining-nums; }
+    .cform {
+      display: grid; gap: 1.15rem; margin-top: 1.35rem; padding-block: 1.35rem 1.6rem;
+      border-top: 2px solid var(--ink); border-bottom: 1px solid var(--rule);
+    }
+    .cform .field-name { max-width: 24rem; }
+    .form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
+    .c-note { padding-block: 1.3rem; font-family: var(--font-serif); font-style: italic; color: var(--ink-2); }
+    .c-note.is-flush { border-top: 2px solid var(--ink); margin-top: 1.35rem; }
+    .thread { list-style: none; }
+    .thread > .cmt + .cmt { border-top: 1px solid var(--rule); }
+    .cmt { padding-block: 1.3rem 1.35rem; }
+    .cmt-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.65rem; }
+    .cmt-name { font-weight: 700; color: var(--ink); overflow-wrap: anywhere; }
+    .owner {
+      align-self: center; padding: 0.1rem 0.45rem; border-radius: var(--r);
+      background: var(--series); color: var(--on-series); font-size: 0.75rem; font-weight: 720; line-height: 1.4;
+    }
+    .cmt-when { font-size: 0.85rem; color: var(--ink-3); font-variant-numeric: tabular-nums lining-nums; }
+    .cmt-body { margin-top: 0.35rem; font-family: var(--font-serif); font-size: 1.02rem; line-height: 1.65; color: var(--ink); white-space: pre-wrap; overflow-wrap: anywhere; }
+    .reply-toggle {
+      display: inline-flex; align-items: center; gap: 0.4rem; min-height: 40px; margin-top: 0.25rem; margin-left: -0.2rem; padding-inline: 0.2rem;
+      font-size: 0.9rem; font-weight: 680; color: var(--series-text); border-radius: var(--r);
+    }
+    .reply-toggle:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+    .reply-toggle[aria-expanded="true"] { color: var(--ink); }
+    .replybox { display: grid; gap: 1rem; margin-top: 0.6rem; padding: 0.4rem 0 0.4rem 1.1rem; border-left: 1px solid var(--rule-strong); }
+    .replybox .field-name { max-width: 22rem; }
+    .replybox textarea { min-height: 96px; }
+    .replies { list-style: none; margin-top: 0.75rem; margin-left: clamp(0.4rem, 2vw, 1rem); padding-left: clamp(0.9rem, 2.5vw, 1.35rem); border-left: 1px solid var(--rule); }
+    .replies .cmt { padding-block: 0.75rem 0.4rem; }
+
+    /* ================= post footer ================= */
+    .post-footer {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem 1.5rem;
+      margin-top: clamp(3rem, 6vw, 4.5rem); padding-block: 1.4rem clamp(3.5rem, 8vw, 6rem); border-top: 2px solid var(--ink);
+    }
+    .back-link .icon { transition: transform 0.25s var(--ease-out); }
+    .back-link:hover .icon { transform: translateX(-3px); }
+
+    /* ================= quiet states (not found, unavailable) ================= */
+    .quiet-text { margin-top: 0.2rem; }
+    .quiet-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
+    .quiet-end { padding-block: clamp(3rem, 8vw, 6rem); }
   </style>
 </head>
-<body>
-  <div class="wrap">
-    <nav><a href="../index.html#blog">← Back to gihanmunasinghe.lk</a></nav>
-    <div id="content"><div class="skeleton">Loading post…</div></div>
-  </div>
-  <div id="toast"></div>
+<body class="series-orange">
+  <a class="skip" href="#main">Skip to content</a>
 
+  <header class="masthead">
+    <div class="wrap masthead-in">
+      <a class="roundel" href="/" aria-label="Gihan Munasinghe, home">Gihan.</a>
+      <nav class="nav" aria-label="Main">
+        <a href="/ventures.html">Ventures</a>
+        <a href="/#blog" aria-current="page">Blog</a>
+        <a href="/shop.html">Shop</a>
+        <a href="/#services">Consulting</a>
+        <a href="/#teaching">Teaching</a>
+        <a href="/#expertise">Expertise</a>
+      </nav>
+      <div class="masthead-actions">
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch to dark theme"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-moon"></use></svg></button>
+        <a class="btn btn-paper btn-cta" href="/#contact">Work with me</a>
+        <button class="icon-btn menu-btn" type="button" data-menu-button aria-controls="menu" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-list"></use></svg><span>Menu</span></button>
+      </div>
+    </div>
+    <nav class="menu-panel" id="menu" aria-label="Main menu">
+      <a href="/ventures.html">Ventures <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-right"></use></svg></a>
+      <a href="/#blog" aria-current="page">Blog <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-right"></use></svg></a>
+      <a href="/shop.html">Shop <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-right"></use></svg></a>
+      <a href="/#services">Consulting <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-right"></use></svg></a>
+      <a href="/#teaching">Teaching <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-right"></use></svg></a>
+      <a href="/#expertise">Expertise <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-right"></use></svg></a>
+      <a href="/#contact">Work with me <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-right"></use></svg></a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <div id="content" class="is-loading" aria-busy="true">
+      <header class="titlepage" aria-hidden="true">
+        <div class="tp-zone">
+          <div class="read-col">
+            <div class="post-title sk-title"><span class="sk" style="width: 96%"></span><span class="sk" style="width: 58%"></span></div>
+            <div class="tp-foot">
+              <span class="sk sk-meta"></span>
+              <span class="sk sk-select"></span>
+            </div>
+          </div>
+        </div>
+        <div class="tp-close"></div>
+      </header>
+      <div class="read-col sk-body" aria-hidden="true">
+        <span class="sk" style="width: 100%"></span>
+        <span class="sk" style="width: 97%"></span>
+        <span class="sk" style="width: 99%"></span>
+        <span class="sk" style="width: 64%"></span>
+        <span class="sk gap" style="width: 100%"></span>
+        <span class="sk" style="width: 94%"></span>
+        <span class="sk" style="width: 41%"></span>
+      </div>
+      <p class="visually-hidden" role="status">Loading post</p>
+    </div>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <footer class="colophon">
+    <div class="wrap colophon-in">
+      <div>
+        <a class="roundel" href="/" aria-label="Gihan Munasinghe, home">Gihan.</a>
+        <p>Software engineer, consultant and educator, building and teaching from Singapore.</p>
+        <p>Set in Archivo and Literata.</p>
+      </div>
+      <div>
+        <h2>On this site</h2>
+        <ul>
+          <li><a href="/ventures.html">Ventures</a></li>
+          <li><a href="/#blog">Blog</a></li>
+          <li><a href="/shop.html">Shop</a></li>
+          <li><a href="/#services">Consulting</a></li>
+          <li><a href="/#teaching">Teaching</a></li>
+          <li><a href="/#about">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://www.linkedin.com/in/gihan-munasinghe-7a484575" target="_blank" rel="noopener">LinkedIn</a></li>
+          <li><a href="https://github.com/GihanMunasinghe" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://www.instagram.com/gihanmunasinghe" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://youtube.com/@gihanmunasinghe" target="_blank" rel="noopener">YouTube</a></li>
+          <li><a href="https://www.facebook.com/gikka.munaya" target="_blank" rel="noopener">Facebook</a></li>
+          <li><a href="https://wa.me/6586469798" target="_blank" rel="noopener">WhatsApp</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="colophon-base"><span>&copy; <span data-year>2026</span> Gihan Munasinghe</span><span>gihanmunasinghe.lk</span></div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/site.js" defer></script>
   <script>
   (async function () {
     const $ = (id) => document.getElementById(id);
     const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const icon = (n) => `<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-${n}"></use></svg>`;
     const params = new URLSearchParams(location.search);
     const slug = params.get("slug") || "";
-    const toast = (m) => { const t = $("toast"); t.textContent = m; t.style.display = "block"; clearTimeout(t._h); t._h = setTimeout(() => t.style.display = "none", 4000); };
+    const content = $("content");
+    const toast = (m, err) => {
+      const t = $("toast"); t.textContent = m; t.classList.toggle("err", !!err); t.classList.add("show");
+      clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 4000);
+    };
+
+    /* A quiet title page for the states where there is no post to show. */
+    function quiet(title, text, retry) {
+      document.title = title + " | Gihan Munasinghe";
+      content.className = "is-ready";
+      content.removeAttribute("aria-busy");
+      content.innerHTML = `
+        <header class="titlepage">
+          <div class="tp-zone">
+            <div class="read-col">
+              <h1 class="post-title">${esc(title)}</h1>
+              <div class="tp-foot" style="grid-template-columns: minmax(0, 1fr)">
+                <div>
+                  <p class="lede quiet-text">${esc(text)}</p>
+                  <div class="quiet-actions">
+                    ${retry ? `<button class="btn btn-primary" type="button" id="retry">Try again</button>` : ""}
+                    <a class="btn ${retry ? "btn-ghost" : "btn-primary"}" href="/#blog">${icon("arrow-left")}All posts</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tp-close"></div>
+        </header>
+        <div class="read-col quiet-end"><p class="endmark" aria-hidden="true"><span class="roundel">G.</span></p></div>`;
+      if (retry) $("retry").addEventListener("click", () => location.reload());
+    }
 
     let API = "";
     try { API = (await (await fetch("../site-config.json?t=" + Date.now())).json()).api || ""; } catch {}
     API = API.replace(/\/$/, "");
-    if (!API) { $("content").innerHTML = '<div class="skeleton">Blog backend not configured yet.</div>'; return; }
+    if (!API) { quiet("Blog backend not configured yet", "The first posts are on their way. Check back soon."); return; }
 
     // If the site owner is signed into /admin (same origin), reuse that token so drafts preview.
     const adminToken = localStorage.getItem("gm_admin_jwt");
@@ -177,9 +448,13 @@
 
     let post;
     try { post = await api("/post?slug=" + encodeURIComponent(slug)); }
-    catch (e) { $("content").innerHTML = '<div class="skeleton">Post not found.</div>'; return; }
+    catch (e) {
+      if (e instanceof TypeError) quiet("This post couldn't load", "The blog didn't answer just now. Check your connection, then try again.", true);
+      else quiet("Post not found", "The link may be out of date. Every published post is on the blog shelf.");
+      return;
+    }
 
-    document.title = post.title + " — Gihan Munasinghe";
+    document.title = post.title + " | Gihan Munasinghe";
     const url = location.href.split("#")[0];
     // social bots don't run JS, so share links point at the server-rendered
     // endpoint (real title/description/image); it redirects humans back here.
@@ -211,56 +486,99 @@
       } catch {}
     })();
 
-    const cover = post.coverSvg
-      ? `<div class="cover">${post.coverSvg}</div>`
-      : (post.image ? `<img class="cover" src="${esc(post.image.replace(/^blog\//, ""))}" alt="" />` : "");
+    /* The cover is shown only for a real image; the old generated title cards (coverSvg) repeat the H1. */
+    const cover = post.image
+      ? `<div class="tp-plate"><figure class="read-col plate"><img src="${esc(String(post.image).replace(/^blog\//, ""))}" alt="" fetchpriority="high" /></figure></div>`
+      : `<div class="tp-close"></div>`;
+    const byline = [
+      `<span class="by-media">${esc(post.media || "Article")}</span>`,
+      `<span class="by-author">Gihan Munasinghe</span>`,
+      post.date ? `<time${post.createdAt ? ` datetime="${esc(post.createdAt)}"` : ""}>${esc(post.date)}</time>` : "",
+      post.readTime ? `<span>${esc(post.readTime)}</span>` : "",
+    ].join("");
+    const sources = Array.isArray(post.sources) && post.sources.length
+      ? `<section class="end-block sources" aria-labelledby="sources-h">
+          <h2 class="end-h" id="sources-h">Sources</h2>
+          <ol>${post.sources.map((s) => `<li><a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)} ${icon("arrow-square-out")}</a></li>`).join("")}</ol>
+        </section>`
+      : "";
 
-    $("content").innerHTML = `
-      <header>
-        <div class="kicker">${esc(post.media || "Article")}</div>
-        <h1 id="postTitle">${esc(post.title)}</h1>
-        <div class="meta"><span>Gihan Munasinghe</span><span>·</span><span>${esc(post.date)}</span><span>·</span><span>${esc(post.readTime)}</span></div>
+    content.className = "is-ready";
+    content.removeAttribute("aria-busy");
+    content.innerHTML = `
+      <header class="titlepage">
+        <div class="tp-zone">
+          <div class="read-col">
+            <h1 class="post-title" id="postTitle">${esc(post.title)}</h1>
+            <div class="tp-foot">
+              <p class="byline"><span class="byline-in">${byline}</span></p>
+              <div class="field lang-field">
+                <label for="langSel">${icon("translate")}Read in</label>
+                <select id="langSel" class="lang-select" aria-describedby="xnote">
+                  <option value="en">English (original)</option>
+                  <option value="zh">中文 · Chinese</option>
+                  <option value="ms">Bahasa Melayu</option>
+                  <option value="ta">தமிழ் · Tamil</option>
+                  <option value="si">සිංහල · Sinhala</option>
+                  <option value="hi">हिन्दी · Hindi</option>
+                </select>
+                <p class="xnote" id="xnote" aria-live="polite"></p>
+              </div>
+            </div>
+          </div>
+        </div>
         ${cover}
-        <div class="lang-bar">
-          <span class="globe">🌐</span>
-          <select id="langSel" aria-label="Read this post in your language">
-            <option value="en">English (original)</option>
-            <option value="zh">中文 · Chinese</option>
-            <option value="ms">Bahasa Melayu</option>
-            <option value="ta">தமிழ் · Tamil</option>
-            <option value="si">සිංහල · Sinhala</option>
-            <option value="hi">हिन्दी · Hindi</option>
-          </select>
-          <span class="xnote" id="xnote"></span>
-        </div>
       </header>
-      <article id="postBody">${post.html || ""}</article>
-      ${Array.isArray(post.sources) && post.sources.length ? `<div class="sources"><h3>Sources</h3><ul>${post.sources.map((s) => `<li><a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a></li>`).join("")}</ul></div>` : ""}
-      <div class="engage">
-        <button class="like-btn" id="likeBtn"><span class="heart">🤍</span> <span id="likeCount">${post.likes || 0}</span></button>
-        <span class="muted-note">Found this useful? Give it a like.</span>
-      </div>
-      <div class="share-bar">
-        <h3>Enjoyed this? Share it</h3>
-        <div class="share-btns">
-          <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}" target="_blank" rel="noopener">in&nbsp;LinkedIn</a>
-          <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(post.title)}" target="_blank" rel="noopener">𝕏&nbsp;Post</a>
-          <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}" target="_blank" rel="noopener">f&nbsp;Facebook</a>
-          <a href="https://wa.me/?text=${encodeURIComponent(post.title + " " + shareUrl)}" target="_blank" rel="noopener">🟢&nbsp;WhatsApp</a>
-          <button type="button" id="copyLink">🔗&nbsp;Copy link</button>
+      <div class="read-col post-wrap">
+        <article class="post-body" id="postBody">${post.html || ""}</article>
+        <p class="endmark" aria-hidden="true"><span class="roundel">G.</span></p>
+        <div class="end">
+          ${sources}
+          <section class="end-block" aria-label="Like this post">
+            <div class="like-row">
+              <button class="like" type="button" id="likeBtn" aria-pressed="false">${icon("heart")}<span class="visually-hidden">Like this post, </span><span id="likeCount">${esc(post.likes || 0)}</span><span class="visually-hidden"> likes</span></button>
+              <span class="like-note">Found this useful? Give it a like.</span>
+            </div>
+          </section>
+          <section class="end-block" aria-labelledby="share-h">
+            <h2 class="end-h" id="share-h">Enjoyed this? Share it</h2>
+            <div class="share-btns">
+              <a class="btn btn-ghost btn-sm" href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}" target="_blank" rel="noopener">${icon("linkedin-logo")}LinkedIn</a>
+              <a class="btn btn-ghost btn-sm" href="https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(post.title)}" target="_blank" rel="noopener" aria-label="Post on X">${icon("x-logo")}Post</a>
+              <a class="btn btn-ghost btn-sm" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}" target="_blank" rel="noopener">${icon("facebook-logo")}Facebook</a>
+              <a class="btn btn-ghost btn-sm" href="https://wa.me/?text=${encodeURIComponent(post.title + " " + shareUrl)}" target="_blank" rel="noopener">${icon("whatsapp-logo")}WhatsApp</a>
+              <button class="btn btn-ghost btn-sm" type="button" id="copyLink">${icon("link-simple")}Copy link</button>
+            </div>
+          </section>
         </div>
-      </div>
-      <div class="comments" id="comments"></div>
-      <div class="post-footer">
-        <a class="back" href="../index.html#blog">← All posts</a>
-        <a class="btn" href="../index.html#contact">Work with me</a>
+        <section class="comments" id="comments" aria-labelledby="comments-h">
+          <h2 class="comments-h" id="comments-h">${icon("chat-circle")}Comments</h2>
+          <p class="c-note is-flush">Loading comments…</p>
+        </section>
+        <nav class="post-footer" aria-label="Post">
+          <a class="text-link back-link" href="/#blog">${icon("arrow-left")}All posts</a>
+          <a class="btn btn-primary" href="/#contact">Work with me</a>
+        </nav>
       </div>`;
 
-    /* live translation — swap title + body into a reader's language, remember the choice */
+    /* live translation: swap title + body into a reader's language, remember the choice */
     const orig = { title: post.title, html: post.html || "" };
     const LANG_NAMES = { en: "English", zh: "中文", ms: "Bahasa Melayu", ta: "தமிழ்", si: "සිංහල", hi: "हिन्दी" };
     const titleEl = $("postTitle"), bodyEl = $("postBody"), langSel = $("langSel"), xnote = $("xnote");
     const xcache = {};
+    let shownLang = "en";
+    /* Script-aware type: load the matching Noto Serif face once, on first use.
+       If it can't load, the :lang() font stacks fall back to system faces. */
+    const SCRIPT_FONTS = { zh: "Noto+Serif+SC", ta: "Noto+Serif+Tamil", si: "Noto+Serif+Sinhala", hi: "Noto+Serif+Devanagari" };
+    function ensureScriptFont(lang) {
+      const fam = SCRIPT_FONTS[lang];
+      if (!fam || document.getElementById("font-" + lang)) return;
+      const l = document.createElement("link");
+      l.id = "font-" + lang; l.rel = "stylesheet";
+      l.href = "https://fonts.googleapis.com/css2?family=" + fam + ":wght@400;700&display=swap";
+      document.head.appendChild(l);
+    }
+    const busy = (on) => { [titleEl, bodyEl].forEach((el) => el.classList.toggle("is-translating", on)); bodyEl.setAttribute("aria-busy", on ? "true" : "false"); };
     /* A first-time translation is prepared in the background (translate +
        native-language proofread), so the API answers 202 until it's ready. */
     async function fetchTranslation(lang) {
@@ -278,20 +596,28 @@
       return r;
     }
     async function applyLang(lang) {
+      xnote.classList.remove("is-err");
       if (!lang || lang === "en") {
         titleEl.textContent = orig.title; bodyEl.innerHTML = orig.html;
-        document.documentElement.lang = "en"; document.title = orig.title + " — Gihan Munasinghe";
-        xnote.innerHTML = ""; localStorage.setItem("gm_lang", "en"); return;
+        document.documentElement.lang = "en"; document.title = orig.title + " | Gihan Munasinghe";
+        xnote.innerHTML = ""; localStorage.setItem("gm_lang", "en"); shownLang = "en"; return;
       }
+      ensureScriptFont(lang);
       xnote.textContent = "Translating…";
+      busy(true);
       try {
         const t = xcache[lang] || (xcache[lang] = await fetchTranslation(lang));
         titleEl.textContent = t.title; bodyEl.innerHTML = t.html;
-        document.documentElement.lang = lang; document.title = t.title + " — Gihan Munasinghe";
-        xnote.innerHTML = "Auto-translated to " + esc(LANG_NAMES[lang] || lang) + ' · <a id="xorig">Show original</a>';
-        $("xorig").addEventListener("click", () => { langSel.value = "en"; applyLang("en"); });
-        localStorage.setItem("gm_lang", lang);
-      } catch (e) { xnote.textContent = "Translation unavailable right now — try again shortly."; delete xcache[lang]; }
+        document.documentElement.lang = lang; document.title = t.title + " | Gihan Munasinghe";
+        xnote.innerHTML = "Auto-translated to " + esc(LANG_NAMES[lang] || lang) + '. <button type="button" class="xorig" id="xorig">Show original</button>';
+        $("xorig").addEventListener("click", () => { langSel.value = "en"; applyLang("en"); langSel.focus(); });
+        localStorage.setItem("gm_lang", lang); shownLang = lang;
+      } catch (e) {
+        xnote.textContent = "Translation unavailable right now. Try again shortly.";
+        xnote.classList.add("is-err");
+        delete xcache[lang];
+        langSel.value = shownLang; // the select names the language on screen, so picking again retries
+      } finally { busy(false); }
     }
     langSel.addEventListener("change", () => applyLang(langSel.value));
     const savedLang = localStorage.getItem("gm_lang");
@@ -300,15 +626,26 @@
     /* likes (one per browser per post) */
     const likeKey = "gm_liked_" + slug;
     const likeBtn = $("likeBtn");
-    if (localStorage.getItem(likeKey)) { likeBtn.classList.add("liked"); likeBtn.querySelector(".heart").textContent = "❤️"; }
+    const setLiked = (on) => {
+      likeBtn.classList.toggle("liked", on);
+      likeBtn.setAttribute("aria-pressed", on ? "true" : "false");
+      likeBtn.querySelector("use").setAttribute("href", "/assets/icons.svg#i-" + (on ? "heart-fill" : "heart"));
+    };
+    if (localStorage.getItem(likeKey)) setLiked(true);
+    likeBtn.addEventListener("animationend", () => likeBtn.classList.remove("just-liked"));
+    /* busy is marked with aria-busy, not disabled, so keyboard focus stays on the button */
+    let likePending = false;
     likeBtn.addEventListener("click", async () => {
+      if (likePending) return;
       const liked = localStorage.getItem(likeKey);
+      likePending = true; likeBtn.setAttribute("aria-busy", "true");
       try {
         const r = await api("/like", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ slug, undo: Boolean(liked) }) });
         $("likeCount").textContent = r.likes;
-        if (liked) { localStorage.removeItem(likeKey); likeBtn.classList.remove("liked"); likeBtn.querySelector(".heart").textContent = "🤍"; }
-        else { localStorage.setItem(likeKey, "1"); likeBtn.classList.add("liked"); likeBtn.querySelector(".heart").textContent = "❤️"; }
-      } catch (e) { toast("Could not register like."); }
+        if (liked) { localStorage.removeItem(likeKey); setLiked(false); }
+        else { localStorage.setItem(likeKey, "1"); setLiked(true); likeBtn.classList.add("just-liked"); }
+      } catch (e) { toast("Could not register like.", true); }
+      finally { likePending = false; likeBtn.removeAttribute("aria-busy"); }
     });
 
     $("copyLink").addEventListener("click", () => {
@@ -317,55 +654,107 @@
 
     /* comments */
     const cbox = $("comments");
-    async function renderComments() {
-      let list = [];
-      try { list = await api("/comments?slug=" + encodeURIComponent(slug)); } catch {}
+    const fmtDate = (d) => { const t = new Date(d); return isNaN(t) ? "" : t.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }); };
+    function showError(input, msg) {
+      const err = $(input.id + "-err");
+      input.setAttribute("aria-invalid", "true");
+      if (err) { err.textContent = msg; err.hidden = false; }
+      input.focus();
+    }
+    function clearError(input) {
+      input.removeAttribute("aria-invalid");
+      const err = $(input.id + "-err");
+      if (err) { err.hidden = true; err.textContent = ""; }
+    }
+    async function renderComments(focusHead) {
+      let list = [], failed = false;
+      try { list = await api("/comments?slug=" + encodeURIComponent(slug)); } catch { failed = true; }
+      if (!Array.isArray(list)) list = [];
       list.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      const enabled = post.commentsEnabled !== false;
       const tops = list.filter((c) => !c.parentId);
       const replies = (id) => list.filter((c) => c.parentId === id);
-      const one = (c, isReply) => `
-        <div class="cmt${isReply ? " reply" : ""}">
-          <span class="who">${esc(c.name)}${c.isOwner ? '<span class="owner">Author</span>' : ""}<span class="when">${new Date(c.createdAt).toLocaleDateString()}</span></span>
-          <div class="body">${esc(c.text)}</div>
-          ${isReply ? "" : `<span class="reply-link" data-reply="${c.id}">↩ Reply</span>
-            <div class="replybox" id="rb-${c.id}" style="display:none">
-              <input type="text" placeholder="Your name" id="rn-${c.id}" />
-              <textarea placeholder="Write a reply…" id="rt-${c.id}"></textarea>
-              <button class="btn" data-sendreply="${c.id}">Reply</button>
+      const one = (c, isReply) => {
+        const id = esc(c.id);
+        const kids = replies(c.id);
+        return `
+        <li class="cmt">
+          <div class="cmt-head">
+            <span class="cmt-name">${esc(c.name)}</span>${c.isOwner ? '<span class="owner">Author</span>' : ""}
+            <time class="cmt-when"${c.createdAt ? ` datetime="${esc(c.createdAt)}"` : ""}>${esc(fmtDate(c.createdAt))}</time>
+          </div>
+          <p class="cmt-body">${esc(c.text)}</p>
+          ${isReply || !enabled ? "" : `<button class="reply-toggle" type="button" data-reply="${id}" aria-expanded="false" aria-controls="rb-${id}">${icon("arrow-bend-up-left")}Reply<span class="visually-hidden"> to ${esc(c.name)}</span></button>
+            <div class="replybox" id="rb-${id}" hidden>
+              <div class="field field-name">
+                <label for="rn-${id}">Your name</label>
+                <input type="text" id="rn-${id}" maxlength="60" autocomplete="name" />
+              </div>
+              <div class="field">
+                <label for="rt-${id}">Your reply</label>
+                <textarea id="rt-${id}" maxlength="2000" aria-describedby="rt-${id}-err"></textarea>
+                <p class="error" id="rt-${id}-err" hidden></p>
+              </div>
+              <div class="form-actions">
+                <button class="btn btn-primary btn-sm" type="button" data-sendreply="${id}">Post reply</button>
+                <button class="btn btn-ghost btn-sm" type="button" data-cancelreply="${id}">Cancel</button>
+              </div>
             </div>`}
-          ${replies(c.id).map((r) => one(r, true)).join("")}
-        </div>`;
-      const enabled = post.commentsEnabled !== false;
-      cbox.innerHTML = `<h2>💬 Comments${list.length ? " (" + list.length + ")" : ""}</h2>` +
+          ${kids.length ? `<ol class="replies">${kids.map((r) => one(r, true)).join("")}</ol>` : ""}
+        </li>`;
+      };
+      cbox.innerHTML = `<h2 class="comments-h" id="comments-h" tabindex="-1">${icon("chat-circle")}Comments${list.length ? ` <span class="c-count">(${list.length})</span>` : ""}</h2>` +
         (enabled ? `<div class="cform">
-          <input type="text" id="cname" placeholder="Your name" maxlength="60" />
-          <textarea id="ctext" placeholder="Share your thoughts…" maxlength="2000"></textarea>
-          <input type="text" class="hp" id="cweb" tabindex="-1" autocomplete="off" aria-hidden="true" />
-          <button class="btn" id="csend">Post comment</button>
-        </div>` : '<p class="muted-note">Comments are turned off for this post.</p>') +
-        (tops.length ? tops.map((c) => one(c, false)).join("") : (enabled ? '<p class="muted-note">Be the first to comment.</p>' : ""));
+          <div class="field field-name">
+            <label for="cname">Your name</label>
+            <input type="text" id="cname" maxlength="60" autocomplete="name" />
+          </div>
+          <div class="field">
+            <label for="ctext">Your comment</label>
+            <textarea id="ctext" maxlength="2000" placeholder="Share your thoughts…" aria-describedby="ctext-hint ctext-err"></textarea>
+            <p class="hint" id="ctext-hint">Up to 2000 characters.</p>
+            <p class="error" id="ctext-err" hidden></p>
+          </div>
+          <div class="hp" aria-hidden="true"><label for="cweb">Website</label><input type="text" class="hp" id="cweb" tabindex="-1" autocomplete="off" aria-hidden="true" /></div>
+          <div class="form-actions"><button class="btn btn-primary" type="button" id="csend">Post comment</button></div>
+        </div>` : '<p class="c-note is-flush">Comments are turned off for this post.</p>') +
+        (failed ? '<p class="c-note">Comments couldn\'t load just now. Refresh the page to try again.</p>'
+          : tops.length ? `<ol class="thread">${tops.map((c) => one(c, false)).join("")}</ol>`
+          : (enabled ? '<p class="c-note">Be the first to comment.</p>' : ""));
+      if (focusHead) $("comments-h").focus();
 
       if (enabled) {
+        const ctext = $("ctext");
+        ctext.addEventListener("input", () => clearError(ctext));
         $("csend").addEventListener("click", async () => {
-          const name = $("cname").value.trim(), text = $("ctext").value.trim();
-          if (text.length < 2) return toast("Write a comment first.");
-          $("csend").disabled = true;
+          const send = $("csend");
+          const name = $("cname").value.trim(), text = ctext.value.trim();
+          if (text.length < 2) return showError(ctext, "Write a comment first.");
+          send.disabled = true; send.textContent = "Posting…";
           try {
             await api("/comments", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ slug, name, text, website: $("cweb").value }) });
-            toast("Comment posted!"); await renderComments();
-          } catch (e) { toast(e.message); $("csend").disabled = false; }
+            toast("Comment posted!"); await renderComments(true);
+          } catch (e) { toast(e.message, true); send.disabled = false; send.textContent = "Post comment"; send.focus(); }
         });
+        const setBox = (id, open, focus) => {
+          const box = $("rb-" + id), tog = cbox.querySelector(`[data-reply="${CSS.escape(id)}"]`);
+          box.hidden = !open; tog.setAttribute("aria-expanded", open ? "true" : "false");
+          if (open && focus) $("rn-" + id).focus();
+          if (!open && focus) tog.focus();
+        };
         cbox.querySelectorAll("[data-reply]").forEach((el) => el.addEventListener("click", () => {
-          const box = $("rb-" + el.dataset.reply); box.style.display = box.style.display === "none" ? "block" : "none";
+          setBox(el.dataset.reply, $("rb-" + el.dataset.reply).hidden, true);
         }));
+        cbox.querySelectorAll("[data-cancelreply]").forEach((el) => el.addEventListener("click", () => setBox(el.dataset.cancelreply, false, true)));
+        cbox.querySelectorAll("textarea[id^='rt-']").forEach((ta) => ta.addEventListener("input", () => clearError(ta)));
         cbox.querySelectorAll("[data-sendreply]").forEach((el) => el.addEventListener("click", async () => {
-          const id = el.dataset.sendreply, name = $("rn-" + id).value.trim(), text = $("rt-" + id).value.trim();
-          if (text.length < 2) return toast("Write a reply first.");
-          el.disabled = true;
+          const id = el.dataset.sendreply, ta = $("rt-" + id), name = $("rn-" + id).value.trim(), text = ta.value.trim();
+          if (text.length < 2) return showError(ta, "Write a reply first.");
+          el.disabled = true; el.textContent = "Posting…";
           try {
             await api("/comments", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ slug, name, text, parentId: id }) });
-            toast("Reply posted!"); await renderComments();
-          } catch (e) { toast(e.message); el.disabled = false; }
+            toast("Reply posted!"); await renderComments(true);
+          } catch (e) { toast(e.message, true); el.disabled = false; el.textContent = "Post reply"; el.focus(); }
         }));
       }
     }

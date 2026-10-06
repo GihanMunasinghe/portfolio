@@ -1,0 +1,973 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-06T22:40:42Z",
+  "title": "Design System: Gihan Munasinghe",
+  "extensions": {
+    "colorMeta": {
+      "series-blue": {
+        "role": "primary",
+        "displayName": "Author Cobalt",
+        "canonical": "oklch(43.0% 0.160 265.0)",
+        "tonalRamp": [
+          "#010036",
+          "#030f71",
+          "#163695",
+          "#3359bb",
+          "#527ce1",
+          "#79a2fe",
+          "#b0c9fe",
+          "#e7effe"
+        ]
+      },
+      "series-orange": {
+        "role": "primary",
+        "displayName": "Press Orange",
+        "canonical": "oklch(67.7% 0.181 44.9)",
+        "tonalRamp": [
+          "#190500",
+          "#411600",
+          "#6e2a01",
+          "#9e4003",
+          "#d25701",
+          "#fe7933",
+          "#feb696",
+          "#feeae1"
+        ]
+      },
+      "series-green": {
+        "role": "primary",
+        "displayName": "Bottle Green",
+        "canonical": "oklch(46.8% 0.100 160.5)",
+        "tonalRamp": [
+          "#000f07",
+          "#012d1b",
+          "#024f33",
+          "#1b724e",
+          "#44956e",
+          "#68b990",
+          "#8ddeb4",
+          "#c2ffde"
+        ]
+      },
+      "series-red": {
+        "role": "primary",
+        "displayName": "Cerise",
+        "canonical": "oklch(53.3% 0.196 15.6)",
+        "tonalRamp": [
+          "#1e0004",
+          "#4b0113",
+          "#7e0226",
+          "#b6023a",
+          "#de3e5a",
+          "#ff7080",
+          "#feb1b6",
+          "#ffe8e9"
+        ]
+      },
+      "orange-text": {
+        "role": "secondary",
+        "displayName": "Burnt Orange (orange as type on paper)",
+        "canonical": "oklch(53.6% 0.147 44.3)",
+        "tonalRamp": [
+          "#190500",
+          "#411501",
+          "#6f2900",
+          "#9f3f02",
+          "#c8602d",
+          "#f08352",
+          "#feb696",
+          "#feeae1"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Cool Paper",
+        "canonical": "oklch(96.9% 0.003 247.9)",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#242527",
+          "#414244",
+          "#606163",
+          "#818284",
+          "#a3a5a7",
+          "#c7c9cb",
+          "#edeff1"
+        ]
+      },
+      "paper-2": {
+        "role": "neutral",
+        "displayName": "Paper Shade",
+        "canonical": "oklch(93.0% 0.007 260.7)",
+        "tonalRamp": [
+          "#090b0e",
+          "#232529",
+          "#404246",
+          "#5f6166",
+          "#808287",
+          "#a2a5aa",
+          "#c6c9ce",
+          "#eceff4"
+        ]
+      },
+      "paper-3": {
+        "role": "neutral",
+        "displayName": "Paper Deep",
+        "canonical": "oklch(89.0% 0.011 256.7)",
+        "tonalRamp": [
+          "#080b10",
+          "#22252a",
+          "#3e4248",
+          "#5d6268",
+          "#7e8389",
+          "#a1a5ac",
+          "#c5cad0",
+          "#eaeff6"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Blue-Black Ink",
+        "canonical": "oklch(20.0% 0.010 268.2)",
+        "tonalRamp": [
+          "#090b10",
+          "#23252a",
+          "#3f4248",
+          "#5f6167",
+          "#7f8289",
+          "#a2a5ac",
+          "#c6c9d0",
+          "#ebeef6"
+        ]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Ink Grey",
+        "canonical": "oklch(41.6% 0.018 264.4)",
+        "tonalRamp": [
+          "#080b13",
+          "#21252e",
+          "#3d424c",
+          "#5c616c",
+          "#7d828d",
+          "#9fa5b1",
+          "#c3c9d5",
+          "#e8effb"
+        ]
+      },
+      "ink-3": {
+        "role": "neutral",
+        "displayName": "Ink Muted",
+        "canonical": "oklch(49.5% 0.019 262.7)",
+        "tonalRamp": [
+          "#070b13",
+          "#20252f",
+          "#3d424c",
+          "#5b616c",
+          "#7c838e",
+          "#9fa5b1",
+          "#c3c9d6",
+          "#e8effc"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "rgba(20, 22, 27, 0.16)",
+        "tonalRamp": [
+          "#090b10",
+          "#23252a",
+          "#3f4248",
+          "#5f6167",
+          "#7f8289",
+          "#a2a5ac",
+          "#c6c9d0",
+          "#ebeef6"
+        ]
+      },
+      "rule-strong": {
+        "role": "neutral",
+        "displayName": "Strong Rule",
+        "canonical": "rgba(20, 22, 27, 0.72)",
+        "tonalRamp": [
+          "#090b10",
+          "#23252a",
+          "#3f4248",
+          "#5f6167",
+          "#7f8289",
+          "#a2a5ac",
+          "#c6c9d0",
+          "#ebeef6"
+        ]
+      },
+      "on-dark-band": {
+        "role": "neutral",
+        "displayName": "Band Type (on cobalt, green, cerise)",
+        "canonical": "oklch(96.9% 0.003 247.9)",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#242527",
+          "#414244",
+          "#606163",
+          "#818284",
+          "#a3a5a7",
+          "#c7c9cb",
+          "#edeff1"
+        ]
+      },
+      "on-light-band": {
+        "role": "neutral",
+        "displayName": "Band Type (on orange)",
+        "canonical": "oklch(20.0% 0.010 268.2)",
+        "tonalRamp": [
+          "#090b10",
+          "#23252a",
+          "#3f4248",
+          "#5f6167",
+          "#7f8289",
+          "#a2a5ac",
+          "#c6c9d0",
+          "#ebeef6"
+        ]
+      },
+      "scrim": {
+        "role": "neutral",
+        "displayName": "Scrim",
+        "canonical": "rgba(10, 12, 18, 0.62)",
+        "tonalRamp": [
+          "#090b11",
+          "#22252c",
+          "#3f4249",
+          "#5e6169",
+          "#7f828b",
+          "#a2a5ae",
+          "#c6c9d2",
+          "#ebeef8"
+        ]
+      },
+      "ok": {
+        "role": "state",
+        "displayName": "Confirmation Green",
+        "canonical": "oklch(46.8% 0.100 160.5)",
+        "tonalRamp": [
+          "#000f07",
+          "#012d1b",
+          "#024f33",
+          "#1b724e",
+          "#44956e",
+          "#68b990",
+          "#8ddeb4",
+          "#c2ffde"
+        ]
+      },
+      "danger": {
+        "role": "state",
+        "displayName": "Signal Red",
+        "canonical": "oklch(50.1% 0.178 28.7)",
+        "tonalRamp": [
+          "#1f0000",
+          "#4d0001",
+          "#810103",
+          "#b0221b",
+          "#d84c3f",
+          "#ff7464",
+          "#ffb3a8",
+          "#ffe9e5"
+        ]
+      },
+      "series-blue-dark": {
+        "role": "primary",
+        "displayName": "Author Cobalt field (dark)",
+        "canonical": "oklch(46.4% 0.167 265.2)",
+        "tonalRamp": [
+          "#010036",
+          "#030a74",
+          "#153599",
+          "#3258bf",
+          "#517be5",
+          "#79a1ff",
+          "#b0c9fe",
+          "#e7efff"
+        ]
+      },
+      "blue-text-dark": {
+        "role": "secondary",
+        "displayName": "Pale Cobalt (dark text tint)",
+        "canonical": "oklch(75.1% 0.127 269.3)",
+        "tonalRamp": [
+          "#030034",
+          "#101861",
+          "#283a84",
+          "#455ba9",
+          "#647dce",
+          "#85a1f5",
+          "#b4c8ff",
+          "#e8eeff"
+        ]
+      },
+      "orange-text-dark": {
+        "role": "secondary",
+        "displayName": "Apricot (dark text tint)",
+        "canonical": "oklch(78.1% 0.142 50.8)",
+        "tonalRamp": [
+          "#180600",
+          "#3e1901",
+          "#692f01",
+          "#984702",
+          "#c36523",
+          "#ea884b",
+          "#feb68d",
+          "#ffeade"
+        ]
+      },
+      "green-text-dark": {
+        "role": "secondary",
+        "displayName": "Mint (dark text tint)",
+        "canonical": "oklch(78.6% 0.130 162.2)",
+        "tonalRamp": [
+          "#000f07",
+          "#002d1c",
+          "#024f34",
+          "#00744e",
+          "#0f9a6a",
+          "#47be8c",
+          "#70e3b0",
+          "#c3ffe0"
+        ]
+      },
+      "red-text-dark": {
+        "role": "secondary",
+        "displayName": "Rose (dark text tint)",
+        "canonical": "oklch(74.6% 0.159 9.2)",
+        "tonalRamp": [
+          "#1e0006",
+          "#4b001a",
+          "#7e0030",
+          "#a72c4e",
+          "#ce516e",
+          "#f67590",
+          "#ffb0bc",
+          "#ffe8eb"
+        ]
+      },
+      "paper-dark": {
+        "role": "neutral",
+        "displayName": "Night Paper",
+        "canonical": "oklch(18.7% 0.011 268.1)",
+        "tonalRamp": [
+          "#090b10",
+          "#23252a",
+          "#3f4248",
+          "#5e6168",
+          "#7f8289",
+          "#a2a5ac",
+          "#c6c9d0",
+          "#ebeef6"
+        ]
+      },
+      "paper-2-dark": {
+        "role": "neutral",
+        "displayName": "Paper Shade (dark)",
+        "canonical": "oklch(22.6% 0.013 264.3)",
+        "tonalRamp": [
+          "#090b11",
+          "#22252b",
+          "#3f4249",
+          "#5e6169",
+          "#7e828a",
+          "#a1a5ad",
+          "#c5c9d2",
+          "#eaeff7"
+        ]
+      },
+      "paper-3-dark": {
+        "role": "neutral",
+        "displayName": "Paper Deep (dark)",
+        "canonical": "oklch(27.2% 0.016 264.3)",
+        "tonalRamp": [
+          "#080b12",
+          "#21252d",
+          "#3e424b",
+          "#5d616b",
+          "#7d828c",
+          "#a0a5af",
+          "#c4c9d4",
+          "#e9effa"
+        ]
+      },
+      "ink-dark": {
+        "role": "neutral",
+        "displayName": "Light Ink",
+        "canonical": "oklch(94.9% 0.006 264.5)",
+        "tonalRamp": [
+          "#0a0b0e",
+          "#242528",
+          "#404245",
+          "#5f6165",
+          "#808286",
+          "#a3a5a9",
+          "#c7c9cd",
+          "#eceef2"
+        ]
+      },
+      "ink-2-dark": {
+        "role": "neutral",
+        "displayName": "Ink Grey (dark)",
+        "canonical": "oklch(78.2% 0.012 264.5)",
+        "tonalRamp": [
+          "#090b10",
+          "#22252b",
+          "#3f4249",
+          "#5e6168",
+          "#7f828a",
+          "#a1a5ad",
+          "#c5c9d1",
+          "#eaeff7"
+        ]
+      },
+      "ink-3-dark": {
+        "role": "neutral",
+        "displayName": "Ink Muted (dark)",
+        "canonical": "oklch(68.8% 0.018 262.7)",
+        "tonalRamp": [
+          "#070b13",
+          "#21252e",
+          "#3d424c",
+          "#5c616c",
+          "#7d838d",
+          "#9fa5b0",
+          "#c3c9d5",
+          "#e8effb"
+        ]
+      },
+      "rule-dark": {
+        "role": "neutral",
+        "displayName": "Hairline (dark)",
+        "canonical": "rgba(236, 238, 242, 0.15)",
+        "tonalRamp": [
+          "#0a0b0e",
+          "#242528",
+          "#404245",
+          "#5f6165",
+          "#808286",
+          "#a3a5a9",
+          "#c7c9cd",
+          "#eceef2"
+        ]
+      },
+      "rule-strong-dark": {
+        "role": "neutral",
+        "displayName": "Strong Rule (dark)",
+        "canonical": "rgba(236, 238, 242, 0.7)",
+        "tonalRamp": [
+          "#0a0b0e",
+          "#242528",
+          "#404245",
+          "#5f6165",
+          "#808286",
+          "#a3a5a9",
+          "#c7c9cd",
+          "#eceef2"
+        ]
+      },
+      "on-dark-band-dark": {
+        "role": "neutral",
+        "displayName": "Band Type on dark fields (dark)",
+        "canonical": "oklch(95.7% 0.006 255.5)",
+        "tonalRamp": [
+          "#090b0e",
+          "#232528",
+          "#404245",
+          "#5f6165",
+          "#808286",
+          "#a2a5a9",
+          "#c6c9cd",
+          "#eceff3"
+        ]
+      },
+      "on-light-band-dark": {
+        "role": "neutral",
+        "displayName": "Band Type on orange (dark)",
+        "canonical": "oklch(18.7% 0.011 268.1)",
+        "tonalRamp": [
+          "#090b10",
+          "#23252a",
+          "#3f4248",
+          "#5e6168",
+          "#7f8289",
+          "#a2a5ac",
+          "#c6c9d0",
+          "#ebeef6"
+        ]
+      },
+      "plank-dark": {
+        "role": "neutral",
+        "displayName": "Shelf Plank (dark)",
+        "canonical": "oklch(31.2% 0.018 262.2)",
+        "tonalRamp": [
+          "#070b13",
+          "#20252e",
+          "#3d424c",
+          "#5c616c",
+          "#7d838d",
+          "#9fa5b0",
+          "#c3c9d5",
+          "#e8effb"
+        ]
+      },
+      "ok-dark": {
+        "role": "state",
+        "displayName": "Confirmation Green (dark)",
+        "canonical": "oklch(78.6% 0.130 162.2)",
+        "tonalRamp": [
+          "#000f07",
+          "#002d1c",
+          "#024f34",
+          "#00744e",
+          "#0f9a6a",
+          "#47be8c",
+          "#70e3b0",
+          "#c3ffe0"
+        ]
+      },
+      "danger-dark": {
+        "role": "state",
+        "displayName": "Signal Red (dark)",
+        "canonical": "oklch(75.9% 0.144 26.1)",
+        "tonalRamp": [
+          "#1f0001",
+          "#4d0004",
+          "#7d0e13",
+          "#a33733",
+          "#ca5b53",
+          "#f27e75",
+          "#feb3ab",
+          "#fee9e6"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The author's name on the homepage cover only; extended width (114%), heavy and tight."
+      },
+      "display-volume": {
+        "displayName": "Display Volume",
+        "purpose": "Title-page h1 of an inner volume (Ventures, Shop, 404)."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings (h2)."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Entries in a ruled list: offers, formats, timeline roles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Interface text in Archivo."
+      },
+      "lede": {
+        "displayName": "Lede",
+        "purpose": "The Literata paragraph under a heading, max 60ch, Ink Grey."
+      },
+      "prose": {
+        "displayName": "Prose",
+        "purpose": "About text, venture write-ups, excerpts and comments."
+      },
+      "reading": {
+        "displayName": "Reading",
+        "purpose": "The blog post body in a 43rem column."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "Button labels."
+      },
+      "nav": {
+        "displayName": "Nav",
+        "purpose": "Masthead links and tabs."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Form labels."
+      },
+      "meta": {
+        "displayName": "Meta",
+        "purpose": "Dates, counts, conditions; tabular figures in Ink Muted."
+      },
+      "spine": {
+        "displayName": "Spine",
+        "purpose": "Book titles set vertically on shelf spines; condensed width 64%."
+      },
+      "mark": {
+        "displayName": "Mark",
+        "purpose": "The \"Gihan.\" / \"G.\" roundel lettering; size follows context."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Code only: inline code, pre blocks, kbd."
+      }
+    },
+    "shadows": [
+      {
+        "name": "mounted-print",
+        "value": "0 34px 60px -30px rgba(18, 26, 54, 0.6), 0 0 0 1px rgba(20, 22, 27, 0.1)",
+        "purpose": "Cover portrait, teaching frontispiece and post cover plate: a print mounted on the page."
+      },
+      {
+        "name": "shelf-plank",
+        "value": "0 26px 22px -22px rgba(18, 26, 54, 0.5)",
+        "purpose": "Cast shadow under the 14px plank of the homepage shelf."
+      },
+      {
+        "name": "jacket-plank",
+        "value": "0 18px 18px -16px rgba(18, 26, 54, 0.45)",
+        "purpose": "Cast shadow under the plank stretch each venture jacket stands on."
+      },
+      {
+        "name": "book-on-display",
+        "value": "0 18px 22px -16px rgba(18, 26, 54, 0.42)",
+        "purpose": "Shop covers standing on the plank."
+      },
+      {
+        "name": "book-on-display-lift",
+        "value": "0 26px 26px -18px rgba(18, 26, 54, 0.42)",
+        "purpose": "Shop cover lifted 8px on hover."
+      },
+      {
+        "name": "spine-edge",
+        "value": "inset -3px 0 0 rgba(0, 0, 0, 0.14), inset 2px 0 0 rgba(255, 255, 255, 0.14)",
+        "purpose": "Rounded-back feel of a spine without any radius."
+      },
+      {
+        "name": "overlay-sheet",
+        "value": "0 40px 80px -30px rgba(18, 26, 54, 0.6)",
+        "purpose": "Venture and product sheets over the scrim."
+      },
+      {
+        "name": "overlay-drawer",
+        "value": "-34px 0 60px -34px rgba(18, 26, 54, 0.6)",
+        "purpose": "Cart drawer casting sideways from the right edge."
+      },
+      {
+        "name": "overlay-menu",
+        "value": "0 24px 40px -24px rgba(18, 26, 54, 0.5)",
+        "purpose": "Mobile menu panel dropping from the masthead."
+      },
+      {
+        "name": "overlay-toast",
+        "value": "0 18px 40px -18px rgba(18, 26, 54, 0.6)",
+        "purpose": "Toast confirmations and errors."
+      },
+      {
+        "name": "hairline-frame",
+        "value": "0 0 0 1px var(--rule)",
+        "purpose": "Draws the edge of jackets, screenshots, post images and the author photo without lifting them."
+      },
+      {
+        "name": "input-focus-ring",
+        "value": "0 0 0 3px color-mix(in srgb, var(--series) 28%, transparent)",
+        "purpose": "Focused input, with the border turned to the series text ink."
+      },
+      {
+        "name": "shade-dark",
+        "value": "rgb(0, 0, 0)",
+        "purpose": "In the dark theme the shade triplet becomes pure black; all shadow geometry is unchanged."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The only easing: exponential ease-out for every placement and state change."
+      },
+      {
+        "name": "band-draw",
+        "value": "0.9s; scaleX(0.04) to none; top band from the left, closing band from the right +80ms",
+        "purpose": "Tri-band title pages drawing in on load."
+      },
+      {
+        "name": "plate-settle",
+        "value": "1.1s, delay 0.2s; from translateY(-26px) rotate(-1.4deg)",
+        "purpose": "Cover portrait settling onto the cover (post cover plate: 1s from -18px, -0.8deg)."
+      },
+      {
+        "name": "slot-in",
+        "value": "0.7s; 24 to 28px travel; stagger 45 to 70ms per item",
+        "purpose": "Books and jackets slotting onto the shelf on first fill; shop covers are lowered from above."
+      },
+      {
+        "name": "place",
+        "value": "0.6s; from translateY(10px), opacity 0",
+        "purpose": "Post title page content placed when the post arrives."
+      },
+      {
+        "name": "sheet-in",
+        "value": "0.45s; from translateY(18px), opacity 0",
+        "purpose": "Sheets rising into place."
+      },
+      {
+        "name": "drawer-slide",
+        "value": "0.45s; translateX(100%) to none",
+        "purpose": "Cart drawer sliding in from the right."
+      },
+      {
+        "name": "stamp-press",
+        "value": "0.5s, delay 0.55s; scale 1.45 to 1",
+        "purpose": "The 404 \"Out of print\" stamp pressed onto the numerals."
+      },
+      {
+        "name": "book-open",
+        "value": "0.6s width and height; closed spine lift -10px in 0.35s",
+        "purpose": "A spine sliding out to show its face on the shelf."
+      },
+      {
+        "name": "state",
+        "value": "0.2s",
+        "purpose": "Colour, background and border transitions on controls."
+      },
+      {
+        "name": "nudge",
+        "value": "0.25s; translateX(3px to 4px)",
+        "purpose": "Trailing arrows on text links, faces and jacket feet."
+      },
+      {
+        "name": "press",
+        "value": "0.15s; translateY(1px)",
+        "purpose": "Button active state."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation and transition durations 0.01ms; no smooth scroll; no view transition",
+        "purpose": "prefers-reduced-motion: reduce removes all motion. Nothing ever loops."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "colophon-cols",
+        "value": "820px"
+      },
+      {
+        "name": "masthead-collapse",
+        "value": "960px"
+      },
+      {
+        "name": "spread-stack",
+        "value": "900px"
+      },
+      {
+        "name": "title-stack",
+        "value": "860px"
+      },
+      {
+        "name": "shelf-vertical",
+        "value": "720px"
+      },
+      {
+        "name": "shop-two-up",
+        "value": "600px"
+      },
+      {
+        "name": "role-stack",
+        "value": "560px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The page's one obvious next step, printed in its series colour.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\"><svg viewBox=\"0 0 256 256\" aria-hidden=\"true\"><path d=\"M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z\"/></svg>Email me</a>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 0.55rem; min-height: 48px; padding: 0.75rem 1.3rem; font-family: var(--font-sans, Archivo, 'Helvetica Neue', Arial, system-ui, sans-serif); font-size: 0.98rem; font-weight: 650; line-height: 1.1; text-decoration: none; color: var(--on-series, #f3f5f7); background: var(--series, #2346a6); border: 1.5px solid var(--series, #2346a6); border-radius: 2px; transition: background-color 0.2s, border-color 0.2s, transform 0.15s var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-btn-primary svg { width: 1.15em; height: 1.15em; fill: currentColor; } .ds-btn-primary:hover { background: color-mix(in oklab, var(--series, #2346a6) 84%, #000); border-color: color-mix(in oklab, var(--series, #2346a6) 84%, #000); } .ds-btn-primary:focus-visible { outline: 2px solid var(--series-text, #2346a6); outline-offset: 3px; } .ds-btn-primary:active { transform: translateY(1px); }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary action and share buttons: a stroked rectangle on paper.",
+      "html": "<a class=\"ds-btn-ghost\" href=\"#\">Read the blog</a>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; gap: 0.55rem; min-height: 48px; padding: 0.75rem 1.3rem; font-family: var(--font-sans, Archivo, 'Helvetica Neue', Arial, system-ui, sans-serif); font-size: 0.98rem; font-weight: 650; line-height: 1.1; text-decoration: none; color: var(--ink, #14161b); background: transparent; border: 1.5px solid var(--rule-strong, rgba(20, 22, 27, 0.72)); border-radius: 2px; transition: background-color 0.2s, border-color 0.2s, transform 0.15s var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-btn-ghost:hover { background: var(--paper-2, #e5e8ed); border-color: var(--ink, #14161b); } .ds-btn-ghost:focus-visible { outline: 2px solid var(--series-text, #2346a6); outline-offset: 3px; } .ds-btn-ghost:active { transform: translateY(1px); }"
+    },
+    {
+      "name": "Paper Button on a Band",
+      "kind": "button",
+      "refersTo": "button-paper",
+      "description": "The masthead \"Work with me\" and back-cover email: band-type fill with series-coloured type, beside an outline-band button.",
+      "html": "<div class=\"ds-band-demo\"><a class=\"ds-btn-paper\" href=\"#\">Work with me</a><a class=\"ds-btn-outline-band\" href=\"#\">WhatsApp</a></div>",
+      "css": ".ds-band-demo { display: flex; flex-wrap: wrap; gap: 0.75rem; padding: 1.5rem; background: var(--series, #2346a6); color: var(--on-series, #f3f5f7); } .ds-btn-paper, .ds-btn-outline-band { display: inline-flex; align-items: center; min-height: 40px; padding: 0.5rem 1rem; font-family: var(--font-sans, Archivo, 'Helvetica Neue', Arial, system-ui, sans-serif); font-size: 0.92rem; font-weight: 650; line-height: 1.1; text-decoration: none; border-radius: 2px; border: 1.5px solid transparent; transition: background-color 0.2s, border-color 0.2s; } .ds-btn-paper { background: var(--on-series, #f3f5f7); color: var(--series, #2346a6); border-color: var(--on-series, #f3f5f7); } .ds-btn-paper:hover { background: color-mix(in oklab, var(--on-series, #f3f5f7) 86%, var(--series, #2346a6)); } .ds-btn-outline-band { background: transparent; color: var(--on-series, #f3f5f7); border-color: color-mix(in srgb, var(--on-series, #f3f5f7) 70%, transparent); } .ds-btn-outline-band:hover { border-color: var(--on-series, #f3f5f7); background: color-mix(in srgb, var(--on-series, #f3f5f7) 10%, transparent); } .ds-btn-paper:focus-visible, .ds-btn-outline-band:focus-visible { outline: 2px solid var(--on-series, #f3f5f7); outline-offset: 3px; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Labelled field: paper ground, 1.5px strong rule, 2px corner; focus turns the border to series ink with a 3px series ring.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Your name</span><input class=\"ds-input\" type=\"text\" placeholder=\"Ada Lovelace\" /><span class=\"ds-field-hint\">Shown next to your comment.</span></label>",
+      "css": ".ds-field { display: grid; gap: 0.4rem; max-width: 24rem; font-family: var(--font-sans, Archivo, 'Helvetica Neue', Arial, system-ui, sans-serif); } .ds-field-label { font-size: 0.875rem; font-weight: 650; color: var(--ink, #14161b); } .ds-field-hint { font-size: 0.8125rem; color: var(--ink-3, #5c626d); } .ds-input { width: 100%; min-height: 48px; padding: 0.7rem 0.9rem; font-family: var(--font-sans, Archivo, 'Helvetica Neue', Arial, system-ui, sans-serif); font-size: 1rem; color: var(--ink, #14161b); background: var(--paper, #f3f5f7); border: 1.5px solid var(--rule-strong, rgba(20, 22, 27, 0.72)); border-radius: 2px; transition: border-color 0.2s, box-shadow 0.2s; } .ds-input::placeholder { color: var(--ink-3, #5c626d); opacity: 1; } .ds-input:hover { border-color: var(--ink, #14161b); } .ds-input:focus, .ds-input:focus-visible { outline: none; border-color: var(--series-text, #2346a6); box-shadow: 0 0 0 3px color-mix(in srgb, var(--series, #2346a6) 28%, transparent); }"
+    },
+    {
+      "name": "Masthead",
+      "kind": "nav",
+      "refersTo": "masthead",
+      "description": "Sticky series band carrying the roundel, the nav, the theme toggle and the paper CTA.",
+      "html": "<header class=\"ds-masthead\"><a class=\"ds-mh-roundel\" href=\"#\">Gihan.</a><nav class=\"ds-mh-nav\"><a href=\"#\">Ventures</a><a href=\"#\" aria-current=\"page\">Blog</a><a href=\"#\">Shop</a><a href=\"#\">Consulting</a></nav><button class=\"ds-mh-icon\" type=\"button\" aria-label=\"Switch to dark theme\"><svg viewBox=\"0 0 256 256\" aria-hidden=\"true\"><path d=\"M233.54,142.23a8,8,0,0,0-8-2,88.08,88.08,0,0,1-109.8-109.8,8,8,0,0,0-10-10,104.84,104.84,0,0,0-52.91,37A104,104,0,0,0,136,224a103.09,103.09,0,0,0,62.52-20.88,104.84,104.84,0,0,0,37-52.91A8,8,0,0,0,233.54,142.23ZM188.9,190.34A88,88,0,0,1,65.66,67.11a89,89,0,0,1,31.4-26A106,106,0,0,0,96,56,104.11,104.11,0,0,0,200,160a106,106,0,0,0,14.92-1.06A89,89,0,0,1,188.9,190.34Z\"/></svg></button><a class=\"ds-mh-cta\" href=\"#\">Work with me</a></header>",
+      "css": ".ds-masthead { display: flex; align-items: center; gap: 1.25rem; height: 64px; padding: 0 1.5rem; background: var(--series, #2346a6); color: var(--on-series, #f3f5f7); font-family: var(--font-sans, Archivo, 'Helvetica Neue', Arial, system-ui, sans-serif); } .ds-mh-roundel { display: inline-grid; place-items: center; min-width: 4.6em; height: 2.3em; padding: 0 0.85em; border: 1.5px solid currentColor; border-radius: 50%; font-size: 0.95rem; font-weight: 800; letter-spacing: -0.01em; line-height: 1; color: inherit; text-decoration: none; } .ds-mh-nav { display: flex; gap: 1.4rem; margin-left: auto; } .ds-mh-nav a { font-size: 0.95rem; font-weight: 560; color: inherit; text-decoration: none; padding: 0.35rem 0; border-bottom: 1.5px solid transparent; transition: border-color 0.2s; } .ds-mh-nav a:hover, .ds-mh-nav a[aria-current=\"page\"] { border-bottom-color: currentColor; } .ds-mh-icon { display: inline-grid; place-items: center; width: 40px; height: 40px; background: none; color: inherit; border: 1.5px solid transparent; border-radius: 2px; cursor: pointer; transition: border-color 0.2s; } .ds-mh-icon:hover { border-color: currentColor; } .ds-mh-icon svg { width: 20px; height: 20px; fill: currentColor; } .ds-mh-cta { display: inline-flex; align-items: center; min-height: 40px; padding: 0.5rem 1rem; font-size: 0.92rem; font-weight: 650; text-decoration: none; background: var(--on-series, #f3f5f7); color: var(--series, #2346a6); border-radius: 2px; } .ds-masthead a:focus-visible, .ds-masthead button:focus-visible { outline: 2px solid var(--on-series, #f3f5f7); outline-offset: 3px; }"
+    },
+    {
+      "name": "Tabs",
+      "kind": "chip",
+      "refersTo": "tab",
+      "description": "Filters on a hairline: muted Archivo labels, the active one in ink with a 3px series underline and a series-ink count.",
+      "html": "<div class=\"ds-tabs\" role=\"group\" aria-label=\"Filter\"><button class=\"ds-tab\" aria-pressed=\"true\">All<span>2</span></button><button class=\"ds-tab\" aria-pressed=\"false\">MVP<span>1</span></button><button class=\"ds-tab\" aria-pressed=\"false\">Live<span>1</span></button></div>",
+      "css": ".ds-tabs { display: flex; flex-wrap: wrap; gap: 0.25rem 1.4rem; border-bottom: 1px solid var(--rule, rgba(20, 22, 27, 0.16)); font-family: var(--font-sans, Archivo, 'Helvetica Neue', Arial, system-ui, sans-serif); } .ds-tab { padding: 0.7rem 0; margin-bottom: -1px; background: none; border: 0; border-bottom: 3px solid transparent; font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--ink-3, #5c626d); cursor: pointer; transition: color 0.2s, border-color 0.2s; } .ds-tab span { margin-left: 0.4rem; font-weight: 560; font-variant-numeric: tabular-nums; } .ds-tab:hover { color: var(--ink, #14161b); } .ds-tab[aria-pressed=\"true\"] { color: var(--ink, #14161b); border-bottom-color: var(--series, #2346a6); } .ds-tab[aria-pressed=\"true\"] span { color: var(--series-text, #2346a6); } .ds-tab:focus-visible { outline: 2px solid var(--series-text, #2346a6); outline-offset: 3px; }"
+    },
+    {
+      "name": "Roundel",
+      "kind": "custom",
+      "refersTo": "roundel",
+      "description": "The publisher's mark and the system's only curve: \"Gihan.\" in an ellipse, \"G.\" where space is tight.",
+      "html": "<div class=\"ds-roundels\"><span class=\"ds-roundel\">Gihan.</span><span class=\"ds-roundel ds-roundel-sm\">G.</span><span class=\"ds-roundel-band\"><span class=\"ds-roundel\">Gihan.</span></span></div>",
+      "css": ".ds-roundels { display: flex; align-items: center; gap: 1.25rem; color: var(--ink, #14161b); font-family: var(--font-sans, Archivo, 'Helvetica Neue', Arial, system-ui, sans-serif); } .ds-roundel { display: inline-grid; place-items: center; min-width: 4.6em; height: 2.3em; padding: 0 0.85em; border: 1.5px solid currentColor; border-radius: 50%; font-size: 1rem; font-weight: 800; letter-spacing: -0.01em; line-height: 1; white-space: nowrap; } .ds-roundel-sm { min-width: 0; padding: 0 0.7em; font-size: 0.8rem; } .ds-roundel-band { display: inline-flex; padding: 0.9rem 1.2rem; background: var(--series, #2346a6); color: var(--on-series, #f3f5f7); }"
+    },
+    {
+      "name": "Tri-Band Title Page",
+      "kind": "custom",
+      "refersTo": "band",
+      "description": "How every volume opens: full-bleed series band, paper with the title under a 2px ink rule, closing series band; bands draw in from opposite edges.",
+      "html": "<section class=\"ds-titlepage\"><div class=\"ds-tp-in\"><h1 class=\"ds-tp-title\">Products I'm building, <span>and where you can come in</span></h1><p class=\"ds-tp-lede\">Each project below is a working product or MVP, with what has shipped and what comes next.</p></div></section>",
+      "css": ".ds-titlepage { display: grid; grid-template-rows: 40px auto 28px; background: var(--paper, #f3f5f7); color: var(--ink, #14161b); overflow: hidden; } .ds-titlepage::before, .ds-titlepage::after { content: \"\"; background: var(--series, #2346a6); } .ds-titlepage::before { grid-row: 1; transform-origin: left center; animation: ds-band-draw 0.9s var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both; } .ds-titlepage::after { grid-row: 3; transform-origin: right center; animation: ds-band-draw 0.9s 0.08s var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both; } .ds-tp-in { padding: 2.25rem 1.5rem 2.5rem; } .ds-tp-title { margin: 0; font-family: var(--font-sans, Archivo, 'Helvetica Neue', Arial, system-ui, sans-serif); font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 820; font-stretch: 112%; line-height: 0.95; letter-spacing: -0.032em; text-wrap: balance; } .ds-tp-title span { display: block; color: var(--series-text, #2346a6); font-weight: 700; font-stretch: 104%; } .ds-tp-lede { margin: 1.25rem 0 0; padding-top: 1rem; border-top: 2px solid var(--ink, #14161b); max-width: 46ch; font-family: var(--font-serif, Literata, 'Iowan Old Style', Georgia, serif); font-size: 1.1rem; line-height: 1.6; color: var(--ink-2, #474c56); } @keyframes ds-band-draw { from { transform: scaleX(0.04); } to { transform: none; } } @media (prefers-reduced-motion: reduce) { .ds-titlepage::before, .ds-titlepage::after { animation: none; } }"
+    },
+    {
+      "name": "Shelf",
+      "kind": "custom",
+      "refersTo": "spine",
+      "description": "Signature: spines standing on an ink plank; hovering or focusing a spine slides its book out to show the face.",
+      "html": "<div class=\"ds-shelf\"><a class=\"ds-book is-open\" href=\"#\"><span class=\"ds-spine\"><span class=\"ds-cap\">01</span><span class=\"ds-st\"><span>Idempotent Kafka consumers</span></span><span class=\"ds-foot\"><span class=\"ds-mini\">G.</span></span></span><span class=\"ds-face\"><span class=\"ds-face-top\"><span>Deep dive</span><span>9 min read</span></span><span class=\"ds-face-text\"><span class=\"ds-face-title\">Idempotent Kafka consumers: the patterns that survive production</span><span class=\"ds-face-ex\">Exactly-once is a promise your consumers have to keep.</span><span class=\"ds-face-read\">Read post <svg viewBox=\"0 0 256 256\" aria-hidden=\"true\"><path d=\"M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z\"/></svg></span></span><span class=\"ds-face-art\"><span class=\"ds-mini\">Gihan.</span></span></span></a><a class=\"ds-book\" href=\"#\" style=\"height:90%\"><span class=\"ds-spine\"><span class=\"ds-cap\">02</span><span class=\"ds-st\"><span>Monolith to microservices</span></span><span class=\"ds-foot\"><span class=\"ds-mini\">G.</span></span></span></a><a class=\"ds-book\" href=\"#\" style=\"height:97%\"><span class=\"ds-spine\"><span class=\"ds-cap\">03</span><span class=\"ds-st\"><span>Launching on GitHub Pages</span></span><span class=\"ds-foot\"><span class=\"ds-mini\">G.</span></span></span></a></div>",
+      "css": ".ds-shelf { --book: var(--orange, #ee6a1f); --on-book: var(--on-light-band, #14161b); display: flex; align-items: flex-end; gap: 7px; height: 332px; padding: 12px 4px 0; width: fit-content; max-width: 100%; overflow-x: auto; border-bottom: 14px solid var(--ink, #14161b); box-shadow: 0 26px 22px -22px rgba(18, 26, 54, 0.5); font-family: var(--font-sans, Archivo, 'Helvetica Neue', Arial, system-ui, sans-serif); } .ds-book { display: flex; flex: none; width: 58px; height: 94%; overflow: hidden; text-decoration: none; color: var(--ink, #14161b); background: var(--book); box-shadow: inset -3px 0 0 rgba(0, 0, 0, 0.14), inset 2px 0 0 rgba(255, 255, 255, 0.14); transition: width 0.6s var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)), transform 0.35s var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-book:not(.is-open):hover { transform: translateY(-10px); } .ds-book.is-open { width: 400px; height: 100%; } .ds-book:focus-visible { outline: 2px solid var(--series-text, #2346a6); outline-offset: 4px; } .ds-spine { flex: none; width: 58px; display: grid; grid-template-rows: 58px minmax(0, 1fr) 54px; background: var(--book); color: var(--on-book); } .ds-cap { display: grid; place-items: center; font-size: 0.72rem; font-weight: 700; font-variant-numeric: tabular-nums; } .ds-st { display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 16px 0; background: var(--paper, #f3f5f7); color: var(--ink, #14161b); } .ds-st span { writing-mode: vertical-rl; max-height: 100%; max-width: 44px; font-size: 0.9rem; font-weight: 720; font-stretch: 64%; line-height: 1.06; } .ds-foot { display: grid; place-items: center; } .ds-mini { display: inline-grid; place-items: center; height: 1.9em; padding: 0 0.5em; border: 1.5px solid currentColor; border-radius: 50%; font-size: 0.55rem; font-weight: 800; line-height: 1; } .ds-face { flex: none; width: 342px; display: grid; grid-template-rows: 58px minmax(0, 1fr) 54px; background: var(--paper, #f3f5f7); border-left: 1px solid rgba(0, 0, 0, 0.18); } .ds-face-top { display: flex; align-items: center; justify-content: space-between; padding: 0 1.15rem; background: var(--book); color: var(--on-book); font-size: 0.85rem; font-weight: 680; } .ds-face-text { display: grid; gap: 0.6rem; align-content: start; padding: 1.15rem; } .ds-face-title { font-size: 1.3rem; font-weight: 760; line-height: 1.12; letter-spacing: -0.015em; } .ds-face-ex { font-family: var(--font-serif, Literata, 'Iowan Old Style', Georgia, serif); font-size: 0.95rem; line-height: 1.55; color: var(--ink-2, #474c56); } .ds-face-read { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.92rem; font-weight: 700; } .ds-face-read svg { width: 1.15em; height: 1.15em; fill: currentColor; transition: transform 0.25s var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-book:hover .ds-face-read svg { transform: translateX(3px); } .ds-face-art { display: flex; align-items: center; padding: 0 1.15rem; background: var(--book); color: var(--on-book); } .ds-face-art .ds-mini { font-size: 0.85rem; padding: 0 0.85em; }"
+    },
+    {
+      "name": "Paperback Jacket",
+      "kind": "card",
+      "refersTo": "band",
+      "description": "Signature (Ventures): a face-out paperback, never a card. Series band, artwork, title and Literata tagline, series foot band, standing on its stretch of plank.",
+      "html": "<a class=\"ds-jacket\" href=\"#\"><span class=\"ds-j-band\"><span class=\"ds-j-stage\"><span class=\"ds-pips\"><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i></i><i></i></span>MVP</span><span>Music</span></span><span class=\"ds-j-art\"><span class=\"ds-j-name\">Band Arranger</span></span><span class=\"ds-j-text\"><span class=\"ds-j-title\">Band Arranger</span><span class=\"ds-j-tag\">Arrange songs for your band in minutes: parts, keys and set lists in one place.</span></span><span class=\"ds-j-foot\"><span class=\"ds-j-open\">Open venture <svg viewBox=\"0 0 256 256\" aria-hidden=\"true\"><path d=\"M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z\"/></svg></span><span class=\"ds-mini\">G.</span></span></a>",
+      "css": ".ds-jacket { --series: var(--green, #0f6b47); --on-series: var(--on-dark-band, #f3f5f7); position: relative; display: grid; max-width: 360px; margin-bottom: 12px; text-decoration: none; background: var(--paper, #f3f5f7); color: var(--ink, #14161b); box-shadow: 0 0 0 1px var(--rule, rgba(20, 22, 27, 0.16)); font-family: var(--font-sans, Archivo, 'Helvetica Neue', Arial, system-ui, sans-serif); } .ds-jacket::before { content: \"\"; position: absolute; top: 0; bottom: 0; left: 10px; width: 1px; background: rgba(0, 0, 0, 0.16); } .ds-jacket::after { content: \"\"; position: absolute; left: -16px; right: -16px; bottom: -12px; height: 12px; background: var(--ink, #14161b); box-shadow: 0 18px 18px -16px rgba(18, 26, 54, 0.45); } .ds-j-band, .ds-j-foot { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0 1.15rem 0 1.5rem; background: var(--series); color: var(--on-series); transition: background-color 0.25s var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-j-band { height: 56px; font-size: 0.86rem; font-weight: 680; } .ds-j-stage { display: inline-flex; align-items: center; gap: 0.65rem; } .ds-pips { display: inline-flex; gap: 3px; } .ds-pips i { width: 8px; height: 8px; border: 1.5px solid color-mix(in srgb, var(--on-series) 72%, transparent); } .ds-pips i.on { background: var(--on-series); border-color: var(--on-series); } .ds-j-art { position: relative; aspect-ratio: 16 / 9; display: flex; align-items: flex-end; padding: 1.1rem 1.2rem 1.15rem 1.5rem; background: var(--series); color: var(--on-series); border-top: 1px solid color-mix(in srgb, var(--on-series) 26%, transparent); } .ds-j-name { padding-top: 0.6rem; border-top: 2px solid var(--on-series); font-size: 2.4rem; font-weight: 800; font-stretch: 74%; line-height: 0.92; letter-spacing: -0.01em; } .ds-j-text { display: grid; gap: 0.55rem; padding: 1.15rem 1.25rem 1.35rem 1.5rem; } .ds-j-title { font-size: 1.5rem; font-weight: 760; line-height: 1.1; letter-spacing: -0.015em; } .ds-j-tag { font-family: var(--font-serif, Literata, 'Iowan Old Style', Georgia, serif); font-size: 0.98rem; line-height: 1.55; color: var(--ink-2, #474c56); } .ds-j-foot { height: 48px; font-size: 0.92rem; font-weight: 700; } .ds-j-open { display: inline-flex; align-items: center; gap: 0.45rem; } .ds-j-open svg { width: 1.15em; height: 1.15em; fill: currentColor; transition: transform 0.3s var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-jacket:hover .ds-j-foot { background: color-mix(in oklab, var(--series) 84%, #000); } .ds-jacket:hover .ds-j-open svg { transform: translateX(4px); } .ds-jacket:focus-visible { outline: 2px solid var(--green-text, #0f6b47); outline-offset: 5px; } .ds-jacket .ds-mini { display: inline-grid; place-items: center; height: 2em; padding: 0 0.55em; border: 1.5px solid currentColor; border-radius: 50%; font-size: 0.56rem; font-weight: 800; line-height: 1; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Paperback Series",
+    "overview": "The site is a paperback series and Gihan is its author. Every page is a volume with its own series colour: the homepage is the cover, and Ventures, the blog post, the Shop and even the 404 are further titles in the same run. Paper, ink, type and the publisher's mark are shared across the series; only the series colour changes from volume to volume, the way a paperback imprint keeps one grid and one typeface and reprints it in a new colour for each title.\n\nThe material is flat print. Colour arrives as solid horizontal fields printed edge to edge, never as gradients, glows or tinted panels. Structure comes from rules: a 2px ink rule opens every block and list, and 1px hairlines divide what follows, so the page reads as a ruled book page instead of a stack of cards. Depth exists only where a physical object sits: a photograph mounted as a print, books standing on a shelf plank, a dialog laid over the page. Type carries the rest of the voice: Archivo is pushed along its width axis from condensed spine lettering to wide cover titles, and Literata sets everything meant to be read at length.\n\nThe world refuses the dark-gradient developer portfolio it replaced, and it equally refuses the cream editorial page. Paper is a cool blue-grey off-white, ink is blue-black, and the four series colours are saturated print inks, not muted tints. Covers and title pages are generous and quiet; lists, timelines, the cart and comments are dense and ruled. Dark is a real, designed theme, not an inversion: night paper and light ink, the series fields keep their print colours, and the type tints of each series lighten for legibility. It follows `prefers-color-scheme` and a remembered manual toggle (stored as `gm_theme`, applied to `html[data-theme]` before first paint).\n\nMotion follows one grammar: things are placed. Bands are drawn across the page, the portrait settles onto the cover, books slot onto the shelf, a stamp is pressed. Every move uses one exponential ease-out, nothing loops, and `prefers-reduced-motion` removes all of it.",
+    "keyCharacteristics": [
+      "One series colour per page (cobalt for the author, orange for writing, bottle green for ventures, cerise for the shop) on shared cool paper and blue-black ink.",
+      "Full-bleed horizontal colour bands, including the tri-band title page that opens every volume.",
+      "Hairline rules and 2px ink opening rules instead of cards or boxes.",
+      "Archivo across its width axis for display, UI and spines; Literata for every long read; system mono for code only.",
+      "Square 2px corners on controls, 0 on printed objects, and one curve in the whole system: the \"Gihan.\" roundel.",
+      "Shadows only under physical objects: mounted prints, books on a plank, dialogs.",
+      "Placed motion on a single exponential ease-out; nothing loops; reduced motion honoured."
+    ],
+    "rules": [
+      {
+        "name": "The One Volume Rule",
+        "body": "Every page owns exactly one series colour, and all of its chrome takes that colour: masthead, bands, primary buttons, active tab underline, focus ring, text selection, list markers, the colophon's top band and the browser `theme-color`. Another series colour may appear on a page only as an object that belongs to that other volume, such as the orange blog spines and green venture spines on the cobalt homepage.",
+        "section": "colors"
+      },
+      {
+        "name": "The Field and Text Rule",
+        "body": "Each series colour has a field value (solid ground behind type) and a text value (type and focus on paper). Never set Press Orange as type on paper; use Burnt Orange. On orange fields, type is ink; on cobalt, green and cerise fields, type is paper.",
+        "section": "colors"
+      },
+      {
+        "name": "The Hover Moves Away Rule",
+        "body": "Hover on a series fill moves away from its type colour: 84% series mixed with black (oklab) under paper type, 82% series mixed with white under the ink type on orange.",
+        "section": "colors"
+      },
+      {
+        "name": "The Flat Ink Rule",
+        "body": "Colour is printed as solid fields. No gradients, glows, translucent tinted panels or gradient text anywhere; the only `linear-gradient` in the build draws the select chevron.",
+        "section": "colors"
+      },
+      {
+        "name": "The Width Axis Rule",
+        "body": "Hierarchy uses Archivo's width as deliberately as its weight: condensed (64% to 92%) for spines, tool lists, stage labels and jacket lettering; normal for UI; extended (104% to 125%) for headings, covers and numerals. Never fake width with transforms or letter-spacing.",
+        "section": "typography"
+      },
+      {
+        "name": "The Serif Is for Reading Rule",
+        "body": "Anything read at length (ledes, prose, post bodies, excerpts, comments, empty-state messages, cart notes) is Literata. Anything operated or scanned (nav, buttons, labels, meta, prices, headings) is Archivo. Mono appears only inside code.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Kicker Rule",
+        "body": "Headings stand alone: no eyebrow or kicker labels above them, and no small tracked uppercase labels. Uppercase with wide tracking (0.14em) exists only inside a rubber stamp (\"Sold\", \"Out of print\").",
+        "section": "typography"
+      },
+      {
+        "name": "The Every Script Rule",
+        "body": "Translated posts switch to script-native serif stacks (Noto Serif Tamil, Sinhala, Devanagari, SC) at weight 700, width 100%, zero tracking, line-height 1.9 to 1.95 for body text; Chinese drops italics.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tri-Band Rule",
+        "body": "Every volume opens on a title page of three horizontal bands: a series band above (with the sticky masthead it reads as one thick top field), paper in the middle carrying the title, and a series band closing it. Bands are always full-bleed, edge to edge of the viewport. They are never inset, never vertical and never a side stripe; the volume band between homepage sections, the 14px band at the top of a sheet or drawer, and the colophon's 10px top band are the same device.",
+        "section": "layout"
+      },
+      {
+        "name": "The Ruled List Rule",
+        "body": "A list, timeline, form or block opens with a 2px ink rule, and each further entry is separated by a 1px hairline. No cards, boxes or zebra fills; on a series band the rules are drawn in the band's type colour.",
+        "section": "layout"
+      },
+      {
+        "name": "The Object Rule",
+        "body": "Shadows belong to objects, never to surfaces. If it is a print, a book, or a layer over the page, it may cast a shadow; if it is content on paper, it sits on rules.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Plank Rule",
+        "body": "Books and face-out covers always stand on a plank: a solid bar of ink (#2c313a in dark), 10 to 14px tall, running under the whole row.",
+        "section": "elevation"
+      },
+      {
+        "name": "The 2px Corner Rule",
+        "body": "Controls and panels get 2px, printed objects get 0, and nothing in between. No pills, no 8px cards, no circular avatars.",
+        "section": "shapes"
+      },
+      {
+        "name": "The One Curve Rule",
+        "body": "The roundel is the only curve in the system: an ellipse with a 1.5px currentColor stroke around \"Gihan.\" (or \"G.\" where space is tight). It is the publisher's mark on the masthead, the cover's bottom band, spine and jacket feet, the end of every post and the colophon. The favicon is the same \"G.\" on a cobalt tri-band.",
+        "section": "shapes"
+      },
+      {
+        "name": "The Placed Rule",
+        "body": "Motion only ever places an object: it draws, settles, slots, slides or presses, once, and comes to rest. Nothing loops, pulses, shimmers or bounces, and with `prefers-reduced-motion: reduce` every animation and transition is cut to near zero.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do give every new page exactly one series colour with a body class and route all of its chrome through `--series`, `--series-text` and `--on-series`.",
+      "Do open every new volume with the tri-band title page, and keep every band full-bleed and horizontal.",
+      "Do open lists, timelines, forms and end matter with a 2px ink rule and separate entries with 1px hairlines.",
+      "Do set anything read at length in Literata (1.0625rem to 1.125rem, line-height 1.72 to 1.75, a 43rem column for posts) and everything operated in Archivo.",
+      "Do use Archivo's width axis for hierarchy: 64% on spines, 104% to 125% on headings and covers.",
+      "Do keep 2px corners on controls and panels and square corners on printed objects; the roundel is the only curve.",
+      "Do use Phosphor regular icons from the sprite at 1.15em in currentColor, 20px inside icon buttons.",
+      "Do design both themes: night paper #111318, light ink #eceef2, print-colour fields, lightened series text tints and a #2c313a plank in dark.",
+      "Do keep focus visible with the 2px series-text outline at a 3px offset, switched to the band's type colour on bands.",
+      "Do show loading as still placeholders in the shape of the content, and give empty and error states a real message and a next step."
+    ],
+    "donts": [
+      "Don't add eyebrow or kicker labels above headings, or small tracked uppercase labels anywhere outside a rubber stamp.",
+      "Don't use gradient text, gradient fills or glows; colour is flat print.",
+      "Don't put coloured side stripes on cards, callouts, quotes or notices; a callout is set off by a 2px ink top rule on Paper Shade, a pull quote by two hairlines.",
+      "Don't use emoji as icons.",
+      "Don't float drop-shadowed cards; content sits on rules, and shadows belong only to prints, books on a plank and overlays.",
+      "Don't use em dashes in copy; use commas, colons, full stops or parentheses.",
+      "Don't drift toward cream or warm paper, or back toward the dark navy gradient look the site replaced.",
+      "Don't set Press Orange as type on paper; use Burnt Orange (#b04a10).",
+      "Don't mix two series colours in one page's chrome.",
+      "Don't round corners beyond 2px, or introduce pills, circles or round dots besides the roundel.",
+      "Don't use monospace for anything but code.",
+      "Don't animate on a loop, shimmer a skeleton, or bounce an object into place."
+    ]
+  }
+}

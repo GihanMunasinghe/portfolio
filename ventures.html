@@ -5,216 +5,462 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://gihan-shop-media-303963685758.s3.ap-southeast-1.amazonaws.com; connect-src 'self' https://api.gihanmunasinghe.lk; frame-src https://www.youtube.com https://player.vimeo.com" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
-  <meta name="theme-color" content="#07090d" />
-  <title>Ventures — MVPs &amp; Products | Gihan Munasinghe</title>
-  <meta name="description" content="Products and MVPs built by Gihan Munasinghe — what's shipped, what's next, and where partners and investors can get involved." />
+  <meta name="theme-color" content="#0f6b47" />
+  <title>Ventures: MVPs &amp; Products | Gihan Munasinghe</title>
+  <meta name="description" content="Products and MVPs built by Gihan Munasinghe: what's shipped, what's next, and where partners and investors can get involved." />
   <link rel="canonical" href="https://www.gihanmunasinghe.lk/ventures.html" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Gihan Munasinghe" />
-  <meta property="og:title" content="Ventures — MVPs &amp; Products | Gihan Munasinghe" />
-  <meta property="og:description" content="Products and MVPs built by Gihan Munasinghe — what's shipped, what's next, and where partners and investors can get involved." />
+  <meta property="og:title" content="Ventures: MVPs &amp; Products | Gihan Munasinghe" />
+  <meta property="og:description" content="Products and MVPs built by Gihan Munasinghe: what's shipped, what's next, and where partners and investors can get involved." />
   <meta property="og:url" content="https://www.gihanmunasinghe.lk/ventures.html" />
   <meta property="og:image" content="https://www.gihanmunasinghe.lk/assets/gihan-formal.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="manifest" href="/site.webmanifest" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script>try{var t=localStorage.getItem("gm_theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="preload" href="/assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/assets/fonts/literata-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/assets/css/site.css" />
   <style>
-    :root {
-      --bg: #07090d; --surface: rgba(255,255,255,0.04); --surface-solid:#11151d; --border: rgba(255,255,255,0.09);
-      --text: #eef1f7; --muted: #98a1b3; --accent: #6ea8fe; --accent-2:#8b5cf6; --accent-3:#22d3ee;
-      --ok:#34d399; --warn:#fbbf24; --danger:#f87171;
-      --grad: linear-gradient(100deg, #6ea8fe, #8b5cf6 55%, #22d3ee);
-      --font-display: "Sora", -apple-system, sans-serif; --font-body: "Inter", -apple-system, sans-serif;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: var(--font-body); color: var(--text); line-height: 1.65; min-height: 100vh;
-      background:
-        radial-gradient(700px 460px at 88% -6%, rgba(139,92,246,0.16), transparent 70%),
-        radial-gradient(760px 520px at -12% 18%, rgba(110,168,254,0.11), transparent 70%),
-        var(--bg);
-    }
-    a { color: inherit; }
-    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 1.4rem; }
+    /* page-local: on narrow screens the actions sit at the right edge of the masthead */
 
-    /* nav */
-    nav { position: sticky; top: 0; z-index: 20; backdrop-filter: blur(12px); background: rgba(7,9,13,0.72); border-bottom: 1px solid var(--border); }
-    .nav-in { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 0; }
-    .logo { font-family: var(--font-display); font-weight: 800; text-decoration: none; font-size: 1.05rem; }
-    .logo span { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .nav-links { display: flex; gap: 1.4rem; align-items: center; }
-    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.92rem; font-weight: 500; }
-    .nav-links a:hover, .nav-links a.on { color: var(--text); }
-    .burger { display: none; background: none; border: 0; color: var(--text); font-size: 1.4rem; cursor: pointer; }
+    /* ================= title page (tri-band) ================= */
+    .titlepage {
+      --bt: clamp(26px, 5vh, 52px);
+      --bb: clamp(20px, 3.4vh, 36px);
+      display: grid; grid-template-rows: var(--bt) auto var(--bb);
+      background: var(--paper); overflow: hidden;
+    }
+    .titlepage::before, .titlepage::after { content: ""; background: var(--series); }
+    .titlepage::before { grid-row: 1; transform-origin: left center; }
+    .titlepage::after { grid-row: 3; transform-origin: right center; }
+    .tp-in { grid-row: 2; padding-block: clamp(2.25rem, 6vh, 4rem) clamp(2.5rem, 6.5vh, 4.25rem); }
+    .tp-title {
+      font-size: clamp(2.45rem, 5.3vw, 4.6rem);
+      font-weight: 820; font-stretch: 112%; line-height: 0.95; letter-spacing: -0.032em;
+    }
+    .tp-title .tp-sub { display: block; color: var(--series-text); font-weight: 700; font-stretch: 104%; }
+    .tp-grid {
+      display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: clamp(2rem, 6vw, 6rem); align-items: start;
+      margin-top: clamp(1.4rem, 3vh, 2rem); padding-top: clamp(1.2rem, 2.6vh, 1.6rem);
+      border-top: 2px solid var(--ink);
+    }
+    .tp-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: clamp(1.4rem, 3.2vh, 2rem); }
+    @media (prefers-reduced-motion: no-preference) {
+      .titlepage::before { animation: band-draw 0.9s var(--ease-out) both; }
+      .titlepage::after { animation: band-draw 0.9s 0.08s var(--ease-out) both; }
+    }
+    @keyframes band-draw { from { transform: scaleX(0.04); } to { transform: none; } }
+
+    /* the stage index: a vertical stage track listing every title */
+    .tp-index h2 { font-size: 1rem; font-weight: 720; font-stretch: 100%; letter-spacing: 0; line-height: 1.3; }
+    .stage-index { list-style: none; margin-top: 0.55rem; }
+    .stage-index li {
+      position: relative; display: grid; grid-template-columns: 14px 6.4rem minmax(0, 1fr);
+      align-items: center; gap: 0 0.95rem; min-height: 44px; padding-block: 0.35rem;
+      border-top: 1px solid var(--rule);
+    }
+    .stage-index li:last-child { border-bottom: 1px solid var(--rule); }
+    .stage-index li::before {
+      content: ""; position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: var(--rule);
+    }
+    .stage-index li:first-child::before { top: 50%; }
+    .stage-index li:last-child::before { bottom: 50%; }
+    .si-node {
+      position: relative; z-index: 1; width: 14px; height: 14px; border-radius: var(--r);
+      background: var(--paper); border: 2px solid var(--rule-strong);
+    }
+    .stage-index li.has .si-node { background: var(--series-text); border-color: var(--series-text); }
+    .si-stage { font-size: 0.95rem; font-weight: 640; font-stretch: 92%; color: var(--ink-3); }
+    .stage-index li.has .si-stage { color: var(--ink); font-weight: 720; }
+    .si-titles { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.2rem 1.1rem; text-align: right; }
+    .si-titles a {
+      font-size: 0.95rem; font-weight: 680; color: var(--series-text); text-decoration: none;
+      border-bottom: 1.5px solid color-mix(in srgb, currentColor 45%, transparent); transition: border-color 0.2s;
+    }
+    .si-titles a:hover { border-bottom-color: currentColor; }
+
     @media (max-width: 860px) {
-      .nav-links { position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: flex-start;
-        gap: 0.2rem; padding: 0.6rem 1.4rem 1.1rem; background: #0b0e14; border-bottom: 1px solid var(--border); display: none; }
-      .nav-links.open { display: flex; }
-      .nav-links a { padding: 0.55rem 0; width: 100%; }
-      .burger { display: block; }
+      .tp-grid { grid-template-columns: 1fr; gap: 2.25rem; }
+      .tp-title { font-size: clamp(2.3rem, 10.6vw, 3.6rem); }
     }
 
-    /* hero */
-    header.hero { padding: 4rem 0 2.4rem; }
-    .kicker { font-family: var(--font-display); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em;
-      background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 0.9rem; }
-    h1 { font-family: var(--font-display); font-size: clamp(1.9rem, 5vw, 3rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.12; margin-bottom: 0.9rem; }
-    .lede { color: var(--muted); font-size: 1.03rem; max-width: 62ch; }
-    .hero-cta { display: flex; gap: 0.7rem; flex-wrap: wrap; margin-top: 1.6rem; }
+    /* ================= catalogue ================= */
+    .catalogue { padding-block: clamp(2rem, 4vw, 3rem) var(--section); }
+    .tab-n { margin-left: 0.4rem; font-weight: 560; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+    .tab[aria-pressed="true"] .tab-n { color: var(--series-text); }
 
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; font-family: var(--font-body);
-      font-weight: 600; font-size: 0.92rem; padding: 0.7rem 1.3rem; border-radius: 12px; text-decoration: none; cursor: pointer;
-      border: 1px solid transparent; transition: transform 0.15s, background 0.2s, border-color 0.2s; }
-    .btn:hover { transform: translateY(-1px); }
-    .btn-primary { background: var(--grad); color: #fff; }
-    .btn-ghost { background: var(--surface); border-color: var(--border); color: var(--text); }
-    .btn-sm { font-size: 0.85rem; padding: 0.5rem 1rem; border-radius: 10px; }
+    .jackets {
+      --gap-x: clamp(1.25rem, 2.6vw, 2.5rem);
+      list-style: none; display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr));
+      gap: clamp(3.5rem, 5vw, 4.5rem) var(--gap-x);
+      margin-top: clamp(1.75rem, 3vw, 2.5rem); padding-bottom: 12px;
+    }
+    /* a face-out paperback: band / artwork / title / foot band */
+    .jacket {
+      position: relative; display: grid; grid-template-rows: auto auto 1fr auto;
+      background: var(--paper); color: var(--ink);
+      box-shadow: 0 0 0 1px var(--rule);
+    }
+    /* covers stand face-out on a shelf: each jacket carries its stretch of plank,
+       meeting its neighbours mid-gap, so a row's shelf ends at its last cover */
+    .jacket::after {
+      content: ""; position: absolute; z-index: 0; pointer-events: none;
+      left: calc(var(--gap-x) / -2); right: calc(var(--gap-x) / -2); bottom: -12px; height: 12px;
+      background: var(--plank); box-shadow: 0 18px 18px -16px rgba(var(--shade), 0.45);
+    }
+    .jacket::before { /* the hinge score of a paperback cover */
+      content: ""; position: absolute; top: 0; bottom: 0; left: 10px; width: 1px; z-index: 2; pointer-events: none;
+      background: rgba(0, 0, 0, 0.16); box-shadow: 1px 0 0 rgba(255, 255, 255, 0.12);
+    }
+    .j-foot { transition: background-color 0.25s var(--ease-out); }
+    .jacket:hover .j-foot, .jacket:has(.j-link:focus-visible) .j-foot { background: var(--series-hover); }
+    .j-band, .j-foot {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      padding: 0 1.15rem 0 1.5rem; background: var(--series); color: var(--on-series);
+    }
+    .j-band { height: 56px; font-size: 0.86rem; font-weight: 680; }
+    .j-stage { display: inline-flex; align-items: center; gap: 0.65rem; }
+    .j-cat { text-align: right; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .mini { display: inline-flex; gap: 3px; }
+    .mini i { width: 8px; height: 8px; border: 1.5px solid color-mix(in srgb, var(--on-series) 72%, transparent); }
+    .mini i.on { background: var(--on-series); border-color: var(--on-series); }
+    .j-art {
+      position: relative; aspect-ratio: 16 / 9; overflow: hidden;
+      background: var(--series); color: var(--on-series);
+    }
+    .j-art::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; z-index: 1; background: color-mix(in srgb, var(--on-series) 26%, transparent); }
+    .j-art img, .j-art svg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .j-art img, .v-cover img { object-position: 50% 0; }
+    .j-type {
+      position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 1.1rem 1.2rem 1.15rem 1.5rem;
+    }
+    .j-type-name {
+      font-size: clamp(2.1rem, 3.4vw, 2.9rem); font-weight: 800; font-stretch: 74%;
+      line-height: 0.92; letter-spacing: -0.01em; text-wrap: balance;
+      padding-top: 0.6rem; border-top: 2px solid var(--on-series);
+    }
+    .j-text { display: grid; gap: 0.55rem; align-content: start; padding: 1.15rem 1.25rem 1.35rem 1.5rem; }
+    .j-title { font-size: 1.5rem; font-weight: 760; line-height: 1.1; letter-spacing: -0.015em; }
+    .j-link { text-decoration: none; color: inherit; }
+    .j-link::after { content: ""; position: absolute; inset: 0; z-index: 3; }
+    .j-link:focus-visible { outline: none; }
+    .j-link:focus-visible::after { outline: 2px solid var(--series-text); outline-offset: 5px; }
+    .j-tagline { font-family: var(--font-serif); font-size: 0.98rem; line-height: 1.55; color: var(--ink-2); text-wrap: pretty; }
+    .j-looking { font-size: 0.9rem; font-weight: 560; color: var(--ink-2); margin-top: 0.15rem; }
+    .j-looking b { font-weight: 720; color: var(--ink); }
+    .j-foot { height: 48px; font-size: 0.92rem; font-weight: 700; }
+    .j-open { display: inline-flex; align-items: center; gap: 0.45rem; }
+    .j-open .icon { transition: transform 0.3s var(--ease-out); }
+    .jacket:hover .j-open .icon, .jacket:has(.j-link:focus-visible) .j-open .icon { transform: translateX(4px); }
+    .j-foot .roundel { font-size: 0.56rem; min-width: 0; height: 2em; padding: 0 0.55em; }
 
-    /* filters */
-    .filters { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 2rem 0 1.4rem; }
-    .chip { font-size: 0.85rem; font-weight: 600; padding: 0.45rem 1rem; border-radius: 999px; cursor: pointer;
-      background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
-    .chip.on { color: var(--text); border-color: var(--accent); background: rgba(110,168,254,0.14); }
+    /* loading: jacket-shaped placeholders, still (nothing loops) */
+    .jacket.is-skel { box-shadow: 0 0 0 1px var(--rule); }
+    .jacket.is-skel::after { background: var(--paper-3); box-shadow: none; }
+    .jacket.is-skel::before { display: none; }
+    .is-skel .j-band, .is-skel .j-foot { background: var(--paper-3); }
+    .is-skel .j-art { background: var(--paper-2); }
+    .is-skel .j-art::after { display: none; }
+    .skel-line { display: block; height: 0.8rem; border-radius: var(--r); background: var(--paper-2); }
+    .skel-line.t { height: 1.4rem; width: 62%; background: var(--paper-3); }
+    .skel-line.s { width: 88%; }
+    .skel-line.u { width: 54%; }
 
-    /* cards */
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.3rem; padding-bottom: 4rem; }
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; overflow: hidden;
-      display: flex; flex-direction: column; transition: transform 0.18s, border-color 0.18s; cursor: pointer; }
-    .card:hover { transform: translateY(-3px); border-color: rgba(110,168,254,0.45); }
-    .card .shot { aspect-ratio: 16/9; background: #0d1118; display: grid; place-items: center; overflow: hidden; }
-    .card .shot img { width: 100%; height: 100%; object-fit: cover; }
-    .card .shot .ph { font-family: var(--font-display); font-weight: 800; font-size: 1.6rem; background: var(--grad);
-      -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .card .shot .cover-svg, .card .shot .cover-svg svg { width: 100%; height: 100%; display: block; }
-    .sheet .cover-svg { border-radius: 14px; overflow: hidden; border: 1px solid var(--border); }
-    .sheet .cover-svg svg { width: 100%; height: auto; display: block; }
-    .card .body { padding: 1.1rem 1.2rem 1.3rem; display: flex; flex-direction: column; gap: 0.55rem; flex: 1; }
-    .card h3 { font-family: var(--font-display); font-size: 1.15rem; }
-    .card p { color: var(--muted); font-size: 0.9rem; }
-    .row { display: flex; gap: 0.45rem; flex-wrap: wrap; align-items: center; }
-    .tag { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
-      padding: 0.22rem 0.6rem; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); }
-    .stage { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.22rem 0.6rem; border-radius: 999px; }
-    .stage.idea      { background: rgba(152,161,179,0.16); color: #c6ccd8; }
-    .stage.prototype { background: rgba(251,191,36,0.16);  color: #fcd34d; }
-    .stage.mvp       { background: rgba(110,168,254,0.18); color: #9ec5ff; }
-    .stage.beta      { background: rgba(139,92,246,0.2);   color: #c4b5fd; }
-    .stage.live      { background: rgba(52,211,153,0.16);  color: #6ee7b7; }
-    .looking { font-size: 0.8rem; color: var(--accent); font-weight: 600; }
+    @media (prefers-reduced-motion: no-preference) {
+      .jackets.just-filled .jacket > * { animation: slot-in 0.7s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 70ms); }
+    }
+    @keyframes slot-in { from { transform: translateY(26px); opacity: 0; } to { transform: none; opacity: 1; } }
 
-    /* detail modal */
-    .modal { position: fixed; inset: 0; z-index: 40; background: rgba(4,5,8,0.92); backdrop-filter: blur(7px);
-      overflow-y: auto; padding: 1.2rem; display: none; }
-    .modal.open { display: block; }
-    .sheet { max-width: 880px; margin: 0 auto 3rem; background: var(--surface-solid); border: 1px solid var(--border);
-      border-radius: 20px; padding: 1.7rem; }
-    .sheet h2 { font-family: var(--font-display); font-size: clamp(1.4rem, 4vw, 2rem); margin-bottom: 0.4rem; }
-    .close { float: right; background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 10px;
-      width: 34px; height: 34px; cursor: pointer; font-size: 1.1rem; line-height: 1; }
-    .sec { margin-top: 1.8rem; }
-    .sec h4 { font-family: var(--font-display); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.13em;
-      color: var(--muted); margin-bottom: 0.8rem; }
-    .prose { color: #c6ccd8; font-size: 0.95rem; }
-    .prose p { margin-bottom: 0.9rem; }
-    .prose h2, .prose h3 { font-family: var(--font-display); color: var(--text); font-size: 1.1rem; margin: 1.3rem 0 0.6rem; }
-    .prose ul, .prose ol { margin: 0 0 0.9rem 1.3rem; }
-    .prose code { font-family: ui-monospace, Menlo, monospace; background: rgba(255,255,255,0.07); border-radius: 6px; padding: 0.1rem 0.35rem; font-size: 0.85em; }
-    .prose pre { background: #0d1118; border: 1px solid var(--border); border-radius: 12px; padding: 1rem; overflow-x: auto; margin-bottom: 0.9rem; }
-    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
-    @media (max-width: 700px) { .two { grid-template-columns: 1fr; } }
-    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.15rem; }
-    .panel h5 { font-family: var(--font-display); font-size: 0.95rem; margin-bottom: 0.5rem; }
-    .panel p { color: var(--muted); font-size: 0.9rem; }
-    .video { position: relative; aspect-ratio: 16/9; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); background: #000; }
+    /* states: empty, not configured, load error */
+    .state { display: grid; justify-items: center; gap: 0.9rem; margin-top: clamp(1.75rem, 3vw, 2.5rem); padding: clamp(2.5rem, 6vw, 4rem) 1.5rem; }
+    .state > .icon { width: 2rem; height: 2rem; color: var(--ink-3); }
+    .state.is-error > .icon { color: var(--danger); }
+    .state p { font-size: 1.1rem; color: var(--ink); max-width: 40ch; }
+    .state .state-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; margin-top: 0.4rem; }
+
+    /* ================= detail sheet ================= */
+    .scrim { overscroll-behavior: contain; }
+    .sheet { --sp: clamp(1.25rem, 4vw, 2.5rem); }
+    .sheet-close { z-index: 2; }
+    .sheet [tabindex="-1"]:focus { outline: none; }
+    .v-head > :first-child { padding-right: 2.75rem; }
+    .v-meta { display: flex; flex-wrap: wrap; gap: 0.15rem 0.6rem; margin-top: 1.6rem; font-size: 0.9rem; font-weight: 680; color: var(--series-text); }
+    .v-meta .sep { color: var(--ink-3); font-weight: 400; }
+    .v-name {
+      font-size: clamp(2.2rem, 5.4vw, 3.5rem); font-weight: 820; font-stretch: 110%;
+      line-height: 0.96; letter-spacing: -0.03em;
+    }
+    .v-tagline { margin-top: 0.95rem; }
+
+    .track { list-style: none; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin-top: 0.85rem; }
+    .track li { position: relative; display: grid; gap: 0.55rem; justify-items: start; }
+    .track li::before { content: ""; position: absolute; left: 0; right: 0; top: 7px; height: 2px; background: var(--rule); }
+    .track li.past::before { background: var(--series-text); }
+    .track li:last-child::before { display: none; }
+    .t-node {
+      position: relative; z-index: 1; width: 16px; height: 16px; border-radius: var(--r);
+      background: var(--paper); border: 2px solid var(--rule-strong);
+    }
+    .track li.past .t-node { background: var(--series-text); border-color: var(--series-text); }
+    .track li.now .t-node { background: var(--series-text); border-color: var(--series-text); box-shadow: 0 0 0 3px var(--paper), 0 0 0 5px var(--series-text); }
+    .t-label { font-size: 0.86rem; font-weight: 600; font-stretch: 86%; color: var(--ink-3); line-height: 1.2; }
+    .track li.past .t-label { color: var(--ink-2); }
+    .track li.now .t-label { color: var(--ink); font-weight: 780; }
+
+    .v-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.9rem; }
+    .v-media { margin-top: clamp(1.75rem, 3.5vw, 2.5rem); }
+    .video { position: relative; aspect-ratio: 16 / 9; background: #000; border-radius: var(--r); overflow: hidden; }
     .video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-    .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.7rem; }
-    .shots img { width: 100%; border-radius: 12px; border: 1px solid var(--border); display: block; }
+    .v-cover { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: var(--series); border-radius: var(--r); }
+    .v-cover img, .v-cover svg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
-    /* checklist */
-    .steps { display: flex; flex-direction: column; gap: 0.55rem; }
-    .step { display: flex; gap: 0.7rem; align-items: flex-start; background: var(--surface); border: 1px solid var(--border);
-      border-radius: 12px; padding: 0.75rem 0.95rem; }
-    .step .dot { flex: none; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center;
-      font-size: 0.72rem; font-weight: 800; margin-top: 0.15rem; }
-    .step.done .dot     { background: rgba(52,211,153,0.18); color: #6ee7b7; }
-    .step.building .dot { background: rgba(251,191,36,0.18); color: #fcd34d; }
-    .step.planned .dot  { background: rgba(152,161,179,0.16); color: #98a1b3; }
-    .step .t { font-size: 0.93rem; font-weight: 600; }
-    .step .d { font-size: 0.85rem; color: var(--muted); margin-top: 0.15rem; }
-    .legend { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.7rem; }
+    .sec { margin-top: clamp(2.25rem, 4.5vw, 3rem); }
+    .sec-title { font-size: 1.1rem; font-weight: 720; letter-spacing: -0.005em; padding-bottom: 0.65rem; border-bottom: 2px solid var(--ink); }
 
-    /* form */
-    .form { display: grid; gap: 0.65rem; }
-    .form .two-in { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
-    @media (max-width: 620px) { .form .two-in { grid-template-columns: 1fr; } }
-    input, textarea, select {
-      width: 100%; padding: 0.72rem 0.95rem; border-radius: 11px; border: 1px solid var(--border);
-      background: rgba(255,255,255,0.05); color: var(--text); font-size: 0.93rem; font-family: var(--font-body);
+    .pa { display: grid; grid-template-columns: 1fr 1fr; }
+    .pa > div { padding-block: 1.1rem 0.2rem; }
+    .pa > div + div { border-left: 1px solid var(--rule); padding-left: clamp(1.25rem, 3vw, 2rem); }
+    .pa > div:first-child:not(:last-child) { padding-right: clamp(1.25rem, 3vw, 2rem); }
+    .pa h3 { font-size: 1.15rem; font-weight: 720; }
+    .pa p { margin-top: 0.45rem; font-family: var(--font-serif); font-size: 1.02rem; line-height: 1.65; color: var(--ink-2); text-wrap: pretty; }
+
+    .v-prose { margin-top: 1.1rem; max-width: 66ch; }
+    .v-prose > :first-child { margin-top: 0; }
+    .v-prose h2, .v-prose h3, .v-prose h4 { font-family: var(--font-sans); color: var(--ink); font-size: 1.2rem; font-weight: 720; line-height: 1.25; margin: 1.5em 0 0.5em; }
+    .v-prose ul, .v-prose ol { padding-left: 1.3em; margin-top: 1em; }
+    .v-prose li + li { margin-top: 0.35em; }
+    .v-prose li::marker { color: var(--series-text); }
+    .v-prose p + ul, .v-prose p + ol, .v-prose ul + p, .v-prose ol + p { margin-top: 1em; }
+    .v-prose a { color: var(--series-text); }
+    .v-prose img { margin-block: 1em; border-radius: var(--r); }
+    .v-prose code { font-family: var(--font-mono); font-size: 0.88em; background: var(--paper-2); padding: 0.1em 0.35em; border-radius: var(--r); }
+    .v-prose pre { margin-top: 1em; padding: 1rem 1.1rem; overflow-x: auto; background: var(--paper-2); border: 1px solid var(--rule); border-radius: var(--r); font-size: 0.9rem; line-height: 1.55; }
+    .v-prose pre code { background: none; padding: 0; }
+    .v-prose blockquote { margin-top: 1em; padding-left: 1rem; border-left: 1px solid var(--rule-strong); font-style: italic; }
+
+    .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 0.85rem; margin-top: 1.1rem; }
+    .shots img { width: 100%; border-radius: var(--r); box-shadow: 0 0 0 1px var(--rule); }
+
+    .legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; margin-top: 0.8rem; font-size: 0.86rem; font-weight: 560; color: var(--ink-2); }
+    .legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+    .checks { list-style: none; margin-top: 0.5rem; }
+    .checks.no-legend { margin-top: 0; }
+    .checks li {
+      display: grid; grid-template-columns: 1.4rem minmax(0, 1fr) auto; align-items: start; gap: 0.15rem 0.85rem;
+      padding-block: 0.85rem 0.9rem; border-bottom: 1px solid var(--rule);
     }
-    textarea { min-height: 110px; resize: vertical; }
-    input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); }
-    .hp { position: absolute; left: -9999px; }
-    .note { font-size: 0.83rem; color: var(--muted); }
-    .empty { color: var(--muted); text-align: center; padding: 3.5rem 1rem; border: 1px dashed var(--border); border-radius: 16px; }
-    #toast { position: fixed; bottom: 1.4rem; left: 50%; transform: translateX(-50%); background: var(--surface-solid);
-      border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem 1.3rem; font-size: 0.9rem; display: none; z-index: 60; max-width: 92vw; }
-    #toast.ok { border-color: rgba(52,211,153,0.45); } #toast.err { border-color: rgba(248,113,113,0.45); }
-    footer { border-top: 1px solid var(--border); padding: 2rem 0 3rem; color: var(--muted); font-size: 0.88rem; }
+    .checks .icon { width: 1.3rem; height: 1.3rem; margin-top: 0.05rem; }
+    .st-done .icon, .legend .st-done .icon { color: var(--series-text); }
+    .st-building .icon { color: var(--ink); }
+    .st-planned .icon { color: var(--ink-3); }
+    .c-label { font-weight: 650; line-height: 1.35; }
+    .c-detail { display: block; margin-top: 0.15rem; font-family: var(--font-serif); font-size: 0.95rem; color: var(--ink-2); line-height: 1.5; }
+    .c-state { font-size: 0.82rem; font-weight: 650; color: var(--ink-3); white-space: nowrap; padding-top: 0.15rem; }
+    .st-done .c-state { color: var(--series-text); }
+    .st-building .c-state { color: var(--ink); }
+
+    .tech { list-style: none; display: flex; flex-wrap: wrap; gap: 0.35rem 0; margin-top: 1rem; font-size: clamp(1.05rem, 1.6vw, 1.2rem); font-weight: 640; font-stretch: 92%; }
+    .tech li + li::before { content: "/"; content: "/" / ""; margin-inline: 0.65rem; color: var(--ink-3); font-weight: 400; }
+
+    .involve {
+      margin: clamp(2.5rem, 5vw, 3.5rem) calc(-1 * var(--sp)) calc(-1 * var(--sp));
+      padding: clamp(1.75rem, 4vw, 2.5rem) var(--sp) calc(var(--sp) + 0.25rem);
+      border-radius: 0 0 var(--r) var(--r);
+    }
+    .involve h3 { font-size: clamp(1.6rem, 3vw, 2.1rem); font-weight: 800; font-stretch: 108%; letter-spacing: -0.02em; line-height: 1; }
+    .involve-looking { margin-top: 1rem; font-weight: 600; }
+    .involve-looking b { font-weight: 760; }
+    .involve .serif { margin-top: 0.6rem; font-size: 1.04rem; line-height: 1.6; max-width: 58ch; opacity: 0.92; }
+    .involve .btn { margin-top: 1.4rem; }
+
+    /* ================= meeting form ================= */
+    .m-form { margin-top: 1.9rem; }
+    .m-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 1.25rem; }
+    .m-grid .span { grid-column: 1 / -1; }
+    .opt { font-weight: 500; color: var(--ink-3); }
+    .field .error { display: flex; align-items: center; gap: 0.35rem; }
+    .field [aria-invalid="true"]:focus { border-color: var(--danger); box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 24%, transparent); }
+    .m-foot {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem 1.5rem;
+      margin-top: 1.6rem; padding-top: 1.25rem; border-top: 1px solid var(--rule);
+    }
+    .m-foot .hint { font-size: 0.875rem; color: var(--ink-3); }
+    .m-error {
+      display: flex; align-items: flex-start; gap: 0.55rem; margin-top: 1.1rem;
+      padding: 0.85rem 1rem; border: 1.5px solid var(--danger); border-radius: var(--r);
+      color: var(--danger); font-weight: 600; font-size: 0.95rem;
+    }
+    .m-error .icon { margin-top: 0.1rem; }
+    .m-done { display: grid; justify-items: start; gap: 0.9rem; padding-block: 0.5rem 0.75rem; }
+    .m-done > .icon { width: 3rem; height: 3rem; color: var(--series-text); }
+    .m-done h2 { font-size: clamp(1.9rem, 4.4vw, 2.75rem); font-weight: 800; font-stretch: 108%; letter-spacing: -0.025em; line-height: 1; }
+    .m-done .btn { margin-top: 0.6rem; }
+    .m-head h2 { font-size: clamp(2rem, 4.6vw, 3rem); font-weight: 820; font-stretch: 110%; letter-spacing: -0.03em; line-height: 0.98; }
+    .m-head .lede { margin-top: 0.9rem; }
+    .m-head .lede strong { color: var(--ink); font-weight: 650; }
+
+    .toast .icon { width: 1.2rem; height: 1.2rem; }
+
+    @media (max-width: 640px) {
+      .pa { grid-template-columns: 1fr; }
+      .pa > div + div { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule); margin-top: 1.1rem; }
+      .pa > div:first-child:not(:last-child) { padding-right: 0; }
+      .checks li { grid-template-columns: 1.4rem minmax(0, 1fr); }
+      .c-state { grid-column: 2; padding-top: 0.1rem; }
+      .m-grid { grid-template-columns: 1fr; }
+      .m-foot .btn { width: 100%; }
+      .t-label { font-size: 0.78rem; }
+      .v-actions .btn { flex: 1 1 auto; }
+    }
   </style>
 </head>
-<body>
-  <nav>
-    <div class="wrap nav-in">
-      <a class="logo" href="/">Gihan<span>.</span></a>
-      <button class="burger" id="burger" aria-label="Menu">☰</button>
-      <div class="nav-links" id="navLinks">
-        <a href="/">Home</a>
-        <a href="/ventures.html" class="on">Ventures</a>
+<body class="series-green">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="masthead">
+    <div class="wrap masthead-in">
+      <a class="roundel" href="/" aria-label="Gihan Munasinghe, home">Gihan.</a>
+      <nav class="nav" aria-label="Main">
+        <a href="/ventures.html" aria-current="page">Ventures</a>
         <a href="/#blog">Blog</a>
         <a href="/shop.html">Shop</a>
-        <a href="/#contact">Contact</a>
+        <a href="/#services">Consulting</a>
+        <a href="/#teaching">Teaching</a>
+        <a href="/#expertise">Expertise</a>
+      </nav>
+      <div class="masthead-actions">
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch to dark theme"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-moon"></use></svg></button>
+        <a class="btn btn-paper btn-cta" href="/#contact">Work with me</a>
+        <button class="icon-btn menu-btn" type="button" data-menu-button aria-controls="menu" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-list"></use></svg><span>Menu</span></button>
       </div>
     </div>
-  </nav>
-
-  <header class="hero wrap">
-    <div class="kicker">Ventures &amp; MVPs</div>
-    <h1>Products I'm building — and where you can come in</h1>
-    <p class="lede">Each project below is a working product or MVP. You'll find what it does, a demo, exactly what's shipped today, and the stages ahead where partners, investors and pilot customers can get involved.</p>
-    <div class="hero-cta">
-      <a class="btn btn-primary" href="#projects">Browse projects</a>
-      <button class="btn btn-ghost" id="talkBtn">Request a meeting</button>
-    </div>
+    <nav class="menu-panel" id="menu" aria-label="Main menu">
+      <a href="/ventures.html" aria-current="page">Ventures <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-right"></use></svg></a>
+      <a href="/#blog">Blog <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-right"></use></svg></a>
+      <a href="/shop.html">Shop <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-right"></use></svg></a>
+      <a href="/#services">Consulting <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-right"></use></svg></a>
+      <a href="/#teaching">Teaching <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-right"></use></svg></a>
+      <a href="/#expertise">Expertise <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-right"></use></svg></a>
+      <a href="/#contact">Work with me <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-right"></use></svg></a>
+    </nav>
   </header>
 
-  <main class="wrap" id="projects">
-    <div class="filters" id="filters"></div>
-    <div class="grid" id="grid"><div class="empty">Loading projects…</div></div>
+  <main id="main">
+    <section class="titlepage" aria-labelledby="page-title">
+      <div class="wrap tp-in">
+        <h1 class="tp-title" id="page-title">Products I'm building, <span class="tp-sub">and where you can come in</span></h1>
+        <div class="tp-grid">
+          <div>
+            <p class="lede">Each project below is a working product or MVP. You'll find what it does, a demo, exactly what's shipped today, and the stages ahead where partners, investors and pilot customers can get involved.</p>
+            <div class="tp-actions">
+              <a class="btn btn-primary" href="#projects"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-book-open"></use></svg>Browse projects</a>
+              <button class="btn btn-ghost" type="button" id="talkBtn"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-envelope-simple"></use></svg>Request a meeting</button>
+            </div>
+          </div>
+          <aside class="tp-index" id="tpIndex" aria-labelledby="index-title" hidden>
+            <h2 id="index-title">By stage</h2>
+            <ol class="stage-index" id="stageIndex">
+              <li data-stage="idea"><span class="si-node" aria-hidden="true"></span><span class="si-stage">Idea</span><span class="si-titles"></span></li>
+              <li data-stage="prototype"><span class="si-node" aria-hidden="true"></span><span class="si-stage">Prototype</span><span class="si-titles"></span></li>
+              <li data-stage="mvp"><span class="si-node" aria-hidden="true"></span><span class="si-stage">MVP</span><span class="si-titles"></span></li>
+              <li data-stage="beta"><span class="si-node" aria-hidden="true"></span><span class="si-stage">Beta</span><span class="si-titles"></span></li>
+              <li data-stage="live"><span class="si-node" aria-hidden="true"></span><span class="si-stage">Live</span><span class="si-titles"></span></li>
+            </ol>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="catalogue" id="projects" aria-labelledby="projects-title">
+      <div class="wrap">
+        <h2 class="visually-hidden" id="projects-title">Projects</h2>
+        <div class="cat-bar">
+          <div class="tabs" id="filters" role="group" aria-label="Filter projects by stage" hidden></div>
+        </div>
+        <p class="visually-hidden" id="catStatus" aria-live="polite"></p>
+        <div id="grid" aria-busy="true">
+          <ul class="jackets" aria-hidden="true">
+            <li class="jacket is-skel"><span class="j-band"></span><span class="j-art"></span><span class="j-text"><span class="skel-line t"></span><span class="skel-line s"></span><span class="skel-line u"></span></span><span class="j-foot"></span></li>
+            <li class="jacket is-skel"><span class="j-band"></span><span class="j-art"></span><span class="j-text"><span class="skel-line t"></span><span class="skel-line s"></span><span class="skel-line u"></span></span><span class="j-foot"></span></li>
+            <li class="jacket is-skel"><span class="j-band"></span><span class="j-art"></span><span class="j-text"><span class="skel-line t"></span><span class="skel-line s"></span><span class="skel-line u"></span></span><span class="j-foot"></span></li>
+          </ul>
+          <p class="visually-hidden">Loading projects…</p>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <footer>
-    <div class="wrap">© <span id="yr"></span> Gihan Munasinghe · <a href="/">gihanmunasinghe.lk</a></div>
+  <footer class="colophon">
+    <div class="wrap colophon-in">
+      <div>
+        <a class="roundel" href="/" aria-label="Gihan Munasinghe, home">Gihan.</a>
+        <p>Software engineer, consultant and educator, building and teaching from Singapore.</p>
+        <p>Set in Archivo and Literata.</p>
+      </div>
+      <div>
+        <h2>On this site</h2>
+        <ul>
+          <li><a href="/ventures.html">Ventures</a></li>
+          <li><a href="/#blog">Blog</a></li>
+          <li><a href="/shop.html">Shop</a></li>
+          <li><a href="/#services">Consulting</a></li>
+          <li><a href="/#teaching">Teaching</a></li>
+          <li><a href="/#about">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://www.linkedin.com/in/gihan-munasinghe-7a484575" target="_blank" rel="noopener">LinkedIn</a></li>
+          <li><a href="https://github.com/GihanMunasinghe" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://www.instagram.com/gihanmunasinghe" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://youtube.com/@gihanmunasinghe" target="_blank" rel="noopener">YouTube</a></li>
+          <li><a href="https://www.facebook.com/gikka.munaya" target="_blank" rel="noopener">Facebook</a></li>
+          <li><a href="https://wa.me/6586469798" target="_blank" rel="noopener">WhatsApp</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="colophon-base"><span>&copy; <span data-year>2026</span> Gihan Munasinghe</span><span>gihanmunasinghe.lk</span></div>
+    </div>
   </footer>
 
-  <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
-  <div id="toast"></div>
+  <div class="scrim" id="modal">
+    <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+      <div class="sheet-band"></div>
+      <button class="icon-btn sheet-close" type="button" id="closeBtn" aria-label="Close"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-x"></use></svg></button>
+      <div class="sheet-body" id="sheetBody"></div>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+  <script src="/assets/js/site.js" defer></script>
   <script>
   (function () {
     const $ = (id) => document.getElementById(id);
     const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-    const toast = (m, cls) => { const t = $("toast"); t.textContent = m; t.className = cls || ""; t.style.display = "block"; clearTimeout(t._h); t._h = setTimeout(() => t.style.display = "none", 5000); };
-    $("yr").textContent = new Date().getFullYear();
-    $("burger").addEventListener("click", () => $("navLinks").classList.toggle("open"));
+    const icon = (n) => `<svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-${n}"></use></svg>`;
+    const toast = (m, cls) => {
+      const t = $("toast");
+      t.innerHTML = icon(cls === "err" ? "warning-circle" : "check-circle") + `<span>${esc(m)}</span>`;
+      t.className = "toast show" + (cls === "err" ? " err" : "");
+      clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 5000);
+    };
 
     const STAGES = { idea: "Idea", prototype: "Prototype", mvp: "MVP", beta: "Beta", live: "Live" };
-    const STATE_ICON = { done: "✓", building: "◐", planned: "○" };
+    const ORDER = Object.keys(STAGES);
+    const STATE_ICON = { done: "check-circle", building: "circle-half", planned: "circle" };
     const STATE_LABEL = { done: "Shipped", building: "In progress", planned: "Planned" };
-    let API = "", VENTURES = [], filter = "all";
+    let API = "", VENTURES = [], filter = "all", lastFocus = null, currentId = null;
+
+    const modal = $("modal"), sheetBody = $("sheetBody"), grid = $("grid"), filters = $("filters");
+    const stageName = (s) => STAGES[s] || s || "";
+    const appHref = (id) => "/ventures.html?app=" + encodeURIComponent(id);
 
     function embed(url) {
       const u = String(url || "").trim();
@@ -224,117 +470,193 @@
       return null;
     }
 
-    function card(v) {
-      const shot = v.images && v.images[0]
-        ? `<img src="${esc(v.images[0])}" alt="${esc(v.name)}" loading="lazy" />`
-        : (v.coverSvg ? `<div class="cover-svg">${v.coverSvg}</div>`
-                      : `<div class="ph">${esc((v.name || "?").slice(0, 2).toUpperCase())}</div>`);
-      return `<article class="card" data-id="${esc(v.id)}">
-        <div class="shot">${shot}</div>
-        <div class="body">
-          <div class="row">
-            <span class="stage ${esc(v.stage)}">${esc(STAGES[v.stage] || v.stage)}</span>
-            <span class="tag">${esc(v.category)}</span>
-          </div>
-          <h3>${esc(v.name)}</h3>
-          <p>${esc(v.tagline)}</p>
-          ${(v.lookingFor || []).length ? `<div class="looking">Looking for: ${v.lookingFor.map(esc).join(" · ")}</div>` : ""}
+    /* one stage vocabulary: a five-step track (Idea, Prototype, MVP, Beta, Live) */
+    function miniTrack(stage) {
+      const at = ORDER.indexOf(stage);
+      if (at < 0) return "";
+      return `<span class="mini" aria-hidden="true">${ORDER.map((_, i) => `<i${i <= at ? ' class="on"' : ""}></i>`).join("")}</span>`;
+    }
+    function fullTrack(stage) {
+      const at = ORDER.indexOf(stage);
+      if (at < 0) return "";
+      return `<ol class="track" aria-label="Stage, ${at + 1} of ${ORDER.length}">${ORDER.map((s, i) => {
+        const cls = i < at ? "past" : i === at ? "now" : "";
+        return `<li${cls ? ` class="${cls}"` : ""}${i === at ? ' aria-current="step"' : ""}><span class="t-node" aria-hidden="true"></span><span class="t-label">${STAGES[s]}</span></li>`;
+      }).join("")}</ol>`;
+    }
+
+    function artwork(v) {
+      if (v.images && v.images[0]) return `<img src="${esc(v.images[0])}" alt="" loading="lazy" />`;
+      if (v.coverSvg) return v.coverSvg;
+      return `<span class="j-type"><span class="j-type-name">${esc(v.name)}</span></span>`;
+    }
+
+    function jacket(v, i) {
+      const looking = (v.lookingFor || []).length ? `<p class="j-looking"><b>Looking for:</b> ${v.lookingFor.map(esc).join(" · ")}</p>` : "";
+      return `<li class="jacket" style="--i:${i}">
+        <div class="j-band"><span class="j-stage">${miniTrack(v.stage)}<span>${esc(stageName(v.stage))}</span></span><span class="j-cat">${esc(v.category)}</span></div>
+        <div class="j-art" aria-hidden="true">${artwork(v)}</div>
+        <div class="j-text">
+          <h3 class="j-title"><a class="j-link" href="${appHref(v.id)}" data-app="${esc(v.id)}">${esc(v.name)}</a></h3>
+          ${v.tagline ? `<p class="j-tagline">${esc(v.tagline)}</p>` : ""}
+          ${looking}
         </div>
-      </article>`;
+        <div class="j-foot" aria-hidden="true"><span class="j-open">Open venture ${icon("arrow-right")}</span><span class="roundel">G.</span></div>
+      </li>`;
     }
 
     function steps(list) {
       if (!list || !list.length) return "";
-      return `<div class="steps">${list.map((s) => `
-        <div class="step ${esc(s.state)}">
-          <span class="dot">${STATE_ICON[s.state] || "○"}</span>
-          <div><div class="t">${esc(s.label)}</div>${s.detail ? `<div class="d">${esc(s.detail)}</div>` : ""}</div>
-        </div>`).join("")}</div>`;
+      return list.map((s) => {
+        const st = STATE_ICON[s.state] ? s.state : "planned";
+        return `<li class="st-${st}">${icon(STATE_ICON[st])}<span><span class="c-label">${esc(s.label)}</span>${s.detail ? `<span class="c-detail">${esc(s.detail)}</span>` : ""}</span><span class="c-state">${STATE_LABEL[st]}</span></li>`;
+      }).join("");
     }
 
-    function openVenture(id) {
+    function stateBox(name, text, actions, isError) {
+      return `<div class="note-box state${isError ? " is-error" : ""}">${icon(name)}<p>${esc(text)}</p>${actions ? `<div class="state-actions">${actions}</div>` : ""}</div>`;
+    }
+    function showState(name, text, actions, isError) {
+      grid.removeAttribute("aria-busy");
+      grid.innerHTML = stateBox(name, text, actions, isError);
+      filters.hidden = true;
+      $("tpIndex").hidden = true;
+    }
+
+    /* ---------- dialog ---------- */
+    function setInert(on) {
+      document.querySelectorAll("body > .skip, body > .masthead, body > main, body > .colophon").forEach((el) => { el.inert = on; });
+    }
+    function showSheet(html, trigger) {
+      if (!modal.classList.contains("open")) lastFocus = trigger || document.activeElement;
+      sheetBody.innerHTML = html;
+      modal.classList.add("open");
+      document.body.style.overflow = "hidden";
+      setInert(true);
+      modal.scrollTop = 0;
+      const t = $("sheetTitle");
+      if (t) t.focus({ preventScroll: true });
+    }
+
+    function openVenture(id, trigger) {
       const v = VENTURES.find((x) => x.id === id);
       if (!v) return;
+      currentId = v.id;
       const em = embed(v.demoUrl);
-      $("sheet").innerHTML = `
-        <button class="close" id="closeBtn" aria-label="Close">✕</button>
-        <div class="row" style="margin-bottom:0.5rem;">
-          <span class="stage ${esc(v.stage)}">${esc(STAGES[v.stage] || v.stage)}</span>
-          <span class="tag">${esc(v.category)}</span>
+      const imgs = v.images || [];
+      let media = "", screens = [];
+      if (em) { media = `<div class="video"><iframe src="${esc(em)}" allowfullscreen loading="lazy" title="${esc(v.name)} demo"></iframe></div>`; screens = imgs; }
+      else if (imgs[0]) { media = `<figure class="v-cover"><img src="${esc(imgs[0])}" alt="${esc(v.name)}" /></figure>`; screens = imgs.slice(1); }
+      else if (v.coverSvg) media = `<figure class="v-cover" aria-hidden="true">${v.coverSvg}</figure>`;
+      const meetPrimary = !v.liveUrl;
+      const looking = (v.lookingFor || []).length;
+
+      showSheet(`
+        <div class="v-head">
+          <h2 class="v-name" id="sheetTitle" tabindex="-1">${esc(v.name)}</h2>
+          ${v.tagline ? `<p class="lede v-tagline">${esc(v.tagline)}</p>` : ""}
+          <p class="v-meta"><span>${esc(stageName(v.stage))}</span>${v.category ? `<span class="sep" aria-hidden="true">/</span><span>${esc(v.category)}</span>` : ""}</p>
         </div>
-        <h2>${esc(v.name)}</h2>
-        <p class="lede">${esc(v.tagline)}</p>
-        <div class="hero-cta">
-          ${v.liveUrl ? `<a class="btn btn-primary btn-sm" href="${esc(v.liveUrl)}" target="_blank" rel="noopener">Try it live ↗</a>` : ""}
-          ${v.repoUrl ? `<a class="btn btn-ghost btn-sm" href="${esc(v.repoUrl)}" target="_blank" rel="noopener">Source ↗</a>` : ""}
-          <button class="btn btn-ghost btn-sm" data-meet="${esc(v.id)}">Request a meeting</button>
-          <button class="btn btn-ghost btn-sm" id="shareBtn">Share</button>
+        ${fullTrack(v.stage)}
+        <div class="v-actions">
+          ${v.liveUrl ? `<a class="btn btn-primary btn-sm" href="${esc(v.liveUrl)}" target="_blank" rel="noopener">${icon("arrow-up-right")}Try it live</a>` : ""}
+          ${v.repoUrl ? `<a class="btn btn-ghost btn-sm" href="${esc(v.repoUrl)}" target="_blank" rel="noopener">${icon(/github\.com/i.test(v.repoUrl) ? "github-logo" : "arrow-square-out")}Source</a>` : ""}
+          ${!em && v.demoUrl ? `<a class="btn btn-ghost btn-sm" href="${esc(v.demoUrl)}" target="_blank" rel="noopener">${icon("play-circle")}Watch the demo</a>` : ""}
+          <button class="btn ${meetPrimary ? "btn-primary" : "btn-ghost"} btn-sm" type="button" data-meet>${icon("envelope-simple")}Request a meeting</button>
+          <button class="btn btn-ghost btn-sm" type="button" id="shareBtn">${icon("share-network")}Share</button>
         </div>
 
-        ${!em && !(v.images || []).length && v.coverSvg ? `<div class="sec"><div class="cover-svg">${v.coverSvg}</div></div>` : ""}
+        ${media ? `<div class="v-media">${media}</div>` : ""}
 
-        ${em ? `<div class="sec"><h4>Demo</h4><div class="video"><iframe src="${esc(em)}" allowfullscreen loading="lazy" title="${esc(v.name)} demo"></iframe></div></div>`
-             : (v.demoUrl ? `<div class="sec"><h4>Demo</h4><a class="btn btn-ghost btn-sm" href="${esc(v.demoUrl)}" target="_blank" rel="noopener">Watch the demo ↗</a></div>` : "")}
-
-        ${(v.problem || v.solution) ? `<div class="sec"><div class="two">
-          ${v.problem ? `<div class="panel"><h5>The problem</h5><p>${esc(v.problem)}</p></div>` : ""}
-          ${v.solution ? `<div class="panel"><h5>The approach</h5><p>${esc(v.solution)}</p></div>` : ""}
+        ${(v.problem || v.solution) ? `<div class="sec"><div class="pa">
+          ${v.problem ? `<div><h3>The problem</h3><p>${esc(v.problem)}</p></div>` : ""}
+          ${v.solution ? `<div><h3>The approach</h3><p>${esc(v.solution)}</p></div>` : ""}
         </div></div>` : ""}
 
-        ${v.overview ? `<div class="sec"><h4>Overview</h4><div class="prose">${v.overview}</div></div>` : ""}
+        ${v.overview ? `<section class="sec"><h3 class="sec-title">Overview</h3><div class="prose v-prose">${v.overview}</div></section>` : ""}
 
-        ${(v.images || []).length > 1 ? `<div class="sec"><h4>Screens</h4><div class="shots">${v.images.slice(1).map((i) => `<img src="${esc(i)}" alt="" loading="lazy" />`).join("")}</div></div>` : ""}
+        ${screens.length ? `<section class="sec"><h3 class="sec-title">Screens</h3><div class="shots">${screens.map((s, i) => `<img src="${esc(s)}" alt="${esc(v.name)}, screen ${i + 1}" loading="lazy" />`).join("")}</div></section>` : ""}
 
-        ${(v.mvp || []).length ? `<div class="sec"><h4>What's in the MVP today</h4>
-          <div class="legend"><span>✓ Shipped</span><span>◐ In progress</span><span>○ Planned</span></div>
-          ${steps(v.mvp)}</div>` : ""}
+        ${(v.mvp || []).length ? `<section class="sec"><h3 class="sec-title">What's in the MVP today</h3>
+          <p class="legend"><span class="st-done">${icon("check-circle")}Shipped</span><span class="st-building">${icon("circle-half")}In progress</span><span class="st-planned">${icon("circle")}Planned</span></p>
+          <ul class="checks">${steps(v.mvp)}</ul></section>` : ""}
 
-        ${(v.roadmap || []).length ? `<div class="sec"><h4>Stages ahead — where you can contribute</h4>${steps(v.roadmap)}</div>` : ""}
+        ${(v.roadmap || []).length ? `<section class="sec"><h3 class="sec-title">Stages ahead: where you can contribute</h3><ul class="checks no-legend">${steps(v.roadmap)}</ul></section>` : ""}
 
-        ${(v.tech || []).length ? `<div class="sec"><h4>Built with</h4><div class="row">${v.tech.map((t) => `<span class="tag">${esc(t)}</span>`).join("")}</div></div>` : ""}
+        ${(v.tech || []).length ? `<section class="sec"><h3 class="sec-title">Built with</h3><ul class="tech">${v.tech.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></section>` : ""}
 
-        ${(v.lookingFor || []).length || v.ask ? `<div class="sec"><h4>Get involved</h4><div class="panel">
-          ${(v.lookingFor || []).length ? `<p style="margin-bottom:0.5rem;"><strong style="color:var(--text)">Looking for:</strong> ${v.lookingFor.map(esc).join(" · ")}</p>` : ""}
-          ${v.ask ? `<p>${esc(v.ask)}</p>` : ""}
-          <div style="margin-top:0.9rem;"><button class="btn btn-primary btn-sm" data-meet="${esc(v.id)}">Request a meeting</button></div>
-        </div></div>` : ""}`;
-      $("modal").classList.add("open");
-      document.body.style.overflow = "hidden";
+        <section class="involve band">
+          <h3>Get involved</h3>
+          ${looking ? `<p class="involve-looking"><b>Looking for:</b> ${v.lookingFor.map(esc).join(" · ")}</p>` : ""}
+          ${v.ask ? `<p class="serif">${esc(v.ask)}</p>` : ""}
+          <button class="btn btn-paper" type="button" data-meet>${icon("envelope-simple")}Request a meeting</button>
+        </section>`, trigger);
+
       history.replaceState(null, "", "?app=" + encodeURIComponent(v.id));
-      $("closeBtn").addEventListener("click", closeModal);
       const sb = $("shareBtn");
       if (sb) sb.addEventListener("click", async () => {
         const url = location.origin + "/ventures.html?app=" + encodeURIComponent(v.id);
-        const data = { title: v.name + " — Gihan Munasinghe", text: v.tagline, url };
+        const data = { title: v.name + " | Gihan Munasinghe", text: v.tagline, url };
         if (navigator.share) { try { await navigator.share(data); return; } catch {} }
         try { await navigator.clipboard.writeText(url); toast("Link copied!", "ok"); } catch { prompt("Copy this link:", url); }
       });
-      $("sheet").querySelectorAll("[data-meet]").forEach((b) => b.addEventListener("click", () => openMeeting(v)));
-      $("sheet").scrollIntoView({ block: "start" });
+      sheetBody.querySelectorAll("[data-meet]").forEach((b) => b.addEventListener("click", () => openMeeting(v)));
     }
 
     function closeModal() {
-      $("modal").classList.remove("open");
+      modal.classList.remove("open");
       document.body.style.overflow = "";
+      setInert(false);
       history.replaceState(null, "", location.pathname);
+      let back = lastFocus && lastFocus !== document.body && document.contains(lastFocus) ? lastFocus : null;
+      if (!back && currentId) back = grid.querySelector(`.j-link[data-app="${CSS.escape(currentId)}"]`);
+      if (back) back.focus();
+      lastFocus = null;
     }
-    $("modal").addEventListener("click", (e) => { if (e.target === $("modal")) closeModal(); });
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("modal").classList.contains("open")) closeModal(); });
+    $("closeBtn").addEventListener("click", closeModal);
+    modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && modal.classList.contains("open")) closeModal(); });
 
-    function openMeeting(v) {
-      $("sheet").innerHTML = `
-        <button class="close" id="closeBtn" aria-label="Close">✕</button>
-        <h2>Request a meeting</h2>
-        <p class="lede">${v ? `About <strong>${esc(v.name)}</strong>. ` : ""}Tell me a little about you and what you'd like to explore — I'll reply personally to arrange a time.</p>
-        <div class="sec">
-          <div class="form">
-            <div class="two-in">
-              <input id="m-name" placeholder="Your name *" maxlength="100" autocomplete="name" />
-              <input id="m-email" type="email" placeholder="Email *" maxlength="200" autocomplete="email" />
+    /* every venture link opens the sheet in place; modified clicks keep normal link behaviour */
+    document.addEventListener("click", (e) => {
+      const a = e.target.closest && e.target.closest("a[data-app]");
+      if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      openVenture(a.dataset.app, a);
+    });
+
+    /* ---------- meeting request ---------- */
+    function setErr(id, msg) {
+      const input = $(id), err = $(id + "-err");
+      if (msg) { input.setAttribute("aria-invalid", "true"); err.innerHTML = icon("warning-circle") + `<span>${esc(msg)}</span>`; err.hidden = false; }
+      else { input.removeAttribute("aria-invalid"); err.hidden = true; err.textContent = ""; }
+    }
+
+    function openMeeting(v, trigger) {
+      showSheet(`
+        <div class="m-head v-head">
+          <h2 id="sheetTitle" tabindex="-1">Request a meeting</h2>
+          <p class="lede">${v ? `About <strong>${esc(v.name)}</strong>. ` : ""}Tell me a little about you and what you'd like to explore. I'll reply personally to arrange a time.</p>
+        </div>
+        <form class="m-form" id="m-form" novalidate>
+          <div class="m-grid">
+            <div class="field">
+              <label for="m-name">Your name</label>
+              <input id="m-name" name="name" maxlength="100" autocomplete="name" required aria-describedby="m-name-err" />
+              <p class="error" id="m-name-err" hidden></p>
             </div>
-            <div class="two-in">
-              <input id="m-company" placeholder="Company / fund (optional)" maxlength="160" autocomplete="organization" />
-              <select id="m-interest">
+            <div class="field">
+              <label for="m-email">Email</label>
+              <input id="m-email" name="email" type="email" maxlength="200" autocomplete="email" required aria-describedby="m-email-err" />
+              <p class="error" id="m-email-err" hidden></p>
+            </div>
+            <div class="field">
+              <label for="m-company">Company or fund <span class="opt">(optional)</span></label>
+              <input id="m-company" name="company" maxlength="160" autocomplete="organization" />
+            </div>
+            <div class="field">
+              <label for="m-interest">Interest</label>
+              <select id="m-interest" name="interest">
                 <option>Investment</option>
                 <option>Partnership</option>
                 <option>Pilot customer</option>
@@ -342,70 +664,124 @@
                 <option>Just curious</option>
               </select>
             </div>
-            <textarea id="m-msg" placeholder="What would you like to discuss?" maxlength="3000"></textarea>
-            <input type="text" class="hp" id="m-web" tabindex="-1" autocomplete="off" aria-hidden="true" />
-            <div class="row" style="justify-content:space-between;">
-              <span class="note">Your details are only used to reply to you.</span>
-              <button class="btn btn-primary" id="m-send">Send request</button>
+            <div class="field span">
+              <label for="m-msg">Message</label>
+              <textarea id="m-msg" name="message" maxlength="3000" aria-describedby="m-msg-hint"></textarea>
+              <p class="hint" id="m-msg-hint">What would you like to discuss?</p>
             </div>
           </div>
-        </div>`;
-      $("modal").classList.add("open");
-      document.body.style.overflow = "hidden";
-      $("closeBtn").addEventListener("click", closeModal);
-      $("m-send").addEventListener("click", async () => {
+          <div class="hp" aria-hidden="true"><label for="m-web">Leave this field empty</label><input type="text" id="m-web" tabindex="-1" autocomplete="off" /></div>
+          <div class="m-foot">
+            <p class="hint">Your details are only used to reply to you.</p>
+            <button class="btn btn-primary" type="submit" id="m-send">${icon("envelope-simple")}<span id="m-send-label">Send request</span></button>
+          </div>
+          <p class="m-error" id="m-error" role="alert" hidden></p>
+        </form>`, trigger);
+
+      const form = $("m-form"), send = $("m-send");
+      ["m-name", "m-email"].forEach((id) => $(id).addEventListener("input", () => { if ($(id).getAttribute("aria-invalid")) setErr(id, ""); }));
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
         const payload = {
           ventureId: v ? v.id : "",
           name: $("m-name").value.trim(), email: $("m-email").value.trim(),
           company: $("m-company").value.trim(), interest: $("m-interest").value,
           message: $("m-msg").value.trim(), website: $("m-web").value,
         };
-        if (!payload.name || !payload.email) return toast("Please add your name and email.", "err");
-        $("m-send").disabled = true;
+        const nameErr = payload.name ? "" : "Please add your name.";
+        const emailErr = !payload.email ? "Please add your email." : (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email) ? "" : "That email address doesn't look right. Please check it.");
+        setErr("m-name", nameErr); setErr("m-email", emailErr);
+        if (nameErr || emailErr) {
+          $(nameErr ? "m-name" : "m-email").focus();
+          if (!payload.name || !payload.email) toast("Please add your name and email.", "err");
+          return;
+        }
+        $("m-error").hidden = true;
+        send.disabled = true; form.setAttribute("aria-busy", "true"); $("m-send-label").textContent = "Sending…";
         try {
           const r = await fetch(API + "/meeting-request", {
             method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload),
           });
           const j = await r.json().catch(() => ({}));
           if (!r.ok) throw new Error(j.error || "Could not send");
-          $("sheet").innerHTML = `<h2>Thank you — request sent ✅</h2>
+          $("toast").classList.remove("show");
+          sheetBody.innerHTML = `<div class="m-done">${icon("check-circle")}
+            <h2 id="sheetTitle" tabindex="-1">Thank you, request sent</h2>
             <p class="lede">I've got your details and will get back to you by email shortly.</p>
-            <div class="hero-cta"><button class="btn btn-ghost" id="closeBtn2">Close</button></div>`;
+            <button class="btn btn-ghost" type="button" id="closeBtn2">Close</button></div>`;
           $("closeBtn2").addEventListener("click", closeModal);
-        } catch (e) { toast(e.message, "err"); $("m-send").disabled = false; }
+          modal.scrollTop = 0;
+          $("sheetTitle").focus({ preventScroll: true });
+        } catch (err) {
+          const msg = err instanceof TypeError ? "Could not reach the server. Check your connection and try again." : err.message;
+          toast(msg, "err");
+          const box = $("m-error");
+          if (box) { box.innerHTML = icon("warning-circle") + `<span>${esc(msg)}</span>`; box.hidden = false; }
+          send.disabled = false; form.removeAttribute("aria-busy"); $("m-send-label").textContent = "Send request";
+        }
       });
     }
-    $("talkBtn").addEventListener("click", () => openMeeting(null));
+    $("talkBtn").addEventListener("click", (e) => openMeeting(null, e.currentTarget));
 
-    function render() {
+    /* ---------- catalogue ---------- */
+    function render(animate) {
       const list = filter === "all" ? VENTURES : VENTURES.filter((v) => v.stage === filter);
-      $("grid").innerHTML = list.length ? list.map(card).join("")
-        : '<div class="empty">Nothing here yet — check back soon.</div>';
-      $("grid").querySelectorAll(".card").forEach((c) => c.addEventListener("click", () => openVenture(c.dataset.id)));
+      grid.removeAttribute("aria-busy");
+      if (!list.length) { grid.innerHTML = stateBox("book-open", "Nothing here yet. Check back soon."); return; }
+      grid.innerHTML = `<ul class="jackets${animate ? " just-filled" : ""}">${list.map(jacket).join("")}</ul>`;
     }
 
     function renderFilters() {
-      const present = [...new Set(VENTURES.map((v) => v.stage))];
-      const opts = [["all", "All"], ...present.map((s) => [s, STAGES[s] || s])];
-      $("filters").innerHTML = opts.map(([k, l]) => `<button class="chip ${k === filter ? "on" : ""}" data-f="${k}">${esc(l)}</button>`).join("");
-      $("filters").querySelectorAll(".chip").forEach((b) => b.addEventListener("click", () => {
-        filter = b.dataset.f; renderFilters(); render();
+      if (!VENTURES.length) { filters.hidden = true; return; }
+      const present = [...new Set(VENTURES.map((v) => v.stage))]
+        .sort((a, b) => (ORDER.indexOf(a) < 0 ? 99 : ORDER.indexOf(a)) - (ORDER.indexOf(b) < 0 ? 99 : ORDER.indexOf(b)));
+      const opts = [["all", "All", VENTURES.length], ...present.map((s) => [s, stageName(s), VENTURES.filter((v) => v.stage === s).length])];
+      filters.innerHTML = opts.map(([k, l, n]) => `<button class="tab" type="button" data-f="${esc(k)}" aria-pressed="${k === filter}">${esc(l)}<span class="tab-n">${n}</span></button>`).join("");
+      filters.hidden = false;
+      filters.querySelectorAll(".tab").forEach((b) => b.addEventListener("click", () => {
+        filter = b.dataset.f;
+        filters.querySelectorAll(".tab").forEach((x) => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+        render(false);
+        const n = filter === "all" ? VENTURES.length : VENTURES.filter((v) => v.stage === filter).length;
+        $("catStatus").textContent = `Showing ${n} ${n === 1 ? "project" : "projects"}${filter === "all" ? "" : " at " + stageName(filter)}`;
       }));
     }
 
+    function renderIndex() {
+      const box = $("stageIndex");
+      if (!VENTURES.length) { $("tpIndex").hidden = true; return; }
+      $("tpIndex").hidden = false;
+      VENTURES.forEach((v) => {
+        if (ORDER.indexOf(v.stage) >= 0 || box.querySelector(`li[data-stage="${CSS.escape(String(v.stage))}"]`)) return;
+        box.insertAdjacentHTML("beforeend", `<li data-stage="${esc(v.stage)}"><span class="si-node" aria-hidden="true"></span><span class="si-stage">${esc(stageName(v.stage))}</span><span class="si-titles"></span></li>`);
+      });
+      box.querySelectorAll("li").forEach((li) => {
+        const here = VENTURES.filter((v) => String(v.stage) === li.dataset.stage);
+        li.classList.toggle("has", here.length > 0);
+        li.querySelector(".si-titles").innerHTML = here.map((v) => `<a href="${appHref(v.id)}" data-app="${esc(v.id)}">${esc(v.name)}</a>`).join("");
+      });
+    }
+
+    const EMAIL = `<a class="btn btn-ghost btn-sm" href="mailto:gihanmunasinghe266@gmail.com?subject=Ventures">${icon("envelope-simple")}Email me</a>`;
+
     (async function init() {
       try { API = ((await (await fetch("/site-config.json?t=" + Date.now())).json()).api || "").replace(/\/$/, ""); } catch {}
-      if (!API) { $("grid").innerHTML = '<div class="empty">Not configured yet.</div>'; return; }
+      if (!API) { showState("info", "Not configured yet.", EMAIL); return; }
       try {
         VENTURES = await (await fetch(API + "/ventures")).json();
         if (!Array.isArray(VENTURES)) VENTURES = [];
-      } catch { $("grid").innerHTML = '<div class="empty">Could not load projects. Please refresh.</div>'; return; }
-      renderFilters(); render();
+      } catch {
+        showState("warning-circle", "Could not load projects. Please refresh.",
+          `<button class="btn btn-primary btn-sm" type="button" id="reloadBtn">Refresh the page</button>${EMAIL}`, true);
+        $("reloadBtn").addEventListener("click", () => location.reload());
+        return;
+      }
+      renderFilters(); renderIndex(); render(true);
       const want = new URLSearchParams(location.search).get("app");
       if (want) openVenture(want);
       try {
         fetch(API + "/track", { method: "POST", headers: { "content-type": "application/json" },
-          body: JSON.stringify({ path: "/ventures.html", ref: document.referrer }) });
+          body: JSON.stringify({ path: "/ventures.html", ref: document.referrer }) }).catch(() => {});
       } catch {}
     })();
   })();
