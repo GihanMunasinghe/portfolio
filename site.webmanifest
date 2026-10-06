@@ -1,13 +1,18 @@
 {
-  "name": "Gihan Munasinghe — Software Engineer, Consultant & Educator",
+  "name": "Gihan Munasinghe | Software Engineer, Consultant & Educator",
   "short_name": "Gihan M.",
-  "description": "Software engineer, consultant and educator. Apps, software consultancy, engineering lecturing, and a tech blog.",
+  "description": "Software engineer, consultant and educator. Ventures, software consultancy, engineering coaching, and a tech blog.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#07090d",
-  "theme_color": "#07090d",
+  "background_color": "#f4f4f0",
+  "theme_color": "#2346a6",
   "icons": [
-    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
   ]
 }
