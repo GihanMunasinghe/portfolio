@@ -1,0 +1,57 @@
+# TEMPORARY diagnostic (remove after use): checks the live site and API from GitHub's network.
+name: Diagnose live site
+on:
+  push:
+    branches: [claude/portfolio-web-redesign-n1t2pr]
+    paths: [.github/workflows/diag-live.yml]
+permissions:
+  contents: read
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: API responses and CORS
+        run: |
+          for p in /posts /ventures /products /shop-config; do
+            echo "=== GET https://api.gihanmunasinghe.lk$p"
+            curl -sS -m 20 -D - -o body.txt -H "Origin: https://www.gihanmunasinghe.lk" "https://api.gihanmunasinghe.lk$p" | grep -iE "^HTTP|access-control|content-type" || true
+            head -c 300 body.txt; echo
+          done
+          echo "=== preflight /track"
+          curl -sS -m 20 -D - -o /dev/null -X OPTIONS -H "Origin: https://www.gihanmunasinghe.lk" -H "Access-Control-Request-Method: POST" -H "Access-Control-Request-Headers: content-type" https://api.gihanmunasinghe.lk/track | grep -iE "^HTTP|access-control" || true
+      - name: Live site files and edge headers
+        run: |
+          for u in / /site-config.json /assets/css/site.css /assets/js/site.js /ventures.html /shop.html; do
+            echo "=== https://www.gihanmunasinghe.lk$u"
+            curl -sS -m 20 -D - -o page.txt "https://www.gihanmunasinghe.lk$u" | grep -iE "^HTTP|content-type|content-security|cf-cache|server|cache-control|last-modified|age:" || true
+            head -c 200 page.txt; echo
+          done
+          curl -sS -m 20 https://www.gihanmunasinghe.lk/ -o home.html
+          echo "=== homepage markers"; grep -c "paperback\|series-blue\|blog-shelf" home.html || true
+          grep -o "cdn-cgi[^\"' ]*" home.html | sort -u | head || true
+          grep -o "<script[^>]*>" home.html | head -20
+      - name: Headless Chrome console
+        run: |
+          mkdir -p pw && cd pw && npm init -y >/dev/null && npm i -s playwright-core@1.56.1 >/dev/null
+          cat > run.mjs <<'JS'
+          import { chromium } from "playwright-core";
+          const b = await chromium.launch({ executablePath: "/usr/bin/google-chrome" });
+          for (const u of ["https://www.gihanmunasinghe.lk/", "https://www.gihanmunasinghe.lk/ventures.html", "https://www.gihanmunasinghe.lk/shop.html"]) {
+            const p = await b.newPage();
+            p.on("console", (m) => console.log(`[console.${m.type()}] ${m.text()}`));
+            p.on("pageerror", (e) => console.log(`[pageerror] ${e.message}`));
+            p.on("requestfailed", (r) => console.log(`[requestfailed] ${r.url()} ${r.failure()?.errorText}`));
+            p.on("response", (r) => { if (r.url().includes("api.gihanmunasinghe.lk") || r.url().includes("site-config")) console.log(`[response] ${r.status()} ${r.request().method()} ${r.url()}`); });
+            console.log(`\n##### ${u}`);
+            await p.goto(u, { waitUntil: "networkidle", timeout: 45000 }).catch((e) => console.log("goto error", e.message));
+            await p.waitForTimeout(3000);
+            const txt = await p.evaluate(() => {
+              const pick = (s) => { const el = document.querySelector(s); return el ? el.innerText.replace(/\s+/g, " ").slice(0, 300) : "(none)"; };
+              return { blog: pick("#blog-shelf"), ventures: pick("#venture-shelf"), grid: pick("#grid") };
+            });
+            console.log("[rendered]", JSON.stringify(txt));
+            await p.close();
+          }
+          await b.close();
+          JS
+          node run.mjs
