@@ -6,43 +6,201 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta name="robots" content="noindex, follow" />
-  <meta name="theme-color" content="#07090d" />
-  <title>Page not found — Gihan Munasinghe</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <meta name="theme-color" content="#2346a6" />
+  <title>Page not found | Gihan Munasinghe</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <script>try{var t=localStorage.getItem("gm_theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="preload" href="/assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/assets/fonts/literata-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/assets/css/site.css" />
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: "Inter", -apple-system, sans-serif; color: #eef1f7; line-height: 1.6;
-      min-height: 100vh; display: grid; place-items: center; text-align: center; padding: 2rem;
-      background:
-        radial-gradient(600px 400px at 85% -5%, rgba(139,92,246,0.15), transparent 70%),
-        radial-gradient(700px 500px at -10% 20%, rgba(110,168,254,0.10), transparent 70%),
-        #07090d;
+    /* ================= cover: a volume that is out of print ================= */
+    .cover {
+      --bt: clamp(36px, 6.5vh, 84px);
+      --bb: clamp(64px, 11vh, 116px);
+      display: grid;
+      grid-template-columns:
+        [full-start] max(var(--gutter), calc((100% - var(--wrap)) / 2))
+        [text-start] minmax(0, 1fr)
+        [text-end] max(var(--gutter), calc((100% - var(--wrap)) / 2)) [full-end];
+      grid-template-rows: var(--bt) 1fr var(--bb);
+      min-height: min(calc(100svh - var(--nav-h)), 880px);
+      background: var(--paper);
+      overflow: hidden;
     }
-    .code { font-family: "Sora", sans-serif; font-size: clamp(4rem, 18vw, 9rem); font-weight: 800; line-height: 1;
-      background: linear-gradient(100deg, #6ea8fe, #8b5cf6 55%, #22d3ee); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    h1 { font-family: "Sora", sans-serif; font-size: clamp(1.3rem, 4vw, 1.8rem); margin: 0.6rem 0 0.8rem; }
-    p { color: #98a1b3; max-width: 30rem; margin: 0 auto 1.6rem; }
-    .btns { display: flex; gap: 0.7rem; justify-content: center; flex-wrap: wrap; }
-    a { display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 600; font-size: 0.95rem;
-      text-decoration: none; padding: 0.7rem 1.4rem; border-radius: 12px; }
-    .primary { background: linear-gradient(100deg, #6ea8fe, #8b5cf6 55%, #22d3ee); color: #fff; }
-    .ghost { color: #eef1f7; border: 1px solid rgba(255,255,255,0.14); }
+    .cover::before, .cover::after { content: ""; grid-column: full; background: var(--series); }
+    .cover::before { grid-row: 1; transform-origin: left center; }
+    .cover::after { grid-row: 3; transform-origin: right center; }
+    .cover-body {
+      grid-column: text; grid-row: 2; align-self: center; min-width: 0;
+      padding-block: clamp(1.75rem, 5vh, 3.5rem);
+    }
+
+    /* the numerals: Archivo at full width, boxed to digit height (0.70em) over the baseline */
+    .folio-wrap {
+      --folio: clamp(6rem, min(21vw, 34vh), 19rem);
+      position: relative; width: fit-content; max-width: 100%;
+    }
+    .folio {
+      font-size: var(--folio);
+      font-weight: 860; font-stretch: 125%;
+      line-height: 0.73; letter-spacing: -0.04em;
+      font-variant-numeric: lining-nums;
+      margin-left: -0.02em; /* optical: the 4's side bearing, so the stem aligns with the rule below */
+      white-space: nowrap;
+    }
+
+    /* the stamp: a rubber-stamp impression in the series ink, overprinting the last numeral */
+    .stamp {
+      position: absolute; left: 100%; top: 50%;
+      translate: -8% -22%; rotate: -9deg;
+      display: grid; justify-items: center; gap: 0.08em;
+      padding: 0.5em 0.8em 0.42em;
+      border: 0.3em double currentColor; border-radius: var(--r);
+      color: var(--series-text);
+      font-size: max(0.78rem, calc(var(--folio) * 0.072));
+      font-weight: 820; font-stretch: 80%; line-height: 1;
+      text-transform: uppercase; letter-spacing: 0.14em; white-space: nowrap;
+      mix-blend-mode: multiply;
+    }
+    .stamp span { margin-right: -0.14em; } /* drop the trailing tracking so each line centres */
+    .stamp span:last-child { font-size: 1.62em; font-weight: 860; font-stretch: 92%; letter-spacing: 0.06em; margin-right: -0.06em; }
+    :root[data-theme="dark"] .stamp { mix-blend-mode: screen; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .stamp { mix-blend-mode: screen; } }
+
+    /* title, blurb and actions sit under a 2px rule, as on every cover in the series */
+    .cover-grid {
+      display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 1.1rem clamp(2rem, 5vw, 5rem); align-items: start;
+      margin-top: clamp(1.4rem, 3.6vh, 2.4rem); padding-top: clamp(1.1rem, 2.6vh, 1.6rem);
+      border-top: 2px solid var(--ink);
+    }
+    .cover-title {
+      font-size: clamp(2.2rem, 4.6vw, 4.25rem);
+      font-weight: 820; font-stretch: 112%;
+      line-height: 0.95; letter-spacing: -0.03em;
+    }
+    .cover-copy { max-width: 44ch; }
+    .cover-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: clamp(1.2rem, 3vh, 1.75rem); }
+    .cover-mark { grid-column: text; grid-row: 3; align-self: center; justify-self: start; z-index: 1; color: var(--on-series); font-size: 1.05rem; }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .cover::before { animation: band-draw 0.9s var(--ease-out) both; }
+      .cover::after { animation: band-draw 0.9s 0.08s var(--ease-out) both; }
+      .stamp { animation: stamp-press 0.5s 0.55s var(--ease-out) both; }
+    }
+    @keyframes band-draw { from { transform: scaleX(0.04); } to { transform: none; } }
+    @keyframes stamp-press { from { scale: 1.45; opacity: 0; } 40% { opacity: 1; } to { scale: 1; opacity: 1; } }
+
+    @media (max-width: 900px) {
+      .cover { --bt: 28px; --bb: 64px; }
+      .cover-grid { grid-template-columns: minmax(0, 1fr); }
+      .cover-mark { font-size: 0.95rem; }
+    }
+    @media (max-width: 600px) {
+      .folio-wrap { --folio: min(29.5vw, 9rem); }
+      .stamp { translate: -6% -18%; }
+    }
+    @media (max-width: 560px) {
+      .cover-actions { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+      .cover-actions .btn { padding-inline: 0.9rem; }
+      .cover-actions .btn-primary { grid-column: 1 / -1; }
+    }
+    @media (max-width: 359px) {
+      .folio-wrap { --folio: 27vw; }
+      .cover-actions { grid-template-columns: minmax(0, 1fr); }
+    }
   </style>
 </head>
-<body>
-  <main>
-    <div class="code">404</div>
-    <h1>This page wandered off</h1>
-    <p>The page you're looking for doesn't exist or has moved. Let's get you back on track.</p>
-    <div class="btns">
-      <a class="primary" href="/">← Back home</a>
-      <a class="ghost" href="/#blog">Read the blog</a>
-      <a class="ghost" href="/shop.html">Visit the shop</a>
+<body class="series-blue">
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="masthead">
+    <div class="wrap masthead-in">
+      <a class="roundel" href="/" aria-label="Gihan Munasinghe, home">Gihan.</a>
+      <nav class="nav" aria-label="Main">
+        <a href="/ventures.html">Ventures</a>
+        <a href="/#blog">Blog</a>
+        <a href="/shop.html">Shop</a>
+        <a href="/#services">Consulting</a>
+        <a href="/#teaching">Teaching</a>
+        <a href="/#expertise">Expertise</a>
+      </nav>
+      <div class="masthead-actions">
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch to dark theme"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-moon"></use></svg></button>
+        <a class="btn btn-paper btn-cta" href="/#contact">Work with me</a>
+        <button class="icon-btn menu-btn" type="button" data-menu-button aria-controls="menu" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-list"></use></svg><span>Menu</span></button>
+      </div>
     </div>
+    <nav class="menu-panel" id="menu" aria-label="Main menu">
+      <a href="/ventures.html">Ventures <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-right"></use></svg></a>
+      <a href="/#blog">Blog <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-right"></use></svg></a>
+      <a href="/shop.html">Shop <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-right"></use></svg></a>
+      <a href="/#services">Consulting <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-right"></use></svg></a>
+      <a href="/#teaching">Teaching <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-right"></use></svg></a>
+      <a href="/#expertise">Expertise <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-right"></use></svg></a>
+      <a href="/#contact">Work with me <svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-right"></use></svg></a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="cover" aria-labelledby="nf-title">
+      <div class="cover-body">
+        <div class="folio-wrap">
+          <p class="folio"><span class="visually-hidden">Error </span>404</p>
+          <p class="stamp" aria-hidden="true"><span>Out of</span><span>print</span></p>
+        </div>
+        <div class="cover-grid">
+          <h1 class="cover-title" id="nf-title">This page is out of print</h1>
+          <div>
+            <p class="lede cover-copy">The page you're looking for doesn't exist or has moved. Let's get you back on track.</p>
+            <div class="cover-actions">
+              <a class="btn btn-primary" href="/"><svg class="icon" aria-hidden="true"><use href="/assets/icons.svg#i-arrow-left"></use></svg>Back home</a>
+              <a class="btn btn-ghost" href="/#blog">Read the blog</a>
+              <a class="btn btn-ghost" href="/shop.html">Visit the shop</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span class="roundel cover-mark" aria-hidden="true">Gihan.</span>
+    </section>
   </main>
+
+  <footer class="colophon">
+    <div class="wrap colophon-in">
+      <div>
+        <a class="roundel" href="/" aria-label="Gihan Munasinghe, home">Gihan.</a>
+        <p>Software engineer, consultant and educator, building and teaching from Singapore.</p>
+        <p>Set in Archivo and Literata.</p>
+      </div>
+      <div>
+        <h2>On this site</h2>
+        <ul>
+          <li><a href="/ventures.html">Ventures</a></li>
+          <li><a href="/#blog">Blog</a></li>
+          <li><a href="/shop.html">Shop</a></li>
+          <li><a href="/#services">Consulting</a></li>
+          <li><a href="/#teaching">Teaching</a></li>
+          <li><a href="/#about">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://www.linkedin.com/in/gihan-munasinghe-7a484575" target="_blank" rel="noopener">LinkedIn</a></li>
+          <li><a href="https://github.com/GihanMunasinghe" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://www.instagram.com/gihanmunasinghe" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://youtube.com/@gihanmunasinghe" target="_blank" rel="noopener">YouTube</a></li>
+          <li><a href="https://www.facebook.com/gikka.munaya" target="_blank" rel="noopener">Facebook</a></li>
+          <li><a href="https://wa.me/6586469798" target="_blank" rel="noopener">WhatsApp</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="colophon-base"><span>&copy; <span data-year>2026</span> Gihan Munasinghe</span><span>gihanmunasinghe.lk</span></div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/site.js" defer></script>
 </body>
 </html>
