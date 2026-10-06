@@ -10,7 +10,20 @@ jobs:
   diag:
     runs-on: ubuntu-latest
     steps:
+      - name: DNS and TLS certificate for the API
+        continue-on-error: true
+        run: |
+          set +e
+          echo "=== DNS"; dig +noall +answer api.gihanmunasinghe.lk; dig +noall +answer www.gihanmunasinghe.lk
+          echo "=== certificate served for api.gihanmunasinghe.lk (SNI)"
+          echo | openssl s_client -connect api.gihanmunasinghe.lk:443 -servername api.gihanmunasinghe.lk 2>/dev/null | openssl x509 -noout -subject -issuer -dates -ext subjectAltName
+          echo "=== certificate served by the documented API Gateway domain target"
+          echo | openssl s_client -connect d-nrbcz64j0f.execute-api.ap-southeast-1.amazonaws.com:443 -servername api.gihanmunasinghe.lk 2>/dev/null | openssl x509 -noout -subject -issuer -dates -ext subjectAltName
+          echo "=== GET /posts via the API Gateway domain target (cert check skipped, diagnosis only)"
+          curl -sS -m 20 -k -D - -o body.txt --connect-to api.gihanmunasinghe.lk:443:d-nrbcz64j0f.execute-api.ap-southeast-1.amazonaws.com:443 -H "Origin: https://www.gihanmunasinghe.lk" https://api.gihanmunasinghe.lk/posts | grep -iE "^HTTP|access-control|content-type"; head -c 200 body.txt; echo
+          exit 0
       - name: API responses and CORS
+        continue-on-error: true
         run: |
           for p in /posts /ventures /products /shop-config; do
             echo "=== GET https://api.gihanmunasinghe.lk$p"
@@ -20,6 +33,7 @@ jobs:
           echo "=== preflight /track"
           curl -sS -m 20 -D - -o /dev/null -X OPTIONS -H "Origin: https://www.gihanmunasinghe.lk" -H "Access-Control-Request-Method: POST" -H "Access-Control-Request-Headers: content-type" https://api.gihanmunasinghe.lk/track | grep -iE "^HTTP|access-control" || true
       - name: Live site files and edge headers
+        continue-on-error: true
         run: |
           for u in / /site-config.json /assets/css/site.css /assets/js/site.js /ventures.html /shop.html; do
             echo "=== https://www.gihanmunasinghe.lk$u"
@@ -31,6 +45,7 @@ jobs:
           grep -o "cdn-cgi[^\"' ]*" home.html | sort -u | head || true
           grep -o "<script[^>]*>" home.html | head -20
       - name: Headless Chrome console
+        continue-on-error: true
         run: |
           mkdir -p pw && cd pw && npm init -y >/dev/null && npm i -s playwright-core@1.56.1 >/dev/null
           cat > run.mjs <<'JS'
