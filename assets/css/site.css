@@ -62,6 +62,7 @@
   --ink-3: #5c626d;
   --rule: rgba(20, 22, 27, 0.16);
   --rule-strong: rgba(20, 22, 27, 0.72);
+  --plank: #14161b; /* the shelf books stand on */
   --shade: 18, 26, 54; /* rgb triplet for tinted shadows */
 
   /* the series: flat print colours */
@@ -79,7 +80,6 @@
   /* state */
   --ok: #0f6b47;
   --danger: #b3261e;
-  --warn: #8a5a00;
 
   /* type */
   --font-sans: "Archivo", "Helvetica Neue", Arial, system-ui, sans-serif;
@@ -112,6 +112,7 @@
     --ink-3: #959ba6;
     --rule: rgba(236, 238, 242, 0.15);
     --rule-strong: rgba(236, 238, 242, 0.7);
+    --plank: #2c313a;
     --shade: 0, 0, 0;
     --blue: #2a4fb5;
     --blue-text: #8eaaff;
@@ -122,7 +123,6 @@
     --on-light-band: #111318;
     --ok: #5fd3a0;
     --danger: #ff8a80;
-    --warn: #f3c46b;
   }
 }
 :root[data-theme="dark"] {
@@ -135,6 +135,7 @@
   --ink-3: #959ba6;
   --rule: rgba(236, 238, 242, 0.15);
   --rule-strong: rgba(236, 238, 242, 0.7);
+  --plank: #2c313a;
   --shade: 0, 0, 0;
   --blue: #2a4fb5;
   --blue-text: #8eaaff;
@@ -145,7 +146,6 @@
   --on-light-band: #111318;
   --ok: #5fd3a0;
   --danger: #ff8a80;
-  --warn: #f3c46b;
 }
 
 .series-blue   { --series: var(--blue);   --series-text: var(--blue-text);   --on-series: var(--on-dark-band); }
@@ -192,7 +192,6 @@ button { cursor: pointer; background: none; border: 0; }
 .band :focus-visible, .masthead :focus-visible { outline-color: var(--on-series); }
 
 .wrap { width: 100%; max-width: calc(var(--wrap) + 2 * var(--gutter)); margin-inline: auto; padding-inline: var(--gutter); }
-.measure { max-width: 64ch; }
 [hidden] { display: none !important; }
 .visually-hidden {
   position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
@@ -220,7 +219,6 @@ h4 { font-size: 1.05rem; font-weight: 680; line-height: 1.3; }
 .prose p + p { margin-top: 1em; }
 .prose strong { color: var(--ink); font-weight: 650; }
 .meta { font-size: 0.875rem; color: var(--ink-3); font-variant-numeric: tabular-nums; }
-.label { font-size: 0.8125rem; font-weight: 650; letter-spacing: 0.01em; }
 .num { font-variant-numeric: tabular-nums lining-nums; }
 
 /* ---------- the publisher's mark ---------- */
@@ -236,7 +234,6 @@ h4 { font-size: 1.05rem; font-weight: 680; line-height: 1.3; }
 .band { background: var(--series); color: var(--on-series); }
 .band .lede, .band .prose, .band .meta { color: inherit; }
 .band .lede, .band .prose { opacity: 0.92; }
-.band-rule { height: clamp(10px, 1.6vw, 18px); background: var(--series); }
 
 /* ---------- masthead (sticky series band carrying the nav) ---------- */
 .masthead {
@@ -300,8 +297,6 @@ h4 { font-size: 1.05rem; font-weight: 680; line-height: 1.3; }
 .btn .icon { width: 1.15em; height: 1.15em; }
 .btn-primary { background: var(--series); color: var(--on-series); border-color: var(--series); }
 .btn-primary:hover:not(:disabled) { background: var(--series-hover); border-color: var(--series-hover); }
-.btn-ink { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-.btn-ink:hover:not(:disabled) { background: color-mix(in oklab, var(--ink) 82%, var(--paper)); }
 .btn-ghost { background: transparent; color: var(--ink); border-color: var(--rule-strong); }
 .btn-ghost:hover:not(:disabled) { background: var(--paper-2); border-color: var(--ink); }
 .btn-sm { min-height: 40px; padding: 0.5rem 0.95rem; font-size: 0.9rem; }
@@ -324,7 +319,6 @@ h4 { font-size: 1.05rem; font-weight: 680; line-height: 1.3; }
 .section { padding-block: var(--section); }
 .section-head { margin-bottom: clamp(2rem, 4vw, 3.25rem); max-width: 46rem; }
 .section-head h2 + .lede { margin-top: 1rem; }
-.hairline { border: 0; border-top: 1px solid var(--rule); }
 
 /* ---------- tabs / filters ---------- */
 .tabs { display: flex; flex-wrap: wrap; gap: 0.25rem 1.4rem; border-bottom: 1px solid var(--rule); }

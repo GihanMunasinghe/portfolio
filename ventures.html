@@ -94,14 +94,12 @@
     .tab[aria-pressed="true"] .tab-n { color: var(--series-text); }
 
     .jackets {
-      --gap-x: clamp(1.25rem, 2.6vw, 2.5rem); --plank: var(--ink);
+      --gap-x: clamp(1.25rem, 2.6vw, 2.5rem);
       list-style: none; display: grid;
       grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr));
       gap: clamp(3.5rem, 5vw, 4.5rem) var(--gap-x);
       margin-top: clamp(1.75rem, 3vw, 2.5rem); padding-bottom: 12px;
     }
-    :root[data-theme="dark"] .jackets { --plank: #2c313a; }
-    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .jackets { --plank: #2c313a; } }
     /* a face-out paperback: band / artwork / title / foot band */
     .jacket {
       position: relative; display: grid; grid-template-rows: auto auto 1fr auto;

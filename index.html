@@ -170,9 +170,6 @@
     }
 
     /* ================= bookcase (blog + ventures) ================= */
-    .bookcase { --plank: var(--ink); }
-    :root[data-theme="dark"] .bookcase { --plank: #2c313a; }
-    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .bookcase { --plank: #2c313a; } }
     .shelf {
       --shelf-h: 480px; --spine-w: 58px; --open-w: min(460px, 78vw);
       display: flex; align-items: flex-end; gap: 7px;
@@ -224,6 +221,7 @@
       background: var(--book); color: var(--on-book); padding: 0 1.15rem;
       font-size: 0.85rem; font-weight: 680;
     }
+    #venture-shelf .face-aside { display: none; } /* the stage is on the spine cap */
     .face-text { display: grid; gap: 0.6rem; align-content: start; padding: 1.15rem 1.15rem 1.1rem; }
     .face-title {
       font-size: 1.42rem; font-weight: 760; line-height: 1.12; letter-spacing: -0.015em; text-wrap: balance;
@@ -269,6 +267,7 @@
       .book.is-open.has-art .face { grid-template-rows: 52px auto 190px; }
       .book.is-open:not(.has-art) .face { grid-template-rows: 52px auto 44px; }
       .book.is-open .face-art { display: flex; }
+      #venture-shelf .face-aside { display: inline; } /* no spine cap on the open book here */
     }
 
     /* ================= consulting contents ================= */
@@ -661,7 +660,7 @@
           <span class="spine-foot"><span class="roundel">G.</span></span>
         </span>
         <span class="face">
-          <span class="face-top"><span>${esc(label)}</span><span>${esc(aside)}</span></span>
+          <span class="face-top"><span>${esc(label)}</span><span class="face-aside">${esc(aside)}</span></span>
           <span class="face-text">
             <span class="face-title">${esc(title)}</span>
             ${excerpt ? `<span class="face-excerpt">${esc(excerpt)}</span>` : ""}
@@ -721,7 +720,7 @@
           id: v.id, i,
           href: "ventures.html?app=" + encodeURIComponent(v.id),
           cap: STAGES[v.stage] || v.stage || "", title: v.name,
-          label: v.category || "Venture", aside: "",
+          label: v.category || "Venture", aside: STAGES[v.stage] || v.stage || "",
           excerpt: v.tagline, read: "Open venture", art,
         });
       }).join("");

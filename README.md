@@ -5,6 +5,11 @@ Personal site + self-contained blog platform for **gihanmunasinghe.lk**.
 - **Frontend**: static site (`index.html`, `blog/post.html`, `admin/`),
   hosted on GitHub Pages. Every push to `main` deploys via
   `.github/workflows/deploy.yml`.
+- **Design**: the public pages share one system, the "paperback series"
+  (`assets/css/site.css`, `assets/js/site.js`, self-hosted fonts in
+  `assets/fonts/`, Phosphor icons in `assets/icons.svg`). Tokens, colours,
+  type and component rules are documented in `DESIGN.md`; product facts
+  live in `PRODUCT.md`.
 - **Backend**: AWS (Lambda + DynamoDB + EventBridge + SES) in `infra/`.
   Runs the blog API, comments, likes, analytics, and the daily AI draft
   agent. See `infra/README.md`.

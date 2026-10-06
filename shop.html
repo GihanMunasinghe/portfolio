@@ -41,9 +41,9 @@
     /* ================= page-local plumbing ================= */
     html.is-locked { overflow: hidden; }
     /* shelf and cover tokens live on body: the drawer and the product sheet sit outside main */
-    body { --plank: var(--ink); --plank-h: 10px; --cover-paper: var(--paper); --cover-edge: rgba(var(--shade), 0.14); }
-    :root[data-theme="dark"] body { --plank: #2c313a; --cover-paper: var(--paper-2); --cover-edge: rgba(236, 236, 230, 0.1); }
-    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) body { --plank: #2c313a; --cover-paper: var(--paper-2); --cover-edge: rgba(236, 236, 230, 0.1); } }
+    body { --plank-h: 10px; --cover-paper: var(--paper); --cover-edge: rgba(var(--shade), 0.14); }
+    :root[data-theme="dark"] body { --cover-paper: var(--paper-2); --cover-edge: rgba(236, 238, 242, 0.1); }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) body { --cover-paper: var(--paper-2); --cover-edge: rgba(236, 238, 242, 0.1); } }
     /* keep the mobile masthead actions on the right edge */
 
     /* ================= masthead cart ================= */
